@@ -1,0 +1,106 @@
+-file("./test_iso8583_message.erl", 1).
+
+-module(test_iso8583_message).
+
+-export([test/0,
+         new_test/0,
+         set_test/0,
+         set_negative_id_test/0,
+         set_bad_positive_id_test/0]).
+
+-file("/usr/lib/erlang/lib/eunit-2.1.4/include/eunit.hrl", 1).
+
+-file("./test_iso8583_message.erl", 10).
+
+-export([]).
+
+new_test() ->
+    {iso8583_message,_} = iso8583_message:new().
+
+set_test() ->
+    Message = iso8583_message:new(),
+    iso8583_message:add_field(0, "0200", Message).
+
+set_negative_id_test() ->
+    Message = iso8583_message:new(),
+    fun() ->
+           try iso8583_message:add_field(- 1, "0200", Message) of
+               __V ->
+                   .erlang:error({assertException_failed,
+                                  [{module,test_iso8583_message},
+                                   {line,38},
+                                   {expression,
+                                    "iso8583_message : add_field ( - 1 "
+                                    ", \"0200\" , Message )"},
+                                   {expected,
+                                    "{ "
+                                    ++
+                                    "error"
+                                    ++
+                                    " , " ++ "_" ++ " , [...] }"},
+                                   {unexpected_success,__V}]})
+           catch
+               error:_ ->
+                   ok;
+               __C:__T ->
+                   .erlang:error({assertException_failed,
+                                  [{module,test_iso8583_message},
+                                   {line,38},
+                                   {expression,
+                                    "iso8583_message : add_field ( - 1 "
+                                    ", \"0200\" , Message )"},
+                                   {expected,
+                                    "{ "
+                                    ++
+                                    "error"
+                                    ++
+                                    " , " ++ "_" ++ " , [...] }"},
+                                   {unexpected_exception,
+                                    {__C,__T,.erlang:get_stacktrace()}}]})
+           end
+    end().
+
+set_bad_positive_id_test() ->
+    Message = iso8583_message:new(),
+    fun() ->
+           try iso8583_message:add_field(193, "0200", Message) of
+               __V ->
+                   .erlang:error({assertException_failed,
+                                  [{module,test_iso8583_message},
+                                   {line,43},
+                                   {expression,
+                                    "iso8583_message : add_field ( 193 "
+                                    ", \"0200\" , Message )"},
+                                   {expected,
+                                    "{ "
+                                    ++
+                                    "error"
+                                    ++
+                                    " , " ++ "_" ++ " , [...] }"},
+                                   {unexpected_success,__V}]})
+           catch
+               error:_ ->
+                   ok;
+               __C:__T ->
+                   .erlang:error({assertException_failed,
+                                  [{module,test_iso8583_message},
+                                   {line,43},
+                                   {expression,
+                                    "iso8583_message : add_field ( 193 "
+                                    ", \"0200\" , Message )"},
+                                   {expected,
+                                    "{ "
+                                    ++
+                                    "error"
+                                    ++
+                                    " , " ++ "_" ++ " , [...] }"},
+                                   {unexpected_exception,
+                                    {__C,__T,.erlang:get_stacktrace()}}]})
+           end
+    end().
+
+
+
+test() ->
+    .eunit:test(test_iso8583_message).
+
