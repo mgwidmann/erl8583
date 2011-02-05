@@ -31,7 +31,20 @@ set_field_negative_test() ->
 set_field_index_too_big_test() ->
 	BitMap = iso8583_bit_map:new(64),
 	?assertError(_, iso8583_bit_map:set(65, "hello", BitMap)).
+
+set_field_index_twice_test() ->
+	BitMap = iso8583_bit_map:new(64),
+	UpdatedBitMap = iso8583_bit_map:set(64, "hello", BitMap),
+	?assertError(_, iso8583_bit_map:set(64, "hello", UpdatedBitMap)).
 	
+get_test() ->
+	BitMap = iso8583_bit_map:new(64),
+	UpdatedBitMap = iso8583_bit_map:set(64, "hello", BitMap),
+	"hello" = iso8583_bit_map:get(64, UpdatedBitMap).
+
+get_no_value_test() ->
+	BitMap = iso8583_bit_map:new(64),
+	?assertError(_, iso8583_bit_map:get(64, BitMap)).	
 %%
 %% Local Functions
 %%
