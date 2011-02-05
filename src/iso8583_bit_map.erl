@@ -10,7 +10,7 @@
 %%
 %% Exported Functions
 %%
--export([new/1, set/3]).
+-export([new/1, set/3, get/2]).
 
 %%
 %% API Functions
@@ -20,13 +20,17 @@ new(NumFields) ->
 	UpdatedDict = dict:store(max_index, NumFields, Dict),
 	{iso8583_bit_map, UpdatedDict}.
 
-set(Index, _Value, BitMap) when Index >= 0 ->
+set(Index, Value, BitMap) when Index >= 0 ->
 	{iso8583_bit_map, Dict} = BitMap,
 	MaxIndex = dict:fetch(max_index, Dict),
-	case Index =< MaxIndex of
+	case Index =< MaxIndex andalso not dict:is_key(Index, Dict) of
 		true ->
-			{iso8583_bit_map, Dict}
+			{iso8583_bit_map, dict:store(Index, Value, Dict)}
 	end.
+
+get(Index, BitMap) when is_integer(Index) ->
+	{iso8583_bit_map, Dict} = BitMap,
+	dict:fetch(Index, Dict).
 
 %%
 %% Local Functions
