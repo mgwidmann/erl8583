@@ -38,13 +38,8 @@ get_indexes(BitMap) ->
 to_list(BitMap) ->
 	{iso8583_bit_map, Dict} = BitMap,
 	Keys = get_indexes(BitMap),
-	to_list(Dict, Keys, []).
-	%[{K, V} || K <- Keys, V <- dict:fetch(K, Dict)].
+	[{K, dict:fetch(K, Dict)} || K <- Keys].
 
 %%
 %% Local Functions
 %%
-to_list(_Dict, [], R) ->
-	lists:reverse(R);
-to_list(Dict, [Key|Tail], R) ->
-	to_list(Dict, Tail, [{Key, dict:fetch(Key, Dict)} | R]).
