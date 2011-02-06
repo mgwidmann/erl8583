@@ -48,7 +48,11 @@ xml_unmarshall_complex_test() ->
 	Message = xml_unmarshaller:unmarshall(XmlMessage),
 	?assertEqual("0810", iso8583_message:get(0, Message)),
 	?assertEqual("333333", iso8583_message:get(3, Message)),
-	?assertEqual([0, 3, 39, 48], iso8583_message:get_fields(Message)).
+	?assertEqual("00", iso8583_message:get(39, Message)),
+	?assertEqual([0, 3, 39, 48], iso8583_message:get_fields(Message)),
+	BitMap = iso8583_message:get(48, Message),
+	[1] = iso8583_bit_map:get_indexes(BitMap),
+	"hello" = iso8583_bit_map:get(1, BitMap).
 
 foo() ->
 	{ok, Sock} = gen_tcp:connect("localhost", 8000, [list, {packet, 0}, {active, true}]),
