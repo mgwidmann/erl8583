@@ -16,7 +16,7 @@
 %% API Functions
 %%
 behaviour_info(callbacks) ->
-	[{map_atom_to_index, 1}];
+	[{map_id_to_index, 1}];
 behaviour_info(_Other) ->
 	undefined.
 

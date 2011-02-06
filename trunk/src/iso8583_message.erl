@@ -46,4 +46,4 @@ mapIdToIndex(Id, _Opts) when is_integer(Id) ->
 	Id;
 mapIdToIndex(Id, Opts) ->
 	Mapper = dict:fetch(mapper, Opts),
-	Mapper:map_atom_to_index(Id).
+	Mapper:map_id_to_index(Id).

@@ -13,14 +13,14 @@
 %%
 %% Exported Functions
 %%
--export([map_atom_to_index/1]).
+-export([map_id_to_index/1]).
 
 %%
 %% API Functions
 %%
 
 %% This class provides self-shunting for testing.
-map_atom_to_index(foo) ->
+map_id_to_index(foo) ->
 	180.
 
 %%
@@ -70,15 +70,15 @@ new_with_mapper_get_test() ->
 	Message2 = iso8583_message:set(180, "hello", Message),
 	?assertEqual("hello", iso8583_message:get(foo, Message2)).
 
-%% Test with a mapper that doesn't map an atom to an ID.
+%% Test with a mapper that doesn't map an atom to an index.
 bad_atom_mapper_test() ->
 	Message = iso8583_message:new([{mapper, ?MODULE}]),
 	?assertError(_, iso8583_message:set(bad_atom, "hello", Message)).
 
 %% Test that we can get fields.
 get_fields_test() ->
-	Message = iso8583_message:new(),
-	Message2 = iso8583_message:set(180, "hello", Message),
+	Message = iso8583_message:new([{mapper, ?MODULE}]),
+	Message2 = iso8583_message:set(foo, "hello", Message),
 	Message3 = iso8583_message:set(0, "0200", Message2),
 	?assertEqual([0, 180], iso8583_message:get_fields(Message3)).
 
