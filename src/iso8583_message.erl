@@ -6,8 +6,6 @@
 %%
 %% Include files
 %%
--include("iso8583_defines.hrl").
--include("iso8583_field.hrl").
 
 %%
 %% Exported Functions
@@ -18,82 +16,34 @@
 %% API Functions
 %%
 new() ->
-	Dict = dict:new(),
-	{iso8583_message, Dict}.
+	new([]).
 
 new(Options) ->
-	Dict = new(Options, dict:new()),
-	{iso8583_message, Dict}.	
+	{iso8583_message, dict:from_list(Options), iso8583_bit_map:new()}.
+	
+set(Id, Value, Msg) ->
+	{iso8583_message, Opts, BitMap} = Msg,
+	Index = mapIdToIndex(Id, Opts),
+	{iso8583_message, Opts, iso8583_bit_map:set(Index, Value, BitMap)}.
+	
+get(Id, Msg) ->
+	{iso8583_message, Opts, BitMap} = Msg,
+	Index = mapIdToIndex(Id, Opts),
+	iso8583_bit_map:get(Index, BitMap).
 
-set(Field, Value, Message) when Field >= 0 andalso Field =< ?MAX_FIELD_ID ->
-		{iso8583_message, Dict} = Message,
-		case dict:is_key(validator, Dict) of
-			true ->
-				Validator = dict:fetch(validator, Dict),
-				Validator:validate_field(Field, Value);
-			false ->
-				ok
-		end,
-		case dict:is_key(Field, Dict) of
-			true ->
-				erlang:error(field_already_set);
-			false ->
-				UpdatedDict = dict:store(Field, Value, Dict),
-				{iso8583_message, UpdatedDict}
-		end;
-set(Field, Value, Message) when is_atom(Field) ->
-	Id = mapAtomToId(Field, Message),
-	set(Id, Value, Message).
+get_fields(Msg) ->
+	{iso8583_message, _Opts, BitMap} = Msg,
+	iso8583_bit_map:get_indexes(BitMap).
 
-get(Field, Message) when is_integer(Field) ->
-	{iso8583_message, Dict} = Message,
-	dict:fetch(Field, Dict);
-get(Field, Message) when is_atom(Field) ->
-	Id = mapAtomToId(Field, Message),
-	get(Id, Message).
-
-get_fields(Message) ->
-	{iso8583_message, Dict} = Message,
-	KeyValues = dict:to_list(Dict),
-	List = get_fields(KeyValues, []),
-	lists:sort(List).
-
-to_list(Message) ->
-	{iso8583_message, Dict} = Message,
-	lists:reverse(to_list(get_fields(Message), [], Dict)).
-
+to_list(Msg) ->
+	{iso8583_message, _Opts, BitMap} = Msg,
+	iso8583_bit_map:to_list(BitMap).
+	
 %%
 %% Local Functions
 %%
-mapAtomToId(Atom, Message) ->
-	{iso8583_message, Dict} = Message,
-	Mapper = dict:fetch(mapper, Dict),
-	Id = Mapper:map_atom_to_id(Atom),
-	true = is_integer(Id),
-	Id.	
-
-new([], Dict) ->
-	Dict;
-new([{mapper, Value}|T], Dict) ->
-	new(mapper, Value, T, Dict);
-new([{validator, Value}|T], Dict) ->
-	new(validator, Value, T, Dict).	
-	
-new(Key, Value, List, Dict) ->
-	UpdatedDict = dict:store(Key, Value, Dict),
-	new(List, UpdatedDict).
-
-get_fields([], List) ->
-	List;
-get_fields([{Key, _Value}|T], List) ->
-	case is_integer(Key) of
-		true ->
-			get_fields(T, [Key|List]);
-		false ->
-			get_fields(T, List)
-	end.
-	
-to_list([], Result, _Dict) ->
-	Result;
-to_list([Key|T], Result, Dict) ->
-	to_list(T, [{Key, dict:fetch(Key, Dict)}|Result], Dict).
+mapIdToIndex(Id, _Opts) when is_integer(Id) ->
+	Id;
+mapIdToIndex(Id, Opts) ->
+	Mapper = dict:fetch(mapper, Opts),
+	Mapper:map_atom_to_index(Id).

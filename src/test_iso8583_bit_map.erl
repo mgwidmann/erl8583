@@ -49,7 +49,7 @@ get_indexes_empty_test() ->
 get_indexes_test() ->
 	BitMap1 = iso8583_bit_map:new(),
 	BitMap2 = iso8583_bit_map:set(64, "hello", BitMap1),
-	BitMap3 = iso8583_bit_map:set(0, "foo", BitMap2),
+	BitMap3 = iso8583_bit_map:set(0, 7, BitMap2),
 	BitMap4 = iso8583_bit_map:set(65, "bar", BitMap3),
 	[0, 64, 65] = iso8583_bit_map:get_indexes(BitMap4).
 
@@ -57,8 +57,8 @@ to_list_test() ->
 	BitMap1 = iso8583_bit_map:new(),
 	BitMap2 = iso8583_bit_map:set(64, "hello", BitMap1),
 	BitMap3 = iso8583_bit_map:set(0, "foo", BitMap2),
-	BitMap4 = iso8583_bit_map:set(65, "bar", BitMap3),
-	%[{0, "foo"}, {64, "hello"}, {65, "bar"}] = 
+	BitMap4 = iso8583_bit_map:set(65, 7, BitMap3),
+	%[{0, "foo"}, {64, "hello"}, {65, 7}] = 
 	iso8583_bit_map:to_list(BitMap4).
 
 %%
