@@ -18,12 +18,17 @@
 %%
 
 %% Check that marshalling does the opposite of unmarshalling.
-xml_marshall_test() ->
+xml_marshall_empty_test() ->
 	IsoMsg = iso8583_message:new(),
 	Marshalled = xml_marshaller:marshall(IsoMsg),
 	IsoMsg = xml_unmarshaller:unmarshall(Marshalled).
 
-
+xml_marshall_simple_test() ->
+	IsoMsg1 = iso8583_message:new(),
+	IsoMsg2 = iso8583_message:set(0, "0200", IsoMsg1),
+	Marshalled = xml_marshaller:marshall(IsoMsg2),
+	IsoMsg2 = xml_unmarshaller:unmarshall(Marshalled).
+	
 %%
 %% Local Functions
 %%
