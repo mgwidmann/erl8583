@@ -16,7 +16,7 @@
 %% API Functions
 %%
 marshall(IsoMsg) ->
-	"<isomsg>" ++ marshall_fields(iso8583_message:to_list(IsoMsg), []) ++ "</isomsg>".
+	"<isomsg>" ++ marshall_fields(iso8583_message:to_list(IsoMsg), []) ++ "</isomsg>\n".
 
 
 %%
