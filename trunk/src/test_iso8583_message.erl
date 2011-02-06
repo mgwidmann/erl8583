@@ -89,4 +89,7 @@ to_list_test() ->
 	Message3 = iso8583_message:set(39, 0, Message2),
 	[{0, "0200"}, {39, 0}] = iso8583_message:to_list(Message3).
 
-	
+from_list_test() ->
+	Message = iso8583_message:from_list([{0, "0200"}, {39, 0}]),
+	{iso8583_message, _, _} = Message,
+	[{0, "0200"}, {39, 0}] = iso8583_message:to_list(Message).

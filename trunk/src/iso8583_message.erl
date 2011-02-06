@@ -10,7 +10,7 @@
 %%
 %% Exported Functions
 %%
--export([new/0, new/1, set/3, get/2, get_fields/1, to_list/1]).
+-export([new/0, new/1, set/3, get/2, get_fields/1, to_list/1, from_list/1]).
 
 %%
 %% API Functions
@@ -38,7 +38,10 @@ get_fields(Msg) ->
 to_list(Msg) ->
 	{iso8583_message, _Opts, BitMap} = Msg,
 	iso8583_bit_map:to_list(BitMap).
-	
+
+from_list(List) ->
+	from_list(List, new()).
+
 %%
 %% Local Functions
 %%
@@ -47,3 +50,8 @@ mapIdToIndex(Id, _Opts) when is_integer(Id) ->
 mapIdToIndex(Id, Opts) ->
 	Mapper = dict:fetch(mapper, Opts),
 	Mapper:map_id_to_index(Id).
+
+from_list([], Result) ->
+	Result;
+from_list([{Key, Value}|Tail], Result) ->
+	from_list(Tail, set(Key, Value, Result)).
