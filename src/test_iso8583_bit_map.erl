@@ -58,8 +58,7 @@ to_list_test() ->
 	BitMap2 = iso8583_bit_map:set(64, "hello", BitMap1),
 	BitMap3 = iso8583_bit_map:set(0, "foo", BitMap2),
 	BitMap4 = iso8583_bit_map:set(65, 7, BitMap3),
-	%[{0, "foo"}, {64, "hello"}, {65, 7}] = 
-	iso8583_bit_map:to_list(BitMap4).
+	[{0, "foo"}, {64, "hello"}, {65, 7}] = iso8583_bit_map:to_list(BitMap4).
 
 from_list_test() ->
 	BitMap = iso8583_bit_map:from_list([{0, "0200"}, {39, 0}]),
