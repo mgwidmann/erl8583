@@ -10,7 +10,7 @@
 %%
 %% Exported Functions
 %%
--export([new/0, set/3, get/2, get_indexes/1, to_list/1]).
+-export([new/0, set/3, get/2, get_indexes/1, to_list/1, from_list/1]).
 
 %%
 %% API Functions
@@ -40,6 +40,13 @@ to_list(BitMap) ->
 	Keys = get_indexes(BitMap),
 	[{K, dict:fetch(K, Dict)} || K <- Keys].
 
+from_list(List) ->
+	from_list(List, new()).
+
 %%
 %% Local Functions
 %%
+from_list([], Result) ->
+	Result;
+from_list([{Key, Value}|Tail], Result) ->
+	from_list(Tail, set(Key, Value, Result)).

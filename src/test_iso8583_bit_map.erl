@@ -61,6 +61,11 @@ to_list_test() ->
 	%[{0, "foo"}, {64, "hello"}, {65, 7}] = 
 	iso8583_bit_map:to_list(BitMap4).
 
+from_list_test() ->
+	BitMap = iso8583_bit_map:from_list([{0, "0200"}, {39, 0}]),
+	{iso8583_bit_map, _} = BitMap,
+	[{0, "0200"}, {39, 0}] = iso8583_bit_map:to_list(BitMap).
+
 %%
 %% Local Functions
 %%
