@@ -15,11 +15,15 @@
 %%
 %% API Functions
 %%
-marshall(_IsoMsg) ->
-	"<isomsg/>".
+marshall(IsoMsg) ->
+	"<isomsg>" ++ marshall_fields(iso8583_message:to_list(IsoMsg), []) ++ "</isomsg>".
 
 
 %%
 %% Local Functions
 %%
-
+marshall_fields([], Result) ->
+	Result;
+marshall_fields([{K, V}|Tail], Result) ->
+	Id = integer_to_list(K),
+	marshall_fields(Tail, "<field id=\"" ++ Id ++ "\" value=\"" ++ V ++ "\" />" ++ Result).
