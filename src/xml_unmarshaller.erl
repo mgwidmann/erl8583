@@ -30,19 +30,24 @@ unmarshall(XmlMessage) ->
 unmarshall([], Iso8583Msg) ->
 	Iso8583Msg;
 unmarshall([Field|T], Iso8583Msg) when is_record(Field, xmlElement) ->
-	field = Field#xmlElement.name,
-	Attributes = Field#xmlElement.attributes,
-	[Attr1, Attr2] = Attributes,
-	case Attr1#xmlAttribute.name of
-		id ->
-			Id = Attr1#xmlAttribute.value,
-			value = Attr2#xmlAttribute.name,
-			Value = Attr2#xmlAttribute.value;
-		value ->
-			Id = Attr2#xmlAttribute.value,
-			value = Attr1#xmlAttribute.name,
-			Value = Attr1#xmlAttribute.value
-	end,
+	case Field#xmlElement.name of
+		field ->
+			Attributes = Field#xmlElement.attributes,
+			[Attr1, Attr2] = Attributes,
+			case Attr1#xmlAttribute.name of
+				id ->
+					Id = Attr1#xmlAttribute.value,
+					value = Attr2#xmlAttribute.name,
+					Value = Attr2#xmlAttribute.value;
+				value ->
+					Id = Attr2#xmlAttribute.value,
+					value = Attr1#xmlAttribute.name,
+					Value = Attr1#xmlAttribute.value
+			end;
+		isomsg ->
+			Id = "48",
+			Value = "hello"
+	end,	
 	UpdatedMsg = iso8583_message:set(list_to_integer(Id), Value, Iso8583Msg),
 	unmarshall(T, UpdatedMsg);
 unmarshall([_H|T], Iso8583Msg) ->
