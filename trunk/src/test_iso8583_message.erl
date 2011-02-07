@@ -79,3 +79,13 @@ from_list_test() ->
 	Message = iso8583_message:from_list([{0, "0200"}, {39, 0}]),
 	{iso8583_message, _, _} = Message,
 	[{0, "0200"}, {39, 0}] = iso8583_message:to_list(Message).
+
+get_attributes_test() ->
+	Message = iso8583_message:new([{"foo", "bar"}, {"hello", "world"}]),
+	[{"foo", "bar"}, {"hello", "world"}] = iso8583_message:get_attributes(Message).
+
+set_attributes_test() ->
+	Msg = iso8583_message:new(),
+	UpdatedMsg = iso8583_message:set_attributes([{"foo", "bar"}, {"hello", "world"}], Msg),
+	[{"foo", "bar"}, {"hello", "world"}] = iso8583_message:get_attributes(UpdatedMsg).
+	

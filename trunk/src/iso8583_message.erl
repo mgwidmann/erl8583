@@ -10,7 +10,15 @@
 %%
 %% Exported Functions
 %%
--export([new/0, new/1, set/3, get/2, get_fields/1, to_list/1, from_list/1]).
+-export([new/0, 
+		 new/1, 
+		 set/3, 
+		 get/2, 
+		 get_fields/1, 
+		 to_list/1, 
+		 from_list/1, 
+		 set_attributes/2, 
+		 get_attributes/1]).
 
 %%
 %% API Functions
@@ -18,30 +26,38 @@
 new() ->
 	new([]).
 
-new(Options) ->
-	{iso8583_message, dict:from_list(Options), dict:new()}.
+new(Attributes) ->
+	{iso8583_message, Attributes, dict:new()}.
 	
 set(Index, Value, Msg) when is_integer(Index) andalso Index >= 0 ->
-	{iso8583_message, Opts, Dict} = Msg,
+	{iso8583_message, Attrs, Dict} = Msg,
 	case dict:is_key(Index, Dict) of
 		false ->
-			{iso8583_message, Opts, dict:store(Index, Value, Dict)}
+			{iso8583_message, Attrs, dict:store(Index, Value, Dict)}
 	end.
 	
 get(Index, Msg) ->
-	{iso8583_message, _Opts, Dict} = Msg,
+	{iso8583_message, _Attrs, Dict} = Msg,
 	dict:fetch(Index, Dict).
 
 get_fields(Msg) ->
-	{iso8583_message, _Opts, Dict} = Msg,
+	{iso8583_message, _Attrs, Dict} = Msg,
 	lists:sort(dict:fetch_keys(Dict)).
 
 to_list(Msg) ->
-	{iso8583_message, _Opts, Dict} = Msg,
+	{iso8583_message, _Attrs, Dict} = Msg,
 	dict:to_list(Dict).
 
+get_attributes(Msg) ->
+	{iso8583_message, Attrs, _} = Msg,
+	Attrs.
+									
 from_list(List) ->
 	from_list(List, new()).
+
+set_attributes(Attr, Msg) ->
+	{iso8583_message, [], Dict} = Msg,
+	{iso8583_message, Attr, Dict}.
 
 %%
 %% Local Functions
