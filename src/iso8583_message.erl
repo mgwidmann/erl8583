@@ -19,25 +19,26 @@ new() ->
 	new([]).
 
 new(Options) ->
-	{iso8583_message, dict:from_list(Options), iso8583_bit_map:new()}.
+	{iso8583_message, dict:from_list(Options), dict:new()}.
 	
-set(Id, Value, Msg) ->
-	{iso8583_message, Opts, BitMap} = Msg,
-	Index = mapIdToIndex(Id, Opts),
-	{iso8583_message, Opts, iso8583_bit_map:set(Index, Value, BitMap)}.
+set(Index, Value, Msg) when is_integer(Index) andalso Index >= 0 ->
+	{iso8583_message, Opts, Dict} = Msg,
+	case dict:is_key(Index, Dict) of
+		false ->
+			{iso8583_message, Opts, dict:store(Index, Value, Dict)}
+	end.
 	
-get(Id, Msg) ->
-	{iso8583_message, Opts, BitMap} = Msg,
-	Index = mapIdToIndex(Id, Opts),
-	iso8583_bit_map:get(Index, BitMap).
+get(Index, Msg) ->
+	{iso8583_message, _Opts, Dict} = Msg,
+	dict:fetch(Index, Dict).
 
 get_fields(Msg) ->
-	{iso8583_message, _Opts, BitMap} = Msg,
-	iso8583_bit_map:get_indexes(BitMap).
+	{iso8583_message, _Opts, Dict} = Msg,
+	lists:sort(dict:fetch_keys(Dict)).
 
 to_list(Msg) ->
-	{iso8583_message, _Opts, BitMap} = Msg,
-	iso8583_bit_map:to_list(BitMap).
+	{iso8583_message, _Opts, Dict} = Msg,
+	dict:to_list(Dict).
 
 from_list(List) ->
 	from_list(List, new()).
@@ -45,12 +46,6 @@ from_list(List) ->
 %%
 %% Local Functions
 %%
-mapIdToIndex(Id, _Opts) when is_integer(Id) ->
-	Id;
-mapIdToIndex(Id, Opts) ->
-	Mapper = dict:fetch(mapper, Opts),
-	Mapper:map_id_to_index(Id).
-
 from_list([], Result) ->
 	Result;
 from_list([{Key, Value}|Tail], Result) ->

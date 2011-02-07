@@ -21,15 +21,15 @@ unmarshall(XmlMessage) ->
 	{Xml, []} = xmerl_scan:string(XmlMessage),
 	isomsg = Xml#xmlElement.name,
 	ChildNodes = Xml#xmlElement.content,
-	unmarshall(ChildNodes, iso8583_message:new(), iso8583_message).
+	unmarshall(ChildNodes, iso8583_message:new()).
 
 
 %%
 %% Local Functions
 %%
-unmarshall([], Iso8583Msg, _Module) ->
+unmarshall([], Iso8583Msg) ->
 	Iso8583Msg;
-unmarshall([Field|T], Iso8583Msg, Module) when is_record(Field, xmlElement) ->
+unmarshall([Field|T], Iso8583Msg) when is_record(Field, xmlElement) ->
 	case Field#xmlElement.name of
 		field ->
 			Attributes = Field#xmlElement.attributes,
@@ -49,10 +49,10 @@ unmarshall([Field|T], Iso8583Msg, Module) when is_record(Field, xmlElement) ->
 			id = Attr1#xmlAttribute.name,
 			Id = Attr1#xmlAttribute.value,
 			ChildNodes = Field#xmlElement.content,
-			Value = unmarshall(ChildNodes, iso8583_bit_map:new(), iso8583_bit_map)
+			Value = unmarshall(ChildNodes, iso8583_message:new())
 	end,	
-	UpdatedMsg = Module:set(list_to_integer(Id), Value, Iso8583Msg),
-	unmarshall(T, UpdatedMsg, Module);
-unmarshall([_H|T], Iso8583Msg, Module) ->
-	unmarshall(T, Iso8583Msg, Module).
+	UpdatedMsg = iso8583_message:set(list_to_integer(Id), Value, Iso8583Msg),
+	unmarshall(T, UpdatedMsg);
+unmarshall([_H|T], Iso8583Msg) ->
+	unmarshall(T, Iso8583Msg).
 
