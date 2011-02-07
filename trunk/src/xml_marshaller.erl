@@ -29,5 +29,5 @@ marshall_fields([{K, V}|Tail], Result) when is_list(V)  ->
 	marshall_fields(Tail, "<field id=\"" ++ Id ++ "\" value=\"" ++ V ++ "\" />" ++ Result);
 marshall_fields([{K, V}|Tail], Result) ->
 	Id = integer_to_list(K),
-	marshall_fields(Tail, "<isomsg id=\"" ++ Id ++ "\">" ++ marshall_fields(iso8583_bit_map:to_list(V), "") ++ "</isomsg>" ++ Result).
+	marshall_fields(Tail, "<isomsg id=\"" ++ Id ++ "\">" ++ marshall_fields(iso8583_message:to_list(V), "") ++ "</isomsg>" ++ Result).
 	
