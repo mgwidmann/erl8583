@@ -21,7 +21,9 @@ unmarshall(XmlMessage) ->
 	{Xml, []} = xmerl_scan:string(XmlMessage),
 	isomsg = Xml#xmlElement.name,
 	ChildNodes = Xml#xmlElement.content,
-	unmarshall(ChildNodes, iso8583_message:new()).
+	Msg = unmarshall(ChildNodes, iso8583_message:new()),
+	Attrs = Xml#xmlElement.attributes,
+	iso8583_message:set_attributes(attributes_to_list(Attrs, []), Msg).
 
 
 %%
@@ -45,14 +47,20 @@ unmarshall([Field|T], Iso8583Msg) when is_record(Field, xmlElement) ->
 					Value = Attr1#xmlAttribute.value
 			end;
 		isomsg ->
-			[Attr1] = Field#xmlElement.attributes,
-			id = Attr1#xmlAttribute.name,
-			Id = Attr1#xmlAttribute.value,
+			Attrs = Field#xmlElement.attributes,
+			[Id] = [Attr#xmlAttribute.value || Attr <- Attrs, id =:= Attr#xmlAttribute.name],
+			AttrsExceptId = [Attr || Attr <- Attrs, id =/= Attr#xmlAttribute.name],
 			ChildNodes = Field#xmlElement.content,
-			Value = unmarshall(ChildNodes, iso8583_message:new())
+			Value = unmarshall(ChildNodes, iso8583_message:new(attributes_to_list(AttrsExceptId, [])))
 	end,	
 	UpdatedMsg = iso8583_message:set(list_to_integer(Id), Value, Iso8583Msg),
 	unmarshall(T, UpdatedMsg);
 unmarshall([_H|T], Iso8583Msg) ->
 	unmarshall(T, Iso8583Msg).
 
+attributes_to_list([], Result) ->
+	Result;
+attributes_to_list([H|T], Result) ->
+	Id = atom_to_list(H#xmlAttribute.name),
+	Value = H#xmlAttribute.value,
+	attributes_to_list(T, [{Id, Value} | Result]).

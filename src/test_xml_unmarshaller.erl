@@ -54,6 +54,15 @@ xml_unmarshall_complex_test() ->
 	[1] = iso8583_message:get_fields(BitMap),
 	"hello" = iso8583_message:get(1, BitMap).
 
+xml_unmarshall_with_attributes_test() ->
+	Message = xml_unmarshaller:unmarshall("<isomsg foo=\"bar\"""/>"),
+	[{"foo", "bar"}] = iso8583_message:get_attributes(Message).
+
+xml_unmarshall_with_attributes2_test() ->
+	Message = xml_unmarshaller:unmarshall("<isomsg><isomsg id=\"48\" foo=\"bar\"""/></isomsg>"),
+	Field = iso8583_message:get(48, Message),
+	[{"foo", "bar"}] = iso8583_message:get_attributes(Field).
+	
 foo() ->
 	{ok, Sock} = gen_tcp:connect("localhost", 8000, [list, {packet, 0}, {active, true}]),
 	IsoMsg1 = iso8583_message:new(),
