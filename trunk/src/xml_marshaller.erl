@@ -16,7 +16,11 @@
 %% API Functions
 %%
 marshall(IsoMsg) ->
-	"<isomsg>" ++ marshall_fields(iso8583_message:to_list(IsoMsg), []) ++ "</isomsg>\n".
+	"<isomsg" ++ 
+		encode_attributes(iso8583_message:get_attributes(IsoMsg)) ++ 
+		">" ++ 
+		marshall_fields(iso8583_message:to_list(IsoMsg), []) ++ 
+		"</isomsg>\n".
 
 
 %%
@@ -29,5 +33,17 @@ marshall_fields([{K, V}|Tail], Result) when is_list(V)  ->
 	marshall_fields(Tail, "<field id=\"" ++ Id ++ "\" value=\"" ++ V ++ "\" />" ++ Result);
 marshall_fields([{K, V}|Tail], Result) ->
 	Id = integer_to_list(K),
-	marshall_fields(Tail, "<isomsg id=\"" ++ Id ++ "\">" ++ marshall_fields(iso8583_message:to_list(V), "") ++ "</isomsg>" ++ Result).
+	marshall_fields(Tail, "<isomsg id=\"" ++ Id ++ "\"" ++
+						encode_attributes(iso8583_message:get_attributes(V)) ++ 
+						">" ++ 
+						marshall_fields(iso8583_message:to_list(V), "") ++ 
+						"</isomsg>" ++ 
+						Result).
 	
+encode_attributes(List) ->
+	encode_attributes(List, "").
+
+encode_attributes([], Result) ->
+	Result;
+encode_attributes([{Key, Value} | Tail], Result) ->
+	encode_attributes(Tail, " " ++ Key ++ "=\"" ++ Value ++ "\"" ++  Result).
