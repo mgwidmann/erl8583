@@ -35,6 +35,18 @@ xml_marshall_complex_test() ->
 	Marshalled = xml_marshaller:marshall(IsoMsg),
 	IsoMsg = xml_unmarshaller:unmarshall(Marshalled).
 
+xml_marshall_with_attributes_test() ->
+	IsoMsg = iso8583_message:new([{"outgoing", "true"}]),
+	Marshalled = xml_marshaller:marshall(IsoMsg),
+	IsoMsg = xml_unmarshaller:unmarshall(Marshalled).
+
+xml_marshall_complex_attributes_test() ->
+	BitMap = iso8583_message:from_list([{1, "foo"}, {2, "bar"}]),
+	BitMap2 = iso8583_message:set_attributes([{"foo","bar"},{"hello","world"}], BitMap),
+	IsoMsg = iso8583_message:from_list([{1, "0200"}, {3, "333333"}, {48, BitMap2} ]),
+	Marshalled = xml_marshaller:marshall(IsoMsg),
+	IsoMsg = xml_unmarshaller:unmarshall(Marshalled).
+
 %%
 %% Local Functions
 %%
