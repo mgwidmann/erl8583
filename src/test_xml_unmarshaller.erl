@@ -77,11 +77,15 @@ foo() ->
 	IsoMsg1 = iso8583_message:new(),
 	IsoMsg2 = iso8583_message:set(0, "0800", IsoMsg1),
 	IsoMsg3 = iso8583_message:set(3, "333333", IsoMsg2),
-	ok = gen_tcp:send(Sock, xml_marshaller:marshall(IsoMsg3)),
-	receive {tcp, _, IsoResp} -> IsoResp end,
-	IsoResp1 = xml_unmarshaller:unmarshall(IsoResp),
-	iso8583_message:get(39, IsoResp1).
-	
+	Field = iso8583_message:new(),
+	Field2 = iso8583_message:set(1, "help", Field),
+	IsoMsg4 = iso8583_message:set(40, Field2, IsoMsg3),
+	Marshalled = xml_marshaller:marshall(IsoMsg4),
+	ok = gen_tcp:send(Sock, Marshalled),
+	ok = gen_tcp:send(Sock, "\n").
+	%receive {tcp, _, IsoResp} -> IsoResp end,
+	%IsoResp1 = xml_unmarshaller:unmarshall(IsoResp),
+	%iso8583_message:get(39, IsoResp1).	
 
 %%
 %% Local Functions
