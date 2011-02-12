@@ -11,13 +11,16 @@
 %%
 %% Exported Functions
 %%
--export([string_to_ascii_hex/1]).
+-export([string_to_ascii_hex/1, ascii_hex_to_string/1]).
 
 %%
 %% API Functions
 %%
 string_to_ascii_hex(Str) ->
 	string_to_ascii_hex(Str, []).
+
+ascii_hex_to_string(HexStr) ->
+	ascii_hex_to_string(HexStr, []).
 
 %%
 %% Local Functions
@@ -43,6 +46,11 @@ string_to_ascii_hex([Char|Tail], Result) ->
 							digit_to_ascii_hex(Msb) ++
 							Result).
 
+ascii_hex_to_string([], Result) ->
+	lists:reverse(Result);
+ascii_hex_to_string([Dig1, Dig2 | Tail], Result) ->
+	Char = [ascii_hex_to_digit([Dig1]) * 16 + ascii_hex_to_digit([Dig2])],
+	ascii_hex_to_string(Tail, Char ++ Result).
 
 %%
 %% Tests
@@ -67,3 +75,8 @@ string_to_ascii_hex_test() ->
 	"" = string_to_ascii_hex(""),
 	"30" = string_to_ascii_hex("0"),
 	"48656C6C6F" = string_to_ascii_hex("Hello").
+
+ascii_hex_to_string_test() ->
+	"" = ascii_hex_to_string(""),
+	"Hello" = ascii_hex_to_string("48656C6c6F").
+	
