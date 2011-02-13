@@ -37,7 +37,7 @@ extract_fields(Message) ->
 	extract_fields(BitMap, 0, 8, {[], Fields}).
 
 extract_fields([], _Offset, _Index, {FieldIds, Fields}) ->
-	{FieldIds, Fields};
+	{lists:sort(FieldIds), Fields};
 extract_fields([_Head|Tail], Offset, 0, {FieldIds, Fields}) ->
 	extract_fields(Tail, Offset+1, 8, {FieldIds, Fields});
 extract_fields([Head|Tail], Offset, Index, {FieldIds, Fields}) ->
@@ -60,5 +60,7 @@ decode_field({n, llvar, _}, Fields) ->
 	{N, Rest} = lists:split(2, Fields),
 	Length = list_to_integer(N),
 	{Value, RemainingFields} = lists:split(Length, Rest),
-	{Value, RemainingFields}.
+	{Value, RemainingFields};
+decode_field({n, fixed, Length}, Fields) ->
+	lists:split(Length, Fields).
 	
