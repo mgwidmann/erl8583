@@ -3,3 +3,5 @@
 -define(PROC_CODE, 3).
 -define(AMOUNT_TRAN, 4).
 -define(AMOUNT_SETTLE, 5).
+-define(AMOUNT_CARDHOLDER_BILLING, 6).
+-define(TRANSMISSION_DATE_TIME, 7).
