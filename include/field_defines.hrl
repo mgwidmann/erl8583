@@ -1,0 +1,2 @@
+-define(MTI, 0).
+-define(PAN, 2).

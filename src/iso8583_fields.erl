@@ -6,6 +6,7 @@
 %%
 %% Include files
 %%
+-include("field_defines.hrl").
 
 %%
 %% Exported Functions
@@ -15,9 +16,9 @@
 %%
 %% API Functions
 %%
-get_encoding(0) ->
+get_encoding(?MTI) ->
 	{n, fixed, 4};
-get_encoding(2) ->
+get_encoding(?PAN) ->
 	{n, llvar, 19};
 get_encoding(3) ->
 	{n, fixed, 6}.
