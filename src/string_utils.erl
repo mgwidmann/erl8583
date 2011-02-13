@@ -55,6 +55,11 @@ ascii_hex_to_string([Dig1, Dig2 | Tail], Result) ->
 	Char = [ascii_hex_to_digit([Dig1]) * 16 + ascii_hex_to_digit([Dig2])],
 	ascii_hex_to_string(Tail, Char ++ Result).
 
+pad_with_zeroes(Length, Value) when Length =:= length(Value) ->
+	Value;
+pad_with_zeroes(Length, Value) when Length < length(Value) ->
+	pad_with_zeroes(Length, "0" ++ Value).
+
 %%
 %% Tests
 %%
@@ -82,8 +87,3 @@ string_to_ascii_hex_test() ->
 ascii_hex_to_string_test() ->
 	"" = ascii_hex_to_string(""),
 	"Hello" = ascii_hex_to_string("48656C6c6F").
-
-pad_with_zeroes(Length, Value) when Length =:= length(Value) ->
-	Value;
-pad_with_zeroes(Length, Value) when Length < length(Value) ->
-	pad_with_zeroes(Length, "0" ++ Value).
