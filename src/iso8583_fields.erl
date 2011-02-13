@@ -55,7 +55,19 @@ get_encoding(?MERCHANT_TYPE) ->
 get_encoding(?ACQUIRER_COUNTRY_CODE) ->
 	{n, fixed, 3};
 get_encoding(?PAN_EXT_COUNTRY_CODE) ->
-	{n, fixed, 3}.
+	{n, fixed, 3};
+get_encoding(?FORWARDING_INST_COUNTRY_CODE) ->
+	{n, fixed, 3};
+get_encoding(?POS_ENTRY_MODE) ->
+	{n, fixed, 3};
+get_encoding(?APPLICATION_PAN_NUMBER) ->
+	{n, fixed, 3};
+get_encoding(?FUNCTION_CODE) ->
+	{n, fixed, 3};
+get_encoding(?POS_CONDITION_CODE) ->
+	{n, fixed, 2};
+get_encoding(?POS_CAPTURE_CODE) ->
+	{n, fixed, 2}.
 
 %%
 %% Local Functions

@@ -7,6 +7,7 @@
 %% Include files
 %%
 -include_lib("eunit/include/eunit.hrl").
+-include("field_defines.hrl").
 
 %%
 %% Exported Functions
@@ -73,6 +74,17 @@ fields_11_12_13_14_test() ->
 	Msg5 = iso8583_message:set(13, "2012", Msg4),
 	Msg6 = iso8583_message:set(14, "1206", Msg5),
 	"0200003C00000000000000123415075520121206" = ascii_marshaller:marshall(Msg6).
+
+fields_21_to_25_test() ->
+	Msg1 = iso8583_message:new(),
+	Msg2 = iso8583_message:set(0, "0200", Msg1),
+	Msg3 = iso8583_message:set(?FORWARDING_INST_COUNTRY_CODE, "1", Msg2),	
+	Msg4 = iso8583_message:set(?POS_ENTRY_MODE, "2", Msg3),	
+	Msg5 = iso8583_message:set(?APPLICATION_PAN_NUMBER, "3", Msg4),
+	Msg6 = iso8583_message:set(?POS_CONDITION_CODE, "5", Msg5),
+	Msg7 = iso8583_message:set(?FUNCTION_CODE, "4", Msg6),
+	"020000000F800000000000100200300405" = ascii_marshaller:marshall(Msg7).
+	
 
 	
 %%

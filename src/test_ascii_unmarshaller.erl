@@ -7,6 +7,7 @@
 %% Include files
 %%
 -include_lib("eunit/include/eunit.hrl").
+-include("field_defines.hrl").
 
 %%
 %% Exported Functions
@@ -54,6 +55,11 @@ fields_15_to_20_test() ->
 	"0003" = iso8583_message:get(17, Msg),
 	"0004" = iso8583_message:get(18, Msg),
 	"006" = iso8583_message:get(20, Msg).
+
+field_26_test() ->
+	Msg = ascii_unmarshaller:unmarshall("0200000008400000000000106"),
+	[0, 21, 26] = iso8583_message:get_fields(Msg),
+	"06" = iso8583_message:get(?POS_CAPTURE_CODE, Msg).
 	
 	
 	
