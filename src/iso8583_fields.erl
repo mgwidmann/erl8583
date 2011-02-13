@@ -35,7 +35,16 @@ get_encoding(?AMOUNT_CARDHOLDER_BILLING_FEE) ->
 get_encoding(?CONVERSION_RATE_SETTLE) ->
 	{n, fixed, 8};
 get_encoding(?CONVERSION_RATE_CARDHOLDER_BILLING) ->
-	{n, fixed, 8}.
+	{n, fixed, 8};
+get_encoding(?SYSTEMS_TRACE_AUDIT_NUMBER) ->
+	{n, fixed, 6};
+get_encoding(?TIME_LOCAL_TRAN) ->
+	{n, fixed, 6};
+get_encoding(?DATE_LOCAL_TRAN) ->
+	{n, fixed, 4};
+get_encoding(?DATE_EXP) ->
+	{n, fixed, 4}.
+
 
 %%
 %% Local Functions
