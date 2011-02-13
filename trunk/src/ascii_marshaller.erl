@@ -11,17 +11,19 @@
 %%
 %% Exported Functions
 %%
--export([marshall/1]).
+-export([marshall/1, marshall/2]).
 
 %%
 %% API Functions
 %%
 marshall(Msg) ->
+	marshall(Msg, iso8583_fields).
+
+marshall(Msg, EncodingRules) ->
 	Mti = iso8583_message:get(0, Msg),
 	[0|Fields] = iso8583_message:get_fields(Msg),
-	Mti ++ bitmap(Fields) ++ encode(Fields, Msg).
-
-
+	Mti ++ bitmap(Fields) ++ encode(Fields, Msg, EncodingRules).
+	
 %%
 %% Local Functions
 %%
@@ -41,16 +43,16 @@ bitmap([Field|Tail], Result) when Field > 0 ->
 	[ToUpdate | RightRest] = Right,
 	bitmap(Tail, Left ++ ([ToUpdate + (1 bsl BitNum)]) ++ RightRest).
 
-encode(Fields, Msg) ->
-	encode(Fields, Msg, []).
+encode(Fields, Msg, EncodingRules) ->
+	encode(Fields, Msg, [], EncodingRules).
 
-encode([], _Msg, Result) ->
+encode([], _Msg, Result, _EncodingRules) ->
 	Result;
-encode([Field|Tail], Msg, Result) ->
-	Encoding = iso8583_fields:get_encoding(Field),
+encode([Field|Tail], Msg, Result, EncodingRules) ->
+	Encoding = EncodingRules:get_encoding(Field),
 	Value = iso8583_message:get(Field, Msg),
 	EncodedValue = encode_field(Encoding, Value),
-	encode(Tail, Msg, Result ++ EncodedValue).
+	encode(Tail, Msg, Result ++ EncodedValue, EncodingRules).
 
 encode_field({n, llvar, Length}, Value) when length(Value) =< Length ->
 	string_utils:integer_to_string(length(Value), 2) ++ Value;
