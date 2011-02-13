@@ -18,12 +18,12 @@
 unmarshall(Msg) ->
 	unmarshall(Msg, iso8583_fields).
 
-unmarshall(Msg, _EncodingRules) ->
+unmarshall(Msg, EncodingRules) ->
 	IsoMsg1 = iso8583_message:new(),
 	{Mti, Rest} = lists:split(4, Msg),
 	IsoMsg2 = iso8583_message:set(0, Mti, IsoMsg1),
 	{FieldIds, Fields} = extract_fields(Rest),
-	decode_fields(FieldIds, Fields, IsoMsg2).
+	decode_fields(FieldIds, Fields, IsoMsg2, EncodingRules).
 
 
 %%
@@ -48,19 +48,17 @@ extract_fields([Head|Tail], Offset, Index, {FieldIds, Fields}) ->
 			extract_fields([Head|Tail], Offset, Index-1, {[Offset*8+9-Index|FieldIds], Fields})
 	end.
 			
-decode_fields([], _, Result) ->
+decode_fields([], _, Result, _EncodingRules) ->
 	Result;
-decode_fields([Field|Tail], Fields, Result) ->
-	Encoding = iso8583_fields:get_encoding(Field),
+decode_fields([Field|Tail], Fields, Result, EncodingRules) ->
+	Encoding = EncodingRules:get_encoding(Field),
 	{Value, UpdatedFields} = decode_field(Encoding, Fields),
 	UpdatedResult = iso8583_message:set(Field, Value, Result),
-	decode_fields(Tail, UpdatedFields, UpdatedResult).
+	decode_fields(Tail, UpdatedFields, UpdatedResult, EncodingRules).
 	
-decode_field({n, llvar, _}, Fields) ->
+decode_field({n, llvar, _MaxLength}, Fields) ->
 	{N, Rest} = lists:split(2, Fields),
-	Length = list_to_integer(N),
-	{Value, RemainingFields} = lists:split(Length, Rest),
-	{Value, RemainingFields};
+	lists:split(list_to_integer(N), Rest);
 decode_field({n, fixed, Length}, Fields) ->
 	lists:split(Length, Fields).
 	
