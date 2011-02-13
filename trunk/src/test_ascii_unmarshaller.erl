@@ -33,3 +33,11 @@ pan_test() ->
 	[0, 2] = iso8583_message:get_fields(Msg),
 	"5234567890123456" = iso8583_message:get(2, Msg).
 	
+field_8_9_10_test() ->
+	Msg = ascii_unmarshaller:unmarshall("130001C0000000000000000000010000000200000003"),
+	"1300" = iso8583_message:get(0, Msg),
+	[0, 8, 9, 10] = iso8583_message:get_fields(Msg),
+	"00000001" = iso8583_message:get(8, Msg),
+	"00000002" = iso8583_message:get(9, Msg),
+	"00000003" = iso8583_message:get(10, Msg).
+	
