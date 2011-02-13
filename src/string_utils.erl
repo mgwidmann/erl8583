@@ -11,7 +11,7 @@
 %%
 %% Exported Functions
 %%
--export([string_to_ascii_hex/1, ascii_hex_to_string/1]).
+-export([string_to_ascii_hex/1, ascii_hex_to_string/1, integer_to_string/2]).
 
 %%
 %% API Functions
@@ -21,6 +21,9 @@ string_to_ascii_hex(Str) ->
 
 ascii_hex_to_string(HexStr) ->
 	ascii_hex_to_string(HexStr, []).
+
+integer_to_string(Value, Length) ->
+	pad_with_zeroes(Length, integer_to_list(Value)).
 
 %%
 %% Local Functions
@@ -79,4 +82,8 @@ string_to_ascii_hex_test() ->
 ascii_hex_to_string_test() ->
 	"" = ascii_hex_to_string(""),
 	"Hello" = ascii_hex_to_string("48656C6c6F").
-	
+
+pad_with_zeroes(Length, Value) when Length =:= length(Value) ->
+	Value;
+pad_with_zeroes(Length, Value) when Length < length(Value) ->
+	pad_with_zeroes(Length, "0" ++ Value).
