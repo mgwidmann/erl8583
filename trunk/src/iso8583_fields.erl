@@ -29,7 +29,13 @@ get_encoding(?AMOUNT_SETTLE) ->
 get_encoding(?AMOUNT_CARDHOLDER_BILLING) ->
 	{n, fixed, 12};
 get_encoding(?TRANSMISSION_DATE_TIME) ->
-	{n, fixed, 10}.
+	{n, fixed, 10};
+get_encoding(?AMOUNT_CARDHOLDER_BILLING_FEE) ->
+	{n, fixed, 8};
+get_encoding(?CONVERSION_RATE_SETTLE) ->
+	{n, fixed, 8};
+get_encoding(?CONVERSION_RATE_CARDHOLDER_BILLING) ->
+	{n, fixed, 8}.
 
 %%
 %% Local Functions
