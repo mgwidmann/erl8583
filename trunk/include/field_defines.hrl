@@ -12,3 +12,9 @@
 -define(TIME_LOCAL_TRAN, 12).
 -define(DATE_LOCAL_TRAN, 13).
 -define(DATE_EXP, 14).
+-define(DATE_SETTLE, 15).
+-define(DATE_CONVERSION, 16).
+-define(DATE_CAPTURE, 17).
+-define(MERCHANT_TYPE, 18).
+-define(ACQUIRER_COUNTRY_CODE, 19).
+-define(PAN_EXT_COUNTRY_CODE, 20).

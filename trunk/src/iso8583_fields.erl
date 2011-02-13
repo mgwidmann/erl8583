@@ -43,8 +43,19 @@ get_encoding(?TIME_LOCAL_TRAN) ->
 get_encoding(?DATE_LOCAL_TRAN) ->
 	{n, fixed, 4};
 get_encoding(?DATE_EXP) ->
-	{n, fixed, 4}.
-
+	{n, fixed, 4};
+get_encoding(?DATE_SETTLE) ->
+	{n, fixed, 4};
+get_encoding(?DATE_CONVERSION) ->
+	{n, fixed, 4};
+get_encoding(?DATE_CAPTURE) ->
+	{n, fixed, 4};
+get_encoding(?MERCHANT_TYPE) ->
+	{n, fixed, 4};
+get_encoding(?ACQUIRER_COUNTRY_CODE) ->
+	{n, fixed, 3};
+get_encoding(?PAN_EXT_COUNTRY_CODE) ->
+	{n, fixed, 3}.
 
 %%
 %% Local Functions
