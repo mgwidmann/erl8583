@@ -25,8 +25,11 @@ get_encoding(?PROC_CODE) ->
 get_encoding(?AMOUNT_TRAN) ->
 	{n, fixed, 12};
 get_encoding(?AMOUNT_SETTLE) ->
-	{n, fixed, 12}.
-
+	{n, fixed, 12};
+get_encoding(?AMOUNT_CARDHOLDER_BILLING) ->
+	{n, fixed, 12};
+get_encoding(?TRANSMISSION_DATE_TIME) ->
+	{n, fixed, 10}.
 
 %%
 %% Local Functions

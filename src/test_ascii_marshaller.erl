@@ -47,7 +47,15 @@ amount_settle_test() ->
 	Msg1 = iso8583_message:new(),
 	Msg2 = iso8583_message:set(0, "0200", Msg1),
 	Msg3 = iso8583_message:set(5, "1", Msg2),	
-	"02000800000000000000000000000001"  = ascii_marshaller:marshall(Msg3).
+	"02000800000000000000000000000001" = ascii_marshaller:marshall(Msg3).
+
+fields_5_6_7_test() ->
+	Msg1 = iso8583_message:new(),
+	Msg2 = iso8583_message:set(0, "0200", Msg1),
+	Msg3 = iso8583_message:set(5, "1", Msg2),	
+	Msg4 = iso8583_message:set(6, "2", Msg3),	
+	Msg5 = iso8583_message:set(7, "0131081200", Msg4),	
+	"02000E000000000000000000000000010000000000020131081200" = ascii_marshaller:marshall(Msg5).
 %%
 %% Local Functions
 %%
