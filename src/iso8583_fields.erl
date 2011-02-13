@@ -67,7 +67,21 @@ get_encoding(?FUNCTION_CODE) ->
 get_encoding(?POS_CONDITION_CODE) ->
 	{n, fixed, 2};
 get_encoding(?POS_CAPTURE_CODE) ->
-	{n, fixed, 2}.
+	{n, fixed, 2};
+get_encoding(?AUTHORIZING_ID_RESP_LEN) ->
+	{n, fixed, 1};
+get_encoding(?AMOUNT_TRAN_FEE) ->
+	{x_n, fixed, 8};
+get_encoding(?AMOUNT_SETTLE_FEE) ->
+	{x_n, fixed, 8};
+get_encoding(?AMOUNT_TRAN_PROCESSING_FEE) ->
+	{x_n, fixed, 8};
+get_encoding(?AMOUNT_SETTLE_PROCESSING_FEE) ->
+	{x_n, fixed, 8};
+get_encoding(?ACQUIRING_INST_ID_CODE) ->
+	{n, llvar, 11};
+get_encoding(?FORWARDING_INST_ID_CODE) ->
+	{n, llvar, 11}.
 
 %%
 %% Local Functions

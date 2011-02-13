@@ -85,7 +85,18 @@ fields_21_to_25_test() ->
 	Msg7 = iso8583_message:set(?FUNCTION_CODE, "4", Msg6),
 	"020000000F800000000000100200300405" = ascii_marshaller:marshall(Msg7).
 	
-
+fields_27_to_33_test() ->
+	Msg1 = iso8583_message:new(),
+	Msg2 = iso8583_message:set(0, "0200", Msg1),
+	Msg3 = iso8583_message:set(27, "9", Msg2),	
+	Msg4 = iso8583_message:set(28, "C11", Msg3),
+	Msg5 = iso8583_message:set(29, "D22", Msg4),
+	Msg6 = iso8583_message:set(30, "C33", Msg5),
+	Msg7 = iso8583_message:set(31, "C44", Msg6),
+	Msg8 = iso8583_message:set(32, "555", Msg7),
+	Msg9 = iso8583_message:set(33, "12345678901", Msg8),
+	"02000000003F800000009C00000011D00000022C00000033C00000044035551112345678901"
+		= ascii_marshaller:marshall(Msg9).
 	
 %%
 %% Local Functions
