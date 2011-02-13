@@ -60,6 +60,8 @@ field_26_test() ->
 	Msg = ascii_unmarshaller:unmarshall("0200000008400000000000106"),
 	[0, 21, 26] = iso8583_message:get_fields(Msg),
 	"06" = iso8583_message:get(?POS_CAPTURE_CODE, Msg).
-	
-	
-	
+
+field_27_to_33_test() ->
+	Msg = ascii_unmarshaller:unmarshall("02000000003F800000009C00000011D00000022C00000033C00000044035551112345678901"),
+	"9" = iso8583_message:get(?AUTHORIZING_ID_RESP_LEN, Msg),
+	"C00000011" = iso8583_message:get(?AMOUNT_TRAN_FEE, Msg).
