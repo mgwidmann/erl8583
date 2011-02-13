@@ -20,8 +20,12 @@ get_encoding(?MTI) ->
 	{n, fixed, 4};
 get_encoding(?PAN) ->
 	{n, llvar, 19};
-get_encoding(3) ->
-	{n, fixed, 6}.
+get_encoding(?PROC_CODE) ->
+	{n, fixed, 6};
+get_encoding(?AMOUNT_TRAN) ->
+	{n, fixed, 12};
+get_encoding(?AMOUNT_SETTLE) ->
+	{n, fixed, 12}.
 
 
 %%

@@ -1,2 +1,5 @@
 -define(MTI, 0).
 -define(PAN, 2).
+-define(PROC_CODE, 3).
+-define(AMOUNT_TRAN, 4).
+-define(AMOUNT_SETTLE, 5).

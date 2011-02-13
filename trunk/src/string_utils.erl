@@ -57,7 +57,7 @@ ascii_hex_to_string([Dig1, Dig2 | Tail], Result) ->
 
 pad_with_zeroes(Length, Value) when Length =:= length(Value) ->
 	Value;
-pad_with_zeroes(Length, Value) when Length < length(Value) ->
+pad_with_zeroes(Length, Value) when Length > length(Value) ->
 	pad_with_zeroes(Length, "0" ++ Value).
 
 %%
