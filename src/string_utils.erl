@@ -11,7 +11,7 @@
 %%
 %% Exported Functions
 %%
--export([string_to_ascii_hex/1, ascii_hex_to_string/1, integer_to_string/2]).
+-export([string_to_ascii_hex/1, ascii_hex_to_string/1, integer_to_string/2, strip_trailing_spaces/1]).
 
 %%
 %% API Functions
@@ -24,6 +24,9 @@ ascii_hex_to_string(HexStr) ->
 
 integer_to_string(Value, Length) ->
 	pad_with_zeroes(Length, integer_to_list(Value)).
+
+strip_trailing_spaces(List) ->
+	lists:reverse(strip_leading_spaces(lists:reverse(List))).
 
 %%
 %% Local Functions
@@ -60,6 +63,11 @@ pad_with_zeroes(Length, Value) when Length =:= length(Value) ->
 pad_with_zeroes(Length, Value) when Length > length(Value) ->
 	pad_with_zeroes(Length, "0" ++ Value).
 
+strip_leading_spaces([32 | Tail]) ->
+	strip_leading_spaces(Tail);
+strip_leading_spaces(L) ->
+	L.
+
 %%
 %% Tests
 %%
@@ -87,3 +95,7 @@ string_to_ascii_hex_test() ->
 ascii_hex_to_string_test() ->
 	"" = ascii_hex_to_string(""),
 	"Hello" = ascii_hex_to_string("48656C6c6F").
+
+strip_spaces_test() ->
+	"abc " = strip_leading_spaces("   abc "),
+	"   abc" = strip_trailing_spaces("   abc ").

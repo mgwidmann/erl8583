@@ -85,7 +85,13 @@ get_encoding(?FORWARDING_INST_ID_CODE) ->
 get_encoding(?PAN_EXTENDED) ->
 	{n, llvar, 28};
 get_encoding(?TRACK_2_DATA) ->
-	{z, llvar, 37}.
+	{z, llvar, 37};
+get_encoding(?TRACK_3_DATA) ->
+	{n, lllvar, 104};
+get_encoding(?RETRIEVAL_REF_NUM) ->
+	{an, fixed, 12};
+get_encoding(?AUTHORIZATION_ID_RESP) ->
+	{an, fixed, 6}.
 
 %%
 %% Local Functions

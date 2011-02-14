@@ -59,8 +59,14 @@ decode_fields([Field|Tail], Fields, Result, EncodingRules) ->
 decode_field({n, llvar, _MaxLength}, Fields) ->
 	{N, Rest} = lists:split(2, Fields),
 	lists:split(list_to_integer(N), Rest);
+decode_field({n, lllvar, _MaxLength}, Fields) ->
+	{N, Rest} = lists:split(3, Fields),
+	lists:split(list_to_integer(N), Rest);
 decode_field({n, fixed, Length}, Fields) ->
 	lists:split(Length, Fields);
+decode_field({an, fixed, Length}, Fields) ->
+	{Value, Rest} = lists:split(Length, Fields),
+	{string_utils:strip_trailing_spaces(Value), Rest};
 decode_field({x_n, fixed, Length}, Fields) ->
 	[Head|_Tail] = Fields,
 	case [Head] of
