@@ -76,5 +76,5 @@ fields_36_37_38_test() ->
 	Msg = ascii_unmarshaller:unmarshall("0200000000001C0000000101234567890Query123456 123   "),
 	[0, 36, 37, 38] = iso8583_message:get_fields(Msg),
 	"1234567890" = iso8583_message:get(?TRACK_3_DATA, Msg),
-	"Query123456" = iso8583_message:get(37, Msg),
-	"123" = iso8583_message:get(38, Msg).
+	"Query123456 " = iso8583_message:get(37, Msg),
+	"123   " = iso8583_message:get(38, Msg).
