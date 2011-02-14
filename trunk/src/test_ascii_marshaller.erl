@@ -97,7 +97,14 @@ fields_27_to_33_test() ->
 	Msg9 = iso8583_message:set(33, "12345678901", Msg8),
 	"02000000003F800000009C00000011D00000022C00000033C00000044035551112345678901"
 		= ascii_marshaller:marshall(Msg9).
-	
+
+fields_34_35_test() ->
+	Msg1 = iso8583_message:new(),
+	Msg2 = iso8583_message:set(0, "0200", Msg1),
+	Msg3 = iso8583_message:set(34, "12341234123412341234567890", Msg2),	
+	Msg4 = iso8583_message:set(35, ";1234123412341234=0305101193010877?", Msg3),
+	"02000000000060000000261234123412341234123456789035;1234123412341234=0305101193010877?" =
+		ascii_marshaller:marshall(Msg4).
 %%
 %% Local Functions
 %%

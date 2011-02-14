@@ -61,5 +61,6 @@ encode_field({n, fixed, Length}, Value) when length(Value) =< Length ->
 	string_utils:integer_to_string(IntValue, Length);
 encode_field({x_n, fixed, Length}, [Head | Value]) when [Head] =:= "C" orelse [Head] =:= "D" ->
 	IntValue = list_to_integer(Value),
-	[Head] ++ string_utils:integer_to_string(IntValue, Length).
-	
+	[Head] ++ string_utils:integer_to_string(IntValue, Length);
+encode_field({z, llvar, Length}, Value) when length(Value) =< Length ->
+	string_utils:integer_to_string(length(Value), 2) ++ Value.

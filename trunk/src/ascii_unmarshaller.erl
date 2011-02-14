@@ -69,5 +69,7 @@ decode_field({x_n, fixed, Length}, Fields) ->
 		"D" ->
 			ok
 	end,
-	lists:split(Length+1, Fields).
-	
+	lists:split(Length+1, Fields);
+decode_field({z, llvar, _MaxLength}, Fields) ->
+	{N, Rest} = lists:split(2, Fields),
+	lists:split(list_to_integer(N), Rest).
