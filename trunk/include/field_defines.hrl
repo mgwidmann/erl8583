@@ -33,3 +33,6 @@
 -define(FORWARDING_INST_ID_CODE, 33).
 -define(PAN_EXTENDED, 34).
 -define(TRACK_2_DATA, 35).
+-define(TRACK_3_DATA, 36).
+-define(RETRIEVAL_REF_NUM, 37).
+-define(AUTHORIZATION_ID_RESP, 38).
