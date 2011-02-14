@@ -81,7 +81,11 @@ get_encoding(?AMOUNT_SETTLE_PROCESSING_FEE) ->
 get_encoding(?ACQUIRING_INST_ID_CODE) ->
 	{n, llvar, 11};
 get_encoding(?FORWARDING_INST_ID_CODE) ->
-	{n, llvar, 11}.
+	{n, llvar, 11};
+get_encoding(?PAN_EXTENDED) ->
+	{n, llvar, 28};
+get_encoding(?TRACK_2_DATA) ->
+	{z, llvar, 37}.
 
 %%
 %% Local Functions
