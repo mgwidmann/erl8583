@@ -11,7 +11,11 @@
 %%
 %% Exported Functions
 %%
--export([string_to_ascii_hex/1, ascii_hex_to_string/1, integer_to_string/2, strip_trailing_spaces/1]).
+-export([string_to_ascii_hex/1, 
+		 ascii_hex_to_string/1, 
+		 integer_to_string/2, 
+		 strip_trailing_spaces/1,
+		 pad_with_trailing_spaces/2]).
 
 %%
 %% API Functions
@@ -27,6 +31,9 @@ integer_to_string(Value, Length) ->
 
 strip_trailing_spaces(List) ->
 	lists:reverse(strip_leading_spaces(lists:reverse(List))).
+
+pad_with_trailing_spaces(List, Length) ->
+	lists:reverse(pad_with_leading_spaces(lists:reverse(List), Length)).
 
 %%
 %% Local Functions
@@ -67,6 +74,11 @@ strip_leading_spaces([32 | Tail]) ->
 	strip_leading_spaces(Tail);
 strip_leading_spaces(L) ->
 	L.
+
+pad_with_leading_spaces(List, Length) when length(List) =:= Length ->
+	List;
+pad_with_leading_spaces(List, Length) when length(List) < Length ->
+	pad_with_leading_spaces(" " ++ List, Length).
 
 %%
 %% Tests
