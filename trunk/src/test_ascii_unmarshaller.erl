@@ -83,3 +83,7 @@ field_39_test() ->
 	Msg = ascii_unmarshaller:unmarshall("020000000000020000007 "),
 	[0, 39] = iso8583_message:get_fields(Msg),
 	"7 " = iso8583_message:get(?RESP_CODE, Msg).
+
+field_40_test() ->
+	Msg = ascii_unmarshaller:unmarshall("02000000000001000000R 1"),
+	"R 1" = iso8583_message:get(40, Msg).
