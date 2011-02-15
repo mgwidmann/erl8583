@@ -36,3 +36,5 @@
 -define(TRACK_3_DATA, 36).
 -define(RETRIEVAL_REF_NUM, 37).
 -define(AUTHORIZATION_ID_RESP, 38).
+-define(RESP_CODE, 39).
+
