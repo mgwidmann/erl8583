@@ -91,7 +91,9 @@ get_encoding(?TRACK_3_DATA) ->
 get_encoding(?RETRIEVAL_REF_NUM) ->
 	{an, fixed, 12};
 get_encoding(?AUTHORIZATION_ID_RESP) ->
-	{an, fixed, 6}.
+	{an, fixed, 6};
+get_encoding(?RESP_CODE) ->
+	{an, fixed, 2}.
 
 %%
 %% Local Functions

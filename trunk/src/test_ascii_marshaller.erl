@@ -114,6 +114,11 @@ fields_36_37_38_test() ->
 	Msg5 = iso8583_message:set(38, "123", Msg4),
 	"0200000000001C0000000101234567890Query123456 123   " = ascii_marshaller:marshall(Msg5).
 
+field_39_test() ->
+	Msg1 = iso8583_message:new(),
+	Msg2 = iso8583_message:set(0, "0200", Msg1),
+	Msg3 = iso8583_message:set(39, "R7", Msg2),
+	"02000000000002000000R7" = ascii_marshaller:marshall(Msg3).
 	
 %%
 %% Local Functions
