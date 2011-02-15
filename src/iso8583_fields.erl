@@ -93,7 +93,9 @@ get_encoding(?RETRIEVAL_REF_NUM) ->
 get_encoding(?AUTHORIZATION_ID_RESP) ->
 	{an, fixed, 6};
 get_encoding(?RESP_CODE) ->
-	{an, fixed, 2}.
+	{an, fixed, 2};
+get_encoding(?SERVICE_RESTRICTION_CODE) ->
+	{an, fixed, 3}.
 
 %%
 %% Local Functions
