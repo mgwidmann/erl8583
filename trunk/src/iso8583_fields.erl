@@ -101,7 +101,10 @@ get_encoding(?CARD_ACCEPTOR_TERMINAL_ID) ->
 get_encoding(?CARD_ACCEPTOR_ID_CODE) ->
 	{ans, fixed, 15};
 get_encoding(?CARD_ACCEPTOR_NAME_LOCATION) ->
-	{ans, fixed, 40}.
+	{ans, fixed, 40};
+get_encoding(?ADDITIONAL_RESP_DATA) ->
+	{an, llvar, 25}.
+
 
 %%
 %% Local Functions
