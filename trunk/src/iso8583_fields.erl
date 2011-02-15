@@ -95,7 +95,10 @@ get_encoding(?AUTHORIZATION_ID_RESP) ->
 get_encoding(?RESP_CODE) ->
 	{an, fixed, 2};
 get_encoding(?SERVICE_RESTRICTION_CODE) ->
-	{an, fixed, 3}.
+	{an, fixed, 3};
+get_encoding(?CARD_ACCEPTOR_TERMINAL_ID) ->
+	{ans, fixed, 8}.
+
 
 %%
 %% Local Functions

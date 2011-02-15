@@ -66,6 +66,8 @@ decode_field({n, fixed, Length}, Fields) ->
 	lists:split(Length, Fields);
 decode_field({an, fixed, Length}, Fields) ->
 	lists:split(Length, Fields);
+decode_field({ans, fixed, Length}, Fields) ->
+	lists:split(Length, Fields);
 decode_field({x_n, fixed, Length}, Fields) ->
 	[Head|_Tail] = Fields,
 	case [Head] of
