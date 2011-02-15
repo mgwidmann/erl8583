@@ -91,3 +91,8 @@ field_40_test() ->
 field_41_test() ->
 	Msg = ascii_unmarshaller:unmarshall("02000000000000800000Term#1  "),
 	"Term#1  " = iso8583_message:get(?CARD_ACCEPTOR_TERMINAL_ID, Msg).
+
+field_42_test() ->
+	Msg = ascii_unmarshaller:unmarshall("02000000000000400000CA ID 123      "),
+	"CA ID 123      " = iso8583_message:get(42, Msg).
+
