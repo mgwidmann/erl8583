@@ -96,3 +96,7 @@ field_42_test() ->
 	Msg = ascii_unmarshaller:unmarshall("02000000000000400000CA ID 123      "),
 	"CA ID 123      " = iso8583_message:get(42, Msg).
 
+field_43_test() ->
+	Msg = ascii_unmarshaller:unmarshall("02000000000000200000NAME                                  ZA"),
+	"NAME                                  ZA" = iso8583_message:get(?CARD_ACCEPTOR_NAME_LOCATION, Msg).
+	

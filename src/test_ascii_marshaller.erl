@@ -138,6 +138,12 @@ field_42_test() ->
 	Msg3 = iso8583_message:set(?CARD_ACCEPTOR_ID_CODE, "CA ID 123", Msg2),
 	"02000000000000400000CA ID 123      " = ascii_marshaller:marshall(Msg3).
 
+field_43_test() ->
+	Msg1 = iso8583_message:new(),
+	Msg2 = iso8583_message:set(0, "0200", Msg1),
+	Msg3 = iso8583_message:set(43, "NAME                                  ZA", Msg2),
+	"02000000000000200000NAME                                  ZA" = ascii_marshaller:marshall(Msg3).
+
 %%
 %% Local Functions
 %%
