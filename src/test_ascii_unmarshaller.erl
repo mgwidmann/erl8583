@@ -103,3 +103,7 @@ field_43_test() ->
 field_44_test() ->
 	Msg = ascii_unmarshaller:unmarshall("0200000000000010000006Foo123"),
 	"Foo123" = iso8583_message:get(?ADDITIONAL_RESP_DATA, Msg).
+
+field_45_test() ->
+	Msg = ascii_unmarshaller:unmarshall("0200000000000008000006Foo123"),
+	"Foo123" = iso8583_message:get(45, Msg).
