@@ -111,7 +111,13 @@ get_encoding(?ADDITIONAL_DATA_ISO) ->
 get_encoding(?ADDITIONAL_DATA_NATIONAL) ->
 	{ans, lllvar, 999};
 get_encoding(?ADDITIONAL_DATA_PRIVATE) ->
-	{ans, lllvar, 999}.
+	{ans, lllvar, 999};
+get_encoding(?CURRENCY_CODE_TRAN) ->
+	{an, fixed, 3};
+get_encoding(?CURRENCY_CODE_SETTLE) ->
+	{an, fixed, 3};
+get_encoding(?CURRENCY_CODE_CARDHOLDER_BILLING) ->
+	{an, fixed, 3}.
 
 
 %%

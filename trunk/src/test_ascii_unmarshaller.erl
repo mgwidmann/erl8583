@@ -118,4 +118,10 @@ fields_47_48_test() ->
 	[0, 47, 48] = iso8583_message:get_fields(Msg),
 	"Hello!" = iso8583_message:get(?ADDITIONAL_DATA_NATIONAL, Msg),
 	"Goodbye!" = iso8583_message:get(?ADDITIONAL_DATA_PRIVATE, Msg).
-	
+
+fields_49_50_51_test() ->
+	Msg = ascii_unmarshaller:unmarshall("0200000000000000E000A  B  C  "),
+	[0, 49, 50, 51] = iso8583_message:get_fields(Msg),
+	"A  " = iso8583_message:get(49, Msg),
+	"B  " = iso8583_message:get(50, Msg),
+	"C  " = iso8583_message:get(51, Msg).
