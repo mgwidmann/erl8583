@@ -44,7 +44,7 @@ bitmap([Field|Tail], Result) when Field > 0 ->
 	bitmap(Tail, Left ++ ([ToUpdate + (1 bsl BitNum)]) ++ RightRest).
 
 encode(Fields, Msg, EncodingRules) ->
-	encode(Fields, Msg, [], EncodingRules).
+	lists:reverse(encode(Fields, Msg, [], EncodingRules)).
 
 encode([], _Msg, Result, _EncodingRules) ->
 	Result;
@@ -52,7 +52,7 @@ encode([Field|Tail], Msg, Result, EncodingRules) ->
 	Encoding = EncodingRules:get_encoding(Field),
 	Value = iso8583_message:get(Field, Msg),
 	EncodedValue = encode_field(Encoding, Value),
-	encode(Tail, Msg, Result ++ EncodedValue, EncodingRules).
+	encode(Tail, Msg, lists:reverse(EncodedValue) ++ Result, EncodingRules).
 
 encode_field({n, llvar, Length}, Value) when length(Value) =< Length ->
 	string_utils:integer_to_string(length(Value), 2) ++ Value;
