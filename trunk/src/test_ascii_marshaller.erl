@@ -162,7 +162,13 @@ field_46_test() ->
 	Msg3 = iso8583_message:set(2, "5234567890123456789", Msg2),
 	Msg4 = iso8583_message:set(?ADDITIONAL_DATA_ISO, "Hello, world!", Msg3),
 	"02004000000000040000195234567890123456789013Hello, world!" = ascii_marshaller:marshall(Msg4).
-	
+
+field_47_48_test() ->
+	Msg1 = iso8583_message:new(),
+	Msg2 = iso8583_message:set(0, "0200", Msg1),
+	Msg3 = iso8583_message:set(47, "Hello!", Msg2),
+	Msg4 = iso8583_message:set(48, "Goodbye!", Msg3),
+	"02000000000000030000006Hello!008Goodbye!" =  ascii_marshaller:marshall(Msg4).
 %%
 %% Local Functions
 %%

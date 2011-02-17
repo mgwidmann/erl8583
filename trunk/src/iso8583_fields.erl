@@ -107,6 +107,10 @@ get_encoding(?ADDITIONAL_RESP_DATA) ->
 get_encoding(?TRACK_1_DATA) ->
 	{an, llvar, 76};
 get_encoding(?ADDITIONAL_DATA_ISO) ->
+	{ans, lllvar, 999};
+get_encoding(?ADDITIONAL_DATA_NATIONAL) ->
+	{ans, lllvar, 999};
+get_encoding(?ADDITIONAL_DATA_PRIVATE) ->
 	{ans, lllvar, 999}.
 
 
