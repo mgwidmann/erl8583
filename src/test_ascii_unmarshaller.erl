@@ -107,3 +107,8 @@ field_44_test() ->
 field_45_test() ->
 	Msg = ascii_unmarshaller:unmarshall("0200000000000008000006Foo123"),
 	"Foo123" = iso8583_message:get(45, Msg).
+
+field_46_test() ->
+	Msg = ascii_unmarshaller:unmarshall("02004000000000040000195234567890123456789013Hello, world!"),
+	[0, 2, 46] = iso8583_message:get_fields(Msg),
+	"Hello, world!" = iso8583_message:get(46, Msg).

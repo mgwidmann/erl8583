@@ -105,7 +105,10 @@ get_encoding(?CARD_ACCEPTOR_NAME_LOCATION) ->
 get_encoding(?ADDITIONAL_RESP_DATA) ->
 	{an, llvar, 25};
 get_encoding(?TRACK_1_DATA) ->
-	{an, llvar, 76}.
+	{an, llvar, 76};
+get_encoding(?ADDITIONAL_DATA_ISO) ->
+	{ans, lllvar, 999}.
+
 
 %%
 %% Local Functions
