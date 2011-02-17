@@ -178,6 +178,11 @@ fields_49_50_51_test() ->
 	Msg5 = iso8583_message:set(?CURRENCY_CODE_CARDHOLDER_BILLING, "C", Msg4),
 	"0200000000000000E000A  B  C  " = ascii_marshaller:marshall(Msg5).
 
+field_52_test() ->
+	Msg1 = iso8583_message:new(),
+	Msg2 = iso8583_message:set(0, "0200", Msg1),
+	Msg3 = iso8583_message:set(52, <<253, 0, 1, 2, 3, 4, 5, 127>>, Msg2),
+	"02000000000000001000FD0001020304057F" = ascii_marshaller:marshall(Msg3).
 %%
 %% Local Functions
 %%

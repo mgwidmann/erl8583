@@ -14,7 +14,8 @@
 -export([string_to_ascii_hex/1, 
 		 ascii_hex_to_string/1, 
 		 integer_to_string/2, 
-		 pad_with_trailing_spaces/2]).
+		 pad_with_trailing_spaces/2,
+		 binary_to_ascii_hex/1]).
 
 %%
 %% API Functions
@@ -30,6 +31,9 @@ integer_to_string(Value, Length) ->
 
 pad_with_trailing_spaces(List, Length) ->
 	lists:reverse(pad_with_leading_spaces(lists:reverse(List), Length)).
+
+binary_to_ascii_hex(Bin) ->
+	binary_to_ascii_hex(binary_to_list(Bin), []).
 
 %%
 %% Local Functions
@@ -71,6 +75,13 @@ pad_with_leading_spaces(List, Length) when length(List) =:= Length ->
 pad_with_leading_spaces(List, Length) when length(List) < Length ->
 	pad_with_leading_spaces(" " ++ List, Length).
 
+binary_to_ascii_hex([], Result) ->
+	lists:reverse(Result);
+binary_to_ascii_hex([H|T], Result) ->
+	Msn = H div 16,
+	Lsn = H rem 16,
+	binary_to_ascii_hex(T, digit_to_ascii_hex(Lsn) ++ digit_to_ascii_hex(Msn) ++ Result).
+
 %%
 %% Tests
 %%
@@ -98,3 +109,6 @@ string_to_ascii_hex_test() ->
 ascii_hex_to_string_test() ->
 	"" = ascii_hex_to_string(""),
 	"Hello" = ascii_hex_to_string("48656C6c6F").
+
+binary_to_ascii_hex_test() ->
+	"00FFA5" = binary_to_ascii_hex(<<0, 255, 165>>).
