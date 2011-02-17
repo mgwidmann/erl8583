@@ -117,7 +117,9 @@ get_encoding(?CURRENCY_CODE_TRAN) ->
 get_encoding(?CURRENCY_CODE_SETTLE) ->
 	{an, fixed, 3};
 get_encoding(?CURRENCY_CODE_CARDHOLDER_BILLING) ->
-	{an, fixed, 3}.
+	{an, fixed, 3};
+get_encoding(?PERSONAL_ID_NUMBER_DATA) ->
+	{b, 8}.
 
 
 %%
