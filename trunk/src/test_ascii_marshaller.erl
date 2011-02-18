@@ -183,6 +183,21 @@ field_52_test() ->
 	Msg2 = iso8583_message:set(0, "0200", Msg1),
 	Msg3 = iso8583_message:set(52, <<253, 0, 1, 2, 3, 4, 5, 127>>, Msg2),
 	"02000000000000001000FD0001020304057F" = ascii_marshaller:marshall(Msg3).
+
+field_53_test() ->
+	Msg1 = iso8583_message:new(),
+	Msg2 = iso8583_message:set(0, "0200", Msg1),
+	Msg3 = iso8583_message:set(2, "5234567890123456789", Msg2),
+	Msg4 = iso8583_message:set(?SECURITY_RELATED_CONTROL_INFO, "17", Msg3),
+	"020040000000000008001952345678901234567890000000000000017" = ascii_marshaller:marshall(Msg4).
+	
+field_54_test() ->
+	Msg1 = iso8583_message:new(),
+	Msg2 = iso8583_message:set(0, "0200", Msg1),
+	Msg3 = iso8583_message:set(2, "5234567890123456789", Msg2),
+	Msg4 = iso8583_message:set(?ADDITIONAL_AMOUNTS, "Additi0nal Am0unt", Msg3),
+	"02004000000000000400195234567890123456789017Additi0nal Am0unt" = ascii_marshaller:marshall(Msg4).
+	
 %%
 %% Local Functions
 %%

@@ -130,3 +130,14 @@ field_52_test() ->
 	Msg = ascii_unmarshaller:unmarshall("02000000000000001000FD0001020304057F"),
 	[0, 52] = iso8583_message:get_fields(Msg),
 	<<253, 0, 1, 2, 3, 4, 5, 127>> = iso8583_message:get(52, Msg).
+
+field_53_test() ->
+	Msg = ascii_unmarshaller:unmarshall("020040000000000008001952345678901234567890000000000000017"),
+	[0, 2, 53] = iso8583_message:get_fields(Msg),
+	"0000000000000017" = iso8583_message:get(?SECURITY_RELATED_CONTROL_INFO, Msg).
+
+field_54_test() ->
+	Msg = ascii_unmarshaller:unmarshall("02004000000000000400195234567890123456789017Additi0nal Am0unt"),
+	[0, 2, 54] = iso8583_message:get_fields(Msg),
+	"Additi0nal Am0unt" = iso8583_message:get(?ADDITIONAL_AMOUNTS, Msg).
+	
