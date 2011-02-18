@@ -78,4 +78,8 @@ decode_field({x_n, fixed, Length}, [Head|Tail]) when [Head] =:= "C" orelse [Head
 	lists:split(Length+1, [Head|Tail]);
 decode_field({z, llvar, _MaxLength}, Fields) ->
 	{N, Rest} = lists:split(2, Fields),
-	lists:split(list_to_integer(N), Rest).
+	lists:split(list_to_integer(N), Rest);
+decode_field({b, Length}, Fields) ->
+	{ValueStr, Rest} = lists:split(2 * Length, Fields),
+	Value = string_utils:ascii_hex_to_binary(ValueStr),
+	{Value, Rest}.

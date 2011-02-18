@@ -125,3 +125,8 @@ fields_49_50_51_test() ->
 	"A  " = iso8583_message:get(49, Msg),
 	"B  " = iso8583_message:get(50, Msg),
 	"C  " = iso8583_message:get(51, Msg).
+
+field_52_test() ->
+	Msg = ascii_unmarshaller:unmarshall("02000000000000001000FD0001020304057F"),
+	[0, 52] = iso8583_message:get_fields(Msg),
+	<<253, 0, 1, 2, 3, 4, 5, 127>> = iso8583_message:get(52, Msg).
