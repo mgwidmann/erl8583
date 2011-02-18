@@ -35,16 +35,15 @@ unmarshall([Field|T], Iso8583Msg) when is_record(Field, xmlElement) ->
 	case Field#xmlElement.name of
 		field ->
 			Attributes = Field#xmlElement.attributes,
-			[Attr1, Attr2] = Attributes,
-			case Attr1#xmlAttribute.name of
-				id ->
-					Id = Attr1#xmlAttribute.value,
-					value = Attr2#xmlAttribute.name,
-					Value = Attr2#xmlAttribute.value;
-				value ->
-					Id = Attr2#xmlAttribute.value,
-					value = Attr1#xmlAttribute.name,
-					Value = Attr1#xmlAttribute.value
+			AttributesList = attributes_to_list(Attributes, []),
+			Id = get_attribute_value("id", AttributesList),
+			ValueStr = get_attribute_value("value", AttributesList),
+			case is_attribute("type", AttributesList) of
+				false ->
+					Value = ValueStr;
+				true ->
+					"binary" = get_attribute_value("type", AttributesList),
+					Value = string_utils:ascii_hex_to_binary(ValueStr)
 			end;
 		isomsg ->
 			Attrs = Field#xmlElement.attributes,
@@ -65,3 +64,15 @@ attributes_to_list([H|T], Result) ->
 	Id = atom_to_list(H#xmlAttribute.name),
 	Value = H#xmlAttribute.value,
 	attributes_to_list(T, [{Id, Value} | Result]).
+
+is_attribute(_Id, []) ->
+	false;
+is_attribute(Id, [{Id, _}|_Tail]) ->
+	true;
+is_attribute(Id, [_Head|Tail]) ->
+	is_attribute(Id, Tail).
+
+get_attribute_value(Key, [{Key, Value} | _Tail]) ->
+	Value;
+get_attribute_value(Key, [_Head|Tail]) ->
+	get_attribute_value(Key, Tail).

@@ -47,6 +47,13 @@ xml_marshall_complex_attributes_test() ->
 	Marshalled = xml_marshaller:marshall(IsoMsg),
 	IsoMsg = xml_unmarshaller:unmarshall(Marshalled).
 
+xml_marshall_binary_test() ->
+	IsoMsg1 = iso8583_message:new(),
+	IsoMsg2 = iso8583_message:set(0, "0200", IsoMsg1),
+	IsoMsg3 = iso8583_message:set(52, <<1,2,3,4,5,6,7,255>>, IsoMsg2),
+	Marshalled = xml_marshaller:marshall(IsoMsg3),
+	IsoMsg3 = xml_unmarshaller:unmarshall(Marshalled).
+	
 %%
 %% Local Functions
 %%
