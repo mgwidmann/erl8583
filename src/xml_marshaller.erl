@@ -31,6 +31,11 @@ marshall_fields([], Result) ->
 marshall_fields([{K, V}|Tail], Result) when is_list(V)  ->
 	Id = integer_to_list(K),
 	marshall_fields(Tail, "<field id=\"" ++ Id ++ "\" value=\"" ++ V ++ "\" />" ++ Result);
+marshall_fields([{K, V}|Tail], Result) when is_binary(V) ->
+	Id = integer_to_list(K),
+	marshall_fields(Tail, "<field id=\"" ++ Id ++ "\" value=\"" ++ 
+						string_utils:binary_to_ascii_hex(V) ++ 
+						"\" type=\"binary\" />" ++ Result);	
 marshall_fields([{K, V}|Tail], Result) ->
 	Id = integer_to_list(K),
 	marshall_fields(Tail, "<isomsg id=\"" ++ Id ++ "\"" ++
