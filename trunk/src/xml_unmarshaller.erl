@@ -48,7 +48,7 @@ unmarshall([Field|T], Iso8583Msg) when is_record(Field, xmlElement) ->
 		isomsg ->
 			Attrs = Field#xmlElement.attributes,
 			AttrList = attributes_to_list(Attrs, []),
-			[Id] = [Value || {Name, Value} <- AttrList, Name =:= "id"],
+			Id = get_attribute_value("id", AttrList),
 			AttrsExceptId = AttrList -- [{"id", Id}],
 			ChildNodes = Field#xmlElement.content,
 			Value = unmarshall(ChildNodes, iso8583_message:new(AttrsExceptId))
