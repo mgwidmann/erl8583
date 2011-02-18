@@ -119,7 +119,11 @@ get_encoding(?CURRENCY_CODE_SETTLE) ->
 get_encoding(?CURRENCY_CODE_CARDHOLDER_BILLING) ->
 	{an, fixed, 3};
 get_encoding(?PERSONAL_ID_NUMBER_DATA) ->
-	{b, 8}.
+	{b, 8};
+get_encoding(?SECURITY_RELATED_CONTROL_INFO) ->
+	{n, fixed, 16};
+get_encoding(?ADDITIONAL_AMOUNTS) ->
+	{an, lllvar, 120}.
 
 
 %%
