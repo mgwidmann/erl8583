@@ -124,11 +124,11 @@ get_encoding(?SECURITY_RELATED_CONTROL_INFO) ->
 	{n, fixed, 16};
 get_encoding(?ADDITIONAL_AMOUNTS) ->
 	{an, lllvar, 120};
-get_encoding(?RESERVED_ISO) ->
+get_encoding(?RESERVED_ISO1) ->
 	{ans, lllvar, 999};
-get_encoding(?RESERVED_NATIONAL) ->
+get_encoding(?RESERVED_ISO2) ->
 	{ans, lllvar, 999};
-get_encoding(?RESERVED_PRIVATE) ->
+get_encoding(?RESERVED_NATIONAL1) ->
 	{ans, lllvar, 999}.
 
 %%
