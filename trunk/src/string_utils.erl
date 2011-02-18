@@ -15,7 +15,8 @@
 		 ascii_hex_to_string/1, 
 		 integer_to_string/2, 
 		 pad_with_trailing_spaces/2,
-		 binary_to_ascii_hex/1]).
+		 binary_to_ascii_hex/1,
+		 ascii_hex_to_binary/1]).
 
 %%
 %% API Functions
@@ -35,6 +36,10 @@ pad_with_trailing_spaces(List, Length) ->
 binary_to_ascii_hex(Bin) ->
 	binary_to_ascii_hex(binary_to_list(Bin), []).
 
+ascii_hex_to_binary(List) ->
+	Bytes = ascii_hex_to_bytes(List, []),
+	list_to_binary(Bytes).
+	
 %%
 %% Local Functions
 %%
@@ -82,6 +87,13 @@ binary_to_ascii_hex([H|T], Result) ->
 	Lsn = H rem 16,
 	binary_to_ascii_hex(T, digit_to_ascii_hex(Lsn) ++ digit_to_ascii_hex(Msn) ++ Result).
 
+ascii_hex_to_bytes([], Result) ->
+	lists:reverse(Result);
+ascii_hex_to_bytes([Msd, Lsd | Tail], Result) ->
+	Msn = ascii_hex_to_digit([Msd]),
+	Lsn = ascii_hex_to_digit([Lsd]),
+	ascii_hex_to_bytes(Tail, [Msn * 16 + Lsn] ++ Result).
+
 %%
 %% Tests
 %%
@@ -112,3 +124,6 @@ ascii_hex_to_string_test() ->
 
 binary_to_ascii_hex_test() ->
 	"00FFA5" = binary_to_ascii_hex(<<0, 255, 165>>).
+
+ascii_hex_to_binary_test() ->
+	<<0, 255, 165>> = ascii_hex_to_binary("00FFa5").
