@@ -59,7 +59,7 @@ string_to_ascii_hex([], Result) ->
 	lists:reverse(Result);
 string_to_ascii_hex([Char|Tail], Result) ->
 	Msb = Char div 16,
-	Lsb = Char - Msb * 16,
+	Lsb = Char rem 16,
 	string_to_ascii_hex(Tail, digit_to_ascii_hex(Lsb) ++ 
 							digit_to_ascii_hex(Msb) ++
 							Result).
