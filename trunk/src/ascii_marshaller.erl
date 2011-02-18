@@ -74,9 +74,6 @@ encode_field({x_n, fixed, Length}, [Head | Value]) when [Head] =:= "C" orelse [H
 	[Head] ++ string_utils:integer_to_string(IntValue, Length);
 encode_field({z, llvar, Length}, Value) when length(Value) =< Length ->
 	string_utils:integer_to_string(length(Value), 2) ++ Value;
-encode_field({b, Length}, Value) ->
-	case Length =:= length(binary_to_list(Value)) of
-		true ->
-			string_utils:binary_to_ascii_hex(Value)
-	end.
+encode_field({b, Length}, Value) when size(Value) =:= Length ->
+	string_utils:binary_to_ascii_hex(Value).
 	
