@@ -144,6 +144,6 @@ field_54_test() ->
 fields_55_56_57_test() ->
 	Msg = ascii_unmarshaller:unmarshall("02004000000000000380195234567890123456789002A1003B22004C333"),
 	[0, 2, 55, 56, 57] = iso8583_message:get_fields(Msg),
-	"A1" = iso8583_message:get(?RESERVED_ISO, Msg),
-	"B22" = iso8583_message:get(?RESERVED_NATIONAL, Msg),
-	"C333" = iso8583_message:get(?RESERVED_PRIVATE, Msg).
+	"A1" = iso8583_message:get(?RESERVED_ISO1, Msg),
+	"B22" = iso8583_message:get(?RESERVED_ISO2, Msg),
+	"C333" = iso8583_message:get(?RESERVED_NATIONAL1, Msg).
