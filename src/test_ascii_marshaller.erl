@@ -197,6 +197,15 @@ field_54_test() ->
 	Msg3 = iso8583_message:set(2, "5234567890123456789", Msg2),
 	Msg4 = iso8583_message:set(?ADDITIONAL_AMOUNTS, "Additi0nal Am0unt", Msg3),
 	"02004000000000000400195234567890123456789017Additi0nal Am0unt" = ascii_marshaller:marshall(Msg4).
+
+fields_55_56_57_test() ->
+	Msg1 = iso8583_message:new(),
+	Msg2 = iso8583_message:set(0, "0200", Msg1),
+	Msg3 = iso8583_message:set(2, "5234567890123456789", Msg2),
+	Msg4 = iso8583_message:set(55, "A1", Msg3),
+	Msg5 = iso8583_message:set(56, "B22", Msg4),
+	Msg6 = iso8583_message:set(57, "C333", Msg5),
+	"02004000000000000380195234567890123456789002A1003B22004C333" = ascii_marshaller:marshall(Msg6).
 	
 %%
 %% Local Functions

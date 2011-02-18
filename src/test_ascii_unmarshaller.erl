@@ -140,4 +140,10 @@ field_54_test() ->
 	Msg = ascii_unmarshaller:unmarshall("02004000000000000400195234567890123456789017Additi0nal Am0unt"),
 	[0, 2, 54] = iso8583_message:get_fields(Msg),
 	"Additi0nal Am0unt" = iso8583_message:get(?ADDITIONAL_AMOUNTS, Msg).
-	
+
+fields_55_56_57_test() ->
+	Msg = ascii_unmarshaller:unmarshall("02004000000000000380195234567890123456789002A1003B22004C333"),
+	[0, 2, 55, 56, 57] = iso8583_message:get_fields(Msg),
+	"A1" = iso8583_message:get(?RESERVED_ISO, Msg),
+	"B22" = iso8583_message:get(?RESERVED_NATIONAL, Msg),
+	"C333" = iso8583_message:get(?RESERVED_PRIVATE, Msg).
