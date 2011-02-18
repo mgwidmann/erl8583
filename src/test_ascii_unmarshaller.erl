@@ -157,3 +157,7 @@ fields_58_to_63_test() ->
 	"E55555" = iso8583_message:get(?RESERVED_PRIVATE3, Msg),
 	"F666666" = iso8583_message:get(?RESERVED_PRIVATE4, Msg).
 	
+field_64_test() ->
+	Msg = ascii_unmarshaller:unmarshall("0200000000000000000180FF01020304057F"),
+	[0, 64] = iso8583_message:get_fields(Msg),
+	<<128, 255, 1, 2, 3, 4, 5, 127>> = iso8583_message:get(?MESSAGE_AUTHENTICATION_CODE, Msg).
