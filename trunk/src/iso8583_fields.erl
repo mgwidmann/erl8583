@@ -141,7 +141,10 @@ get_encoding(?RESERVED_PRIVATE2) ->
 get_encoding(?RESERVED_PRIVATE3) ->
 	{ans, lllvar, 999};
 get_encoding(?RESERVED_PRIVATE4) ->
-	{ans, lllvar, 999}.
+	{ans, lllvar, 999};
+get_encoding(?MESSAGE_AUTHENTICATION_CODE) ->
+	{b, 8}.
+
 
 %%
 %% Local Functions
