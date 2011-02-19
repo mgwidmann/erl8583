@@ -257,6 +257,13 @@ fields_83_to_90_test() ->
 	Msg9 = iso8583_message:set(?DEBITS_REVERSAL_AMOUNT, "7777777", Msg8),
 	Msg10 = iso8583_message:set(?ORIGINAL_DATA_ELEMENTS, "88888888", Msg9),
 	"0200800000000000000000003FC0000000000000000000010000000000220000000003330000000000004444000000000005555500000000006666660000000007777777000000000000000000000000000000000088888888" = ascii_marshaller:marshall(Msg10).
+
+fields_95_96_test() ->
+	Msg1 = iso8583_message:new(),
+	Msg2 = iso8583_message:set(0, "0200", Msg1),
+	Msg3 = iso8583_message:set(?REPLACEMENT_AMOUNTS, "1", Msg2),
+	Msg4 = iso8583_message:set(?MESSAGE_SECURITY_CODE, <<1,0,0,0,0,0,0,255>>, Msg3),
+	"0200800000000000000000000003000000001                                         01000000000000FF" = ascii_marshaller:marshall(Msg4).
 	
 %%
 %% Local Functions

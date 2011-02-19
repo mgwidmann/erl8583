@@ -201,13 +201,11 @@ get_encoding(?FILE_SECURITY_CODE) ->
 get_encoding(?RESP_INDICATOR) ->
 	{an, fixed, 5};
 get_encoding(?SERVICE_INDICATOR) ->
-	{an, fixed, 7}.
-
-
-
-
-
-
+	{an, fixed, 7};
+get_encoding(?REPLACEMENT_AMOUNTS) ->
+	{an, fixed, 42};
+get_encoding(?MESSAGE_SECURITY_CODE) ->
+	{b, 8}.
 
 %%
 %% Local Functions
