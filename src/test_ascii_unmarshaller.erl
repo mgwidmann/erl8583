@@ -212,3 +212,8 @@ field_98_test() ->
 	Msg = ascii_unmarshaller:unmarshall("020080000000000000000000000040000000Payee                    "),
 	[0, ?PAYEE] = iso8583_message:get_fields(Msg),
 	"Payee                    " = iso8583_message:get(?PAYEE, Msg).
+
+field_101_test() ->
+	Msg = ascii_unmarshaller:unmarshall("02008000000000000000000000000800000017A loong file name"),
+	[0, ?FILE_NAME] = iso8583_message:get_fields(Msg),
+	"A loong file name" = iso8583_message:get(?FILE_NAME, Msg).
