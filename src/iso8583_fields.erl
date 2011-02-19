@@ -177,7 +177,25 @@ get_encoding(?INQUIRIES_NUMBER) ->
 get_encoding(?AUTHORIZATIONS_NUMBER) ->
 	{n, fixed, 10};
 get_encoding(?CREDITS_PROCESSING_FEE_AMOUNT) ->
-	{n, fixed, 12}.
+	{n, fixed, 12};
+get_encoding(?CREDITS_TRANSACTION_FEE_AMOUNT) ->
+	{n, fixed, 12};
+get_encoding(?DEBITS_PROCESSING_FEE_AMOUNT) ->
+	{n, fixed, 12};
+get_encoding(?DEBITS_TRANSACTION_FEE_AMOUNT) ->
+	{n, fixed, 12};
+get_encoding(?CREDITS_AMOUNT) ->
+	{n, fixed, 16};
+get_encoding(?CREDITS_REVERSAL_AMOUNT) ->
+	{n, fixed, 16};
+get_encoding(?DEBITS_AMOUNT) ->
+	{n, fixed, 16};
+get_encoding(?DEBITS_REVERSAL_AMOUNT) ->
+	{n, fixed, 16};
+get_encoding(?ORIGINAL_DATA_ELEMENTS) ->
+	{n, fixed, 42}.
+
+
 
 
 
