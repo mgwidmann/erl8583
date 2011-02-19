@@ -207,3 +207,8 @@ field_97_test() ->
 	Msg = ascii_unmarshaller:unmarshall("020080000000000000000000000080000000C0000000000000001"),
 	[0, 97] = iso8583_message:get_fields(Msg),
 	"C0000000000000001" = iso8583_message:get(?AMOUNT_NET_SETTLE, Msg).
+
+field_98_test() ->
+	Msg = ascii_unmarshaller:unmarshall("020080000000000000000000000040000000Payee                    "),
+	[0, ?PAYEE] = iso8583_message:get_fields(Msg),
+	"Payee                    " = iso8583_message:get(?PAYEE, Msg).
