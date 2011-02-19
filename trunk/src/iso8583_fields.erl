@@ -157,7 +157,18 @@ get_encoding(?NETWORK_MANAGEMENT_INFORMATION_CODE) ->
 get_encoding(?MESSAGE_NUMBER) ->
 	{n, fixed, 4};
 get_encoding(?MESSAGE_NUMBER_LAST) ->
-	{n, fixed, 4}.
+	{n, fixed, 4};
+get_encoding(?DATE_ACTION) ->
+	{n, fixed, 6};
+get_encoding(?CREDITS_NUMBER) ->
+	{n, fixed, 10};
+get_encoding(?CREDITS_REVERSAL_NUMBER) ->
+	{n, fixed, 10};
+get_encoding(?DEBITS_NUMBER) ->
+	{n, fixed, 10};
+get_encoding(?DEBITS_REVERSAL_NUMBER) ->
+	{n, fixed, 10}.
+
 
 
 %%
