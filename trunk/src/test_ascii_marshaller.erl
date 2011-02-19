@@ -229,6 +229,13 @@ fields_67_to_70_test() ->
 	Msg6 = iso8583_message:set(?NETWORK_MANAGEMENT_INFORMATION_CODE, "4", Msg5),
 	"020080000000000000003C0000000000000001002003004" = ascii_marshaller:marshall(Msg6).
 	
+fields_71_72_test() ->
+	Msg1 = iso8583_message:new(),
+	Msg2 = iso8583_message:set(0, "0200", Msg1),
+	Msg3 = iso8583_message:set(?MESSAGE_NUMBER, "1", Msg2),
+	Msg4 = iso8583_message:set(?MESSAGE_NUMBER_LAST, "2", Msg3),
+	"02008000000000000000030000000000000000010002" = ascii_marshaller:marshall(Msg4).
+	
 %%
 %% Local Functions
 %%
