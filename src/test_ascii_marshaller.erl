@@ -213,6 +213,13 @@ field_64_test() ->
 	Msg3 = iso8583_message:set(64, <<128, 255, 1, 2, 3, 4, 5, 127>>, Msg2),
 	"0200000000000000000180FF01020304057F" = ascii_marshaller:marshall(Msg3).
 
+field_66_test() ->
+	Msg1 = iso8583_message:new(),
+	Msg2 = iso8583_message:set(0, "0200", Msg1),
+	Msg3 = iso8583_message:set(?SETTLE_CODE, "9", Msg2),
+	"0200800000000000000040000000000000009" = ascii_marshaller:marshall(Msg3),
+	Msg3 = ascii_unmarshaller:unmarshall(ascii_marshaller:marshall(Msg3)).
+	
 %%
 %% Local Functions
 %%
