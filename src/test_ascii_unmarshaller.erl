@@ -180,3 +180,9 @@ fields_71_72_test() ->
 	[0, 71, 72] = iso8583_message:get_fields(Msg),
 	"0001" = iso8583_message:get(?MESSAGE_NUMBER, Msg),
 	"0002" = iso8583_message:get(?MESSAGE_NUMBER_LAST, Msg).
+
+field_73_test() ->
+	Msg = ascii_unmarshaller:unmarshall("020080000000000000000080000000000000110219"),
+	[0, 73] = iso8583_message:get_fields(Msg),
+	"110219" = iso8583_message:get(?DATE_ACTION, Msg).
+
