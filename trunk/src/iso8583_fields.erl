@@ -207,8 +207,13 @@ get_encoding(?REPLACEMENT_AMOUNTS) ->
 get_encoding(?MESSAGE_SECURITY_CODE) ->
 	{b, 8};
 get_encoding(?AMOUNT_NET_SETTLE) ->
-	{x_n, fixed, 16}.
-
+	{x_n, fixed, 16};
+get_encoding(?PAYEE) ->
+	{ans, fixed, 25};
+get_encoding(?SETTLE_INSTITUTION_ID_CODE) ->
+	{n, llvar, 11};
+get_encoding(?RECEIVING_INSTITUTION_ID_CODE) ->
+	{n, llvar, 11}.
 
 %%
 %% Local Functions

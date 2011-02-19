@@ -265,6 +265,14 @@ fields_95_96_test() ->
 	Msg4 = iso8583_message:set(?MESSAGE_SECURITY_CODE, <<1,0,0,0,0,0,0,255>>, Msg3),
 	"0200800000000000000000000003000000001                                         01000000000000FF" = ascii_marshaller:marshall(Msg4).
 	
+fields_99_100_test() ->
+	Msg1 = iso8583_message:new(),
+	Msg2 = iso8583_message:set(0, "0200", Msg1),
+	Msg3 = iso8583_message:set(?SETTLE_INSTITUTION_ID_CODE, "11", Msg2),
+	Msg4 = iso8583_message:set(?RECEIVING_INSTITUTION_ID_CODE, "2222", Msg3),
+	"0200800000000000000000000000300000000211042222" = ascii_marshaller:marshall(Msg4).
+	
+
 %%
 %% Local Functions
 %%
