@@ -213,7 +213,10 @@ get_encoding(?PAYEE) ->
 get_encoding(?SETTLE_INSTITUTION_ID_CODE) ->
 	{n, llvar, 11};
 get_encoding(?RECEIVING_INSTITUTION_ID_CODE) ->
-	{n, llvar, 11}.
+	{n, llvar, 11};
+get_encoding(?FILE_NAME) ->
+	{ans, llvar, 17}.
+
 
 %%
 %% Local Functions

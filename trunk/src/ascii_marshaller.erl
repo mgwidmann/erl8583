@@ -63,6 +63,8 @@ encode_field({an, llvar, Length}, Value) when length(Value) =< Length ->
 	string_utils:integer_to_string(length(Value), 2) ++ Value;
 encode_field({an, lllvar, Length}, Value) when length(Value) =< Length ->
 	string_utils:integer_to_string(length(Value), 3) ++ Value;
+encode_field({ans, llvar, Length}, Value) when length(Value) =< Length ->
+	string_utils:integer_to_string(length(Value), 2) ++ Value;
 encode_field({ans, lllvar, Length}, Value) when length(Value) =< Length ->
 	string_utils:integer_to_string(length(Value), 3) ++ Value;
 encode_field({n, fixed, Length}, Value) when length(Value) =< Length ->

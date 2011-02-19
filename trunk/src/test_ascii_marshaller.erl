@@ -272,7 +272,12 @@ fields_99_100_test() ->
 	Msg4 = iso8583_message:set(?RECEIVING_INSTITUTION_ID_CODE, "2222", Msg3),
 	"0200800000000000000000000000300000000211042222" = ascii_marshaller:marshall(Msg4).
 	
-
+field_101_test() ->
+	Msg1 = iso8583_message:new(),
+	Msg2 = iso8583_message:set(0, "0200", Msg1),
+	Msg3 = iso8583_message:set(?FILE_NAME, "A loong file name", Msg2),
+	"02008000000000000000000000000800000017A loong file name" = ascii_marshaller:marshall(Msg3).
+	
 %%
 %% Local Functions
 %%
