@@ -167,4 +167,11 @@ field_66_test() ->
 	[0, 66] = iso8583_message:get_fields(Msg),
 	"1" = iso8583_message:get(66, Msg).
 
+fields_67_to_70_test() ->
+	Msg = ascii_unmarshaller:unmarshall("020080000000000000003C0000000000000001002003004"),
+	[0, 67, 68, 69, 70] = iso8583_message:get_fields(Msg),
+	"01" = iso8583_message:get(67, Msg),
+	"002" = iso8583_message:get(68, Msg),
+	"003" = iso8583_message:get(69, Msg),
+	"004" = iso8583_message:get(70, Msg).
 	

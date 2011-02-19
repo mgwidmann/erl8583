@@ -33,7 +33,7 @@ bitmap(Fields) ->
 	NumBitMaps = (lists:max(Fields) + 63) div 64,
 	ExtensionBits = [Bit * 64 - 127 || Bit <- lists:seq(2, NumBitMaps)],
 	BitMap = lists:duplicate(NumBitMaps * 8, 0),
-	string_utils:string_to_ascii_hex(bitmap(lists:sort(Fields ++ ExtensionBits), BitMap)).
+	string_utils:string_to_ascii_hex(bitmap(lists:sort(ExtensionBits ++ Fields), BitMap)).
 
 bitmap([], Result) ->
 	Result;

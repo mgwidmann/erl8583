@@ -145,8 +145,15 @@ get_encoding(?RESERVED_PRIVATE4) ->
 get_encoding(?MESSAGE_AUTHENTICATION_CODE) ->
 	{b, 8};
 get_encoding(?SETTLE_CODE) ->
-	{n, fixed, 1}.
-
+	{n, fixed, 1};
+get_encoding(?EXTENDED_PAYMENT_CODE) ->
+	{n, fixed, 2};
+get_encoding(?RECEIVING_INSTITUTION_COUNTRY_CODE) ->
+	{n, fixed, 3};
+get_encoding(?SETTLE_INSTITUTION_COUNTRY_CODE) ->
+	{n, fixed, 3};
+get_encoding(?NETWORK_MANAGEMENT_INFORMATION_CODE) ->
+	{n, fixed, 3}.
 
 %%
 %% Local Functions
