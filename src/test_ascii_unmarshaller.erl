@@ -203,3 +203,7 @@ fields_91_to_94_test() ->
 	"55555" = iso8583_message:get(?RESP_INDICATOR, Msg),
 	"DDDDDDD" = iso8583_message:get(?SERVICE_INDICATOR, Msg).
 	
+field_97_test() ->
+	Msg = ascii_unmarshaller:unmarshall("020080000000000000000000000080000000C0000000000000001"),
+	[0, 97] = iso8583_message:get_fields(Msg),
+	"C0000000000000001" = iso8583_message:get(?AMOUNT_NET_SETTLE, Msg).

@@ -205,7 +205,10 @@ get_encoding(?SERVICE_INDICATOR) ->
 get_encoding(?REPLACEMENT_AMOUNTS) ->
 	{an, fixed, 42};
 get_encoding(?MESSAGE_SECURITY_CODE) ->
-	{b, 8}.
+	{b, 8};
+get_encoding(?AMOUNT_NET_SETTLE) ->
+	{x_n, fixed, 16}.
+
 
 %%
 %% Local Functions
