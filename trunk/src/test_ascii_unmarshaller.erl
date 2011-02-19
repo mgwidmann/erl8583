@@ -217,3 +217,9 @@ field_101_test() ->
 	Msg = ascii_unmarshaller:unmarshall("02008000000000000000000000000800000017A loong file name"),
 	[0, ?FILE_NAME] = iso8583_message:get_fields(Msg),
 	"A loong file name" = iso8583_message:get(?FILE_NAME, Msg).
+
+fields_102_103_104_128_test() ->
+	Msg = ascii_unmarshaller:unmarshall("02008000000000000000000000000700000104ID 1281234567890123456789012345678009txn desc.0000000000000000"),
+	[0, ?ACCOUNT_ID1, ?ACCOUNT_ID2, ?TRAN_DESCRIPTION, ?MESSAGE_AUTHENTICATION_CODE2] = iso8583_message:get_fields(Msg),
+	<<0, 0, 0, 0, 0, 0, 0, 0>> = iso8583_message:get(?MESSAGE_AUTHENTICATION_CODE2, Msg).
+

@@ -215,7 +215,19 @@ get_encoding(?SETTLE_INSTITUTION_ID_CODE) ->
 get_encoding(?RECEIVING_INSTITUTION_ID_CODE) ->
 	{n, llvar, 11};
 get_encoding(?FILE_NAME) ->
-	{ans, llvar, 17}.
+	{ans, llvar, 17};
+get_encoding(?ACCOUNT_ID1) ->
+	{ans, llvar, 28};
+get_encoding(?ACCOUNT_ID2) ->
+	{ans, llvar, 28};
+get_encoding(?TRAN_DESCRIPTION) ->
+	{ans, lllvar, 100};
+get_encoding(?MESSAGE_AUTHENTICATION_CODE2) ->
+	{b, 8};
+get_encoding(Id) when Id >= 105 andalso Id =< 127 ->
+	{ans, lllvar, 999}.
+
+
 
 
 %%
