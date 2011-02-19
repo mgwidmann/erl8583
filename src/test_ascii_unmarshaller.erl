@@ -175,3 +175,8 @@ fields_67_to_70_test() ->
 	"003" = iso8583_message:get(69, Msg),
 	"004" = iso8583_message:get(70, Msg).
 	
+fields_71_72_test() ->
+	Msg = ascii_unmarshaller:unmarshall("02008000000000000000030000000000000000010002"),
+	[0, 71, 72] = iso8583_message:get_fields(Msg),
+	"0001" = iso8583_message:get(?MESSAGE_NUMBER, Msg),
+	"0002" = iso8583_message:get(?MESSAGE_NUMBER_LAST, Msg).

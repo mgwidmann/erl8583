@@ -153,7 +153,12 @@ get_encoding(?RECEIVING_INSTITUTION_COUNTRY_CODE) ->
 get_encoding(?SETTLE_INSTITUTION_COUNTRY_CODE) ->
 	{n, fixed, 3};
 get_encoding(?NETWORK_MANAGEMENT_INFORMATION_CODE) ->
-	{n, fixed, 3}.
+	{n, fixed, 3};
+get_encoding(?MESSAGE_NUMBER) ->
+	{n, fixed, 4};
+get_encoding(?MESSAGE_NUMBER_LAST) ->
+	{n, fixed, 4}.
+
 
 %%
 %% Local Functions
