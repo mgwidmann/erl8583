@@ -195,4 +195,11 @@ field_78_to_82_test() ->
 	"0000004444" = iso8583_message:get(?AUTHORIZATIONS_NUMBER, Msg),
 	"000000055555" = iso8583_message:get(?CREDITS_PROCESSING_FEE_AMOUNT, Msg).
 	
-
+fields_91_to_94_test() ->
+	Msg = ascii_unmarshaller:unmarshall("020080000000000000000000003C00000000A2255555DDDDDDD"),
+	[0, 91, 92, 93, 94] = iso8583_message:get_fields(Msg),
+	"A" = iso8583_message:get(?FILE_UPDATE_CODE, Msg),
+	"22" = iso8583_message:get(?FILE_SECURITY_CODE, Msg),
+	"55555" = iso8583_message:get(?RESP_INDICATOR, Msg),
+	"DDDDDDD" = iso8583_message:get(?SERVICE_INDICATOR, Msg).
+	

@@ -193,7 +193,16 @@ get_encoding(?DEBITS_AMOUNT) ->
 get_encoding(?DEBITS_REVERSAL_AMOUNT) ->
 	{n, fixed, 16};
 get_encoding(?ORIGINAL_DATA_ELEMENTS) ->
-	{n, fixed, 42}.
+	{n, fixed, 42};
+get_encoding(?FILE_UPDATE_CODE) ->
+	{an, fixed, 1};
+get_encoding(?FILE_SECURITY_CODE) ->
+	{an, fixed, 2};
+get_encoding(?RESP_INDICATOR) ->
+	{an, fixed, 5};
+get_encoding(?SERVICE_INDICATOR) ->
+	{an, fixed, 7}.
+
 
 
 
