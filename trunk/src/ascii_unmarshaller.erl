@@ -32,12 +32,14 @@ unmarshall(Msg, EncodingRules) ->
 extract_fields([]) ->
 	{[], []};
 extract_fields(Message) ->
-	{AsciiBitMap, Fields} = lists:split(16, Message),
+	BitMapLength = get_bit_map_length(Message),
+	{AsciiBitMap, Fields} = lists:split(BitMapLength, Message),
 	BitMap = string_utils:ascii_hex_to_string(AsciiBitMap),
 	extract_fields(BitMap, 0, 8, {[], Fields}).
 
 extract_fields([], _Offset, _Index, {FieldIds, Fields}) ->
-	{lists:sort(FieldIds), Fields};
+	Ids = lists:sort(FieldIds),
+	{[Id || Id <- Ids, Id rem 64 =/= 1], Fields};
 extract_fields([_Head|Tail], Offset, 0, {FieldIds, Fields}) ->
 	extract_fields(Tail, Offset+1, 8, {FieldIds, Fields});
 extract_fields([Head|Tail], Offset, Index, {FieldIds, Fields}) ->
@@ -86,3 +88,19 @@ decode_field({b, Length}, Fields) ->
 	{ValueStr, Rest} = lists:split(2 * Length, Fields),
 	Value = string_utils:ascii_hex_to_binary(ValueStr),
 	{Value, Rest}.
+
+get_bit_map_length(Msg) ->
+	get_bit_map_length(Msg, 16).
+
+get_bit_map_length(Msg, Length) ->
+	[HexDig1, HexDig2|_Tail] = Msg,
+	<<Byte>> = string_utils:ascii_hex_to_binary([HexDig1, HexDig2]),
+	case (Byte band 128) of
+		0 ->
+			Length;
+		_ ->
+			{_Msg1, Msg2} = lists:split(16, Msg),
+			get_bit_map_length(Msg2, Length+16)
+	end.
+
+	

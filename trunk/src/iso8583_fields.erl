@@ -143,7 +143,9 @@ get_encoding(?RESERVED_PRIVATE3) ->
 get_encoding(?RESERVED_PRIVATE4) ->
 	{ans, lllvar, 999};
 get_encoding(?MESSAGE_AUTHENTICATION_CODE) ->
-	{b, 8}.
+	{b, 8};
+get_encoding(?SETTLE_CODE) ->
+	{n, fixed, 1}.
 
 
 %%
