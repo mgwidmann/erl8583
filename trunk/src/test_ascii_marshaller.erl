@@ -220,6 +220,15 @@ field_66_test() ->
 	"0200800000000000000040000000000000009" = ascii_marshaller:marshall(Msg3),
 	Msg3 = ascii_unmarshaller:unmarshall(ascii_marshaller:marshall(Msg3)).
 	
+fields_67_to_70_test() ->
+	Msg1 = iso8583_message:new(),
+	Msg2 = iso8583_message:set(0, "0200", Msg1),
+	Msg3 = iso8583_message:set(?EXTENDED_PAYMENT_CODE, "1", Msg2),
+	Msg4 = iso8583_message:set(?RECEIVING_INSTITUTION_COUNTRY_CODE, "2", Msg3),
+	Msg5 = iso8583_message:set(?SETTLE_INSTITUTION_COUNTRY_CODE, "3", Msg4),
+	Msg6 = iso8583_message:set(?NETWORK_MANAGEMENT_INFORMATION_CODE, "4", Msg5),
+	"020080000000000000003C0000000000000001002003004" = ascii_marshaller:marshall(Msg6).
+	
 %%
 %% Local Functions
 %%
