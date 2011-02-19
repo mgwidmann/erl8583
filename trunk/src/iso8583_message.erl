@@ -31,10 +31,8 @@ new(Attributes) ->
 	
 set(Index, Value, Msg) when is_integer(Index) andalso Index >= 0 ->
 	{iso8583_message, Attrs, Dict} = Msg,
-	case dict:is_key(Index, Dict) of
-		false ->
-			{iso8583_message, Attrs, dict:store(Index, Value, Dict)}
-	end.
+	false = dict:is_key(Index, Dict),
+	{iso8583_message, Attrs, dict:store(Index, Value, Dict)}.
 	
 get(Index, Msg) ->
 	{iso8583_message, _Attrs, Dict} = Msg,
