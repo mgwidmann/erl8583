@@ -186,3 +186,13 @@ field_73_test() ->
 	[0, 73] = iso8583_message:get_fields(Msg),
 	"110219" = iso8583_message:get(?DATE_ACTION, Msg).
 
+field_78_to_82_test() ->
+	Msg = ascii_unmarshaller:unmarshall("020080000000000000000007C000000000000000000001000000002200000003330000004444000000055555"),
+	[0, 78, 79, 80, 81, 82] = iso8583_message:get_fields(Msg),
+	"0000000001" = iso8583_message:get(?TRANSFER_NUMBER, Msg),
+	"0000000022" = iso8583_message:get(?TRANSFER_NUMBER_REVERSAL, Msg),
+	"0000000333" = iso8583_message:get(?INQUIRIES_NUMBER, Msg),
+	"0000004444" = iso8583_message:get(?AUTHORIZATIONS_NUMBER, Msg),
+	"000000055555" = iso8583_message:get(?CREDITS_PROCESSING_FEE_AMOUNT, Msg).
+	
+

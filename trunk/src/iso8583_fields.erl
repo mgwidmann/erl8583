@@ -167,7 +167,18 @@ get_encoding(?CREDITS_REVERSAL_NUMBER) ->
 get_encoding(?DEBITS_NUMBER) ->
 	{n, fixed, 10};
 get_encoding(?DEBITS_REVERSAL_NUMBER) ->
-	{n, fixed, 10}.
+	{n, fixed, 10};
+get_encoding(?TRANSFER_NUMBER) ->
+	{n, fixed, 10};
+get_encoding(?TRANSFER_NUMBER_REVERSAL) ->
+	{n, fixed, 10};
+get_encoding(?INQUIRIES_NUMBER) ->
+	{n, fixed, 10};
+get_encoding(?AUTHORIZATIONS_NUMBER) ->
+	{n, fixed, 10};
+get_encoding(?CREDITS_PROCESSING_FEE_AMOUNT) ->
+	{n, fixed, 12}.
+
 
 
 
