@@ -33,7 +33,7 @@ bitmap(Fields) ->
 	NumBitMaps = (lists:max(Fields) + 63) div 64,
 	ExtensionBits = [Bit * 64 - 127 || Bit <- lists:seq(2, NumBitMaps)],
 	BitMap = lists:duplicate(NumBitMaps * 8, 0),
-	string_utils:string_to_ascii_hex(bitmap(lists:sort(ExtensionBits ++ Fields), BitMap)).
+	convert:string_to_ascii_hex(bitmap(lists:sort(ExtensionBits ++ Fields), BitMap)).
 
 bitmap([], Result) ->
 	Result;
@@ -56,29 +56,29 @@ encode([Field|Tail], Msg, Result, EncodingRules) ->
 	encode(Tail, Msg, lists:reverse(EncodedValue) ++ Result, EncodingRules).
 
 encode_field({n, llvar, Length}, Value) when length(Value) =< Length ->
-	string_utils:integer_to_string(length(Value), 2) ++ Value;
+	convert:integer_to_string(length(Value), 2) ++ Value;
 encode_field({n, lllvar, Length}, Value) when length(Value) =< Length ->
-	string_utils:integer_to_string(length(Value), 3) ++ Value;
+	convert:integer_to_string(length(Value), 3) ++ Value;
 encode_field({an, llvar, Length}, Value) when length(Value) =< Length ->
-	string_utils:integer_to_string(length(Value), 2) ++ Value;
+	convert:integer_to_string(length(Value), 2) ++ Value;
 encode_field({an, lllvar, Length}, Value) when length(Value) =< Length ->
-	string_utils:integer_to_string(length(Value), 3) ++ Value;
+	convert:integer_to_string(length(Value), 3) ++ Value;
 encode_field({ans, llvar, Length}, Value) when length(Value) =< Length ->
-	string_utils:integer_to_string(length(Value), 2) ++ Value;
+	convert:integer_to_string(length(Value), 2) ++ Value;
 encode_field({ans, lllvar, Length}, Value) when length(Value) =< Length ->
-	string_utils:integer_to_string(length(Value), 3) ++ Value;
+	convert:integer_to_string(length(Value), 3) ++ Value;
 encode_field({n, fixed, Length}, Value) when length(Value) =< Length ->
 	IntValue = list_to_integer(Value),
-	string_utils:integer_to_string(IntValue, Length);
+	convert:integer_to_string(IntValue, Length);
 encode_field({an, fixed, Length}, Value) when length(Value) =< Length ->
-	string_utils:pad_with_trailing_spaces(Value, Length);
+	convert:pad_with_trailing_spaces(Value, Length);
 encode_field({ans, fixed, Length}, Value) when length(Value) =< Length ->
-	string_utils:pad_with_trailing_spaces(Value, Length);
+	convert:pad_with_trailing_spaces(Value, Length);
 encode_field({x_n, fixed, Length}, [Head | Value]) when [Head] =:= "C" orelse [Head] =:= "D" ->
 	IntValue = list_to_integer(Value),
-	[Head] ++ string_utils:integer_to_string(IntValue, Length);
+	[Head] ++ convert:integer_to_string(IntValue, Length);
 encode_field({z, llvar, Length}, Value) when length(Value) =< Length ->
-	string_utils:integer_to_string(length(Value), 2) ++ Value;
+	convert:integer_to_string(length(Value), 2) ++ Value;
 encode_field({b, Length}, Value) when size(Value) =:= Length ->
-	string_utils:binary_to_ascii_hex(Value).
+	convert:binary_to_ascii_hex(Value).
 	

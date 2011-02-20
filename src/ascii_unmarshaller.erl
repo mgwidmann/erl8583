@@ -34,7 +34,7 @@ extract_fields([]) ->
 extract_fields(Message) ->
 	BitMapLength = get_bit_map_length(Message),
 	{AsciiBitMap, Fields} = lists:split(BitMapLength, Message),
-	BitMap = string_utils:ascii_hex_to_string(AsciiBitMap),
+	BitMap = convert:ascii_hex_to_string(AsciiBitMap),
 	extract_fields(BitMap, 0, 8, {[], Fields}).
 
 extract_fields([], _Offset, _Index, {FieldIds, Fields}) ->
@@ -89,7 +89,7 @@ decode_field({z, llvar, _MaxLength}, Fields) ->
 	lists:split(list_to_integer(N), Rest);
 decode_field({b, Length}, Fields) ->
 	{ValueStr, Rest} = lists:split(2 * Length, Fields),
-	Value = string_utils:ascii_hex_to_binary(ValueStr),
+	Value = convert:ascii_hex_to_binary(ValueStr),
 	{Value, Rest}.
 
 get_bit_map_length(Msg) ->
@@ -97,7 +97,7 @@ get_bit_map_length(Msg) ->
 
 get_bit_map_length(Msg, Length) ->
 	[HexDig1, HexDig2|_Tail] = Msg,
-	<<Byte>> = string_utils:ascii_hex_to_binary([HexDig1, HexDig2]),
+	<<Byte>> = convert:ascii_hex_to_binary([HexDig1, HexDig2]),
 	case (Byte band 128) of
 		0 ->
 			Length;
