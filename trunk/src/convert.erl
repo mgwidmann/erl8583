@@ -1,7 +1,7 @@
 %% Author: carl
 %% Created: 12 Feb 2011
 %% Description: TODO: Add description to string_utils
--module(string_utils).
+-module(convert).
 
 %%
 %% Include files
@@ -43,7 +43,7 @@ ascii_hex_to_binary(List) ->
 	list_to_binary(Bytes).
 	
 concat_binaries(List) ->
-	lists:foldr({string_utils, concat_binaries}, <<>>, List).
+	lists:foldr({convert, concat_binaries}, <<>>, List).
 
 concat_binaries(X, Y) ->
 	<<X/binary, Y/binary>>.

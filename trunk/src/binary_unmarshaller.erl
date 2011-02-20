@@ -21,7 +21,7 @@ unmarshall(Msg) ->
 unmarshall(Msg, _EncodingRules) ->
 	IsoMsg1 = iso8583_message:new(),
 	{MtiBin, _} = split_binary(Msg, 2),
-	Mti = string_utils:binary_to_ascii_hex(MtiBin),
+	Mti = convert:binary_to_ascii_hex(MtiBin),
 	iso8583_message:set(0, Mti, IsoMsg1).
 
 

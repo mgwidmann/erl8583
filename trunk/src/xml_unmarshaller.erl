@@ -43,7 +43,7 @@ unmarshall([Field|T], Iso8583Msg) when is_record(Field, xmlElement) ->
 					Value = ValueStr;
 				true ->
 					"binary" = get_attribute_value("type", AttributesList),
-					Value = string_utils:ascii_hex_to_binary(ValueStr)
+					Value = convert:ascii_hex_to_binary(ValueStr)
 			end;
 		isomsg ->
 			Attrs = Field#xmlElement.attributes,
