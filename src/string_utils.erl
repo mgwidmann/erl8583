@@ -16,7 +16,9 @@
 		 integer_to_string/2, 
 		 pad_with_trailing_spaces/2,
 		 binary_to_ascii_hex/1,
-		 ascii_hex_to_binary/1]).
+		 ascii_hex_to_binary/1,
+		 concat_binaries/1,
+		 concat_binaries/2]).
 
 %%
 %% API Functions
@@ -40,6 +42,12 @@ ascii_hex_to_binary(List) ->
 	Bytes = ascii_hex_to_bytes(List, []),
 	list_to_binary(Bytes).
 	
+concat_binaries(List) ->
+	lists:foldr({string_utils, concat_binaries}, <<>>, List).
+
+concat_binaries(X, Y) ->
+	<<X/binary, Y/binary>>.
+
 %%
 %% Local Functions
 %%
@@ -127,3 +135,6 @@ binary_to_ascii_hex_test() ->
 
 ascii_hex_to_binary_test() ->
 	<<0, 255, 165>> = ascii_hex_to_binary("00FFa5").
+
+concat_binaries_test() ->
+	<<1, 2, 3, 4>> = concat_binaries([<<1>>, <<2, 3>>, <<4>>]).
