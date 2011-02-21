@@ -21,7 +21,8 @@
 		 concat_binaries/2,
 		 integer_to_bcd/2,
 		 ascii_hex_to_bcd/2,
-		 bcd_to_integer/1]).
+		 bcd_to_integer/1,
+		 bcd_to_ascii_hex/3]).
 
 %%
 %% API Functions
@@ -68,6 +69,16 @@ bcd_to_integer(Bcd) ->
 		end,
 	lists:foldl(F, 0, BcdList).
 
+bcd_to_ascii_hex(Bcd, Length, PaddingChar) when size(Bcd) =:= (Length + 1) div 2 ->
+	IntValue = bcd_to_integer(Bcd),
+	case Length rem 2 of
+		0 ->
+			integer_to_string(IntValue, Length);
+		1 ->
+			StrippedValue = IntValue - ascii_hex_to_digit(PaddingChar),
+			0 = StrippedValue rem 10,
+			integer_to_string(StrippedValue div 10, Length)
+	end.
 
 %%
 %% Local Functions
@@ -197,8 +208,9 @@ integer_to_bcd_test() ->
 	?assertError(_, integer_to_bcd(1000, 3)).
 
 ascii_hex_to_bcd_test() ->
-	<<58, 31>> = ascii_hex_to_bcd("3A1", "F"),
-	<<58, 16>> = ascii_hex_to_bcd("3A1", "0"),
+	<<48, 31>> = ascii_hex_to_bcd("301", "F"),
+	<<64, 31>> = ascii_hex_to_bcd("401", "F"),
+	<<48, 16>> = ascii_hex_to_bcd("301", "0"),
 	<<18, 52>> = ascii_hex_to_bcd("1234", "0").
 
 bcd_to_integer_test() ->
@@ -207,3 +219,10 @@ bcd_to_integer_test() ->
 	1 = bcd_to_integer(<<0, 1>>),
 	123 = bcd_to_integer(<<1, 35>>),
 	123456 = bcd_to_integer(<<18, 52, 86>>).
+
+bcd_to_ascii_hex_test() ->
+	"1234" = bcd_to_ascii_hex(<<18, 52>>, 4, "F"),
+	"123" = bcd_to_ascii_hex(<<18, 63>>, 3, "F"),
+	"123" = bcd_to_ascii_hex(<<18, 48>>, 3, "0"),
+	"401" = bcd_to_ascii_hex(<<64, 31>>, 3, "F").
+
