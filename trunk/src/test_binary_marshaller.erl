@@ -21,11 +21,19 @@
 mti_only_test() ->
 	Msg1 = iso8583_message:new(),
 	Msg2 = iso8583_message:set(0, "0200", Msg1),
-	Marshalled2 = binary_marshaller:marshall(Msg2),
-	{<<2, 0>>, X} = split_binary(Marshalled2, 2),
+	<<2, 0>> = binary_marshaller:marshall(Msg2),
 	Msg3 = iso8583_message:set(0, "0210", Msg1),
-	Marshalled3 = binary_marshaller:marshall(Msg3),
-	{<<2, 16>>, X} = split_binary(Marshalled3, 2).
+	<<2, 16>> = binary_marshaller:marshall(Msg3).
+
+field_2_test() ->
+	Msg1 = iso8583_message:new(),
+	Msg2 = iso8583_message:set(0, "0210", Msg1),
+	Msg3 = iso8583_message:set(?PAN, "15234567890123456", Msg2),
+	<<2, 16, 64, 0, 0, 0, 0, 0, 0, 0, 23, 21, 35, 69, 103, 137, 1, 35, 69, 96>> 
+		= binary_marshaller:marshall(Msg3).
+	
+	
+	
 
 
 
