@@ -23,8 +23,9 @@ unmarshall(Msg, _EncodingRules) ->
 	{MtiBin, Rest} = split_binary(Msg, 2),
 	Mti = convert:binary_to_ascii_hex(MtiBin),
 	IsoMsg2 = iso8583_message:set(0, Mti, IsoMsg1),
-	{FieldIds, _Fields} = extract_fields(Rest),
-	populate_fields(FieldIds, IsoMsg2).
+	{FieldIds, Fields} = extract_fields(Rest),
+	populate_fields(FieldIds, IsoMsg2),
+	Fields.
 	
 
 
