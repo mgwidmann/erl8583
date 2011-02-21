@@ -19,7 +19,8 @@
 		 ascii_hex_to_binary/1,
 		 concat_binaries/1,
 		 concat_binaries/2,
-		 integer_to_bcd/2]).
+		 integer_to_bcd/2,
+		 ascii_hex_to_bcd/2]).
 
 %%
 %% API Functions
@@ -51,6 +52,12 @@ concat_binaries(X, Y) ->
 
 integer_to_bcd(Value, Length) ->
 	integer_to_bcd(Value, Length, []).
+
+ascii_hex_to_bcd(Value, PaddingChar) when length(Value) rem 2 =:= 1 ->
+	ascii_hex_to_bcd(Value ++ PaddingChar, PaddingChar);
+ascii_hex_to_bcd(Value, _PaddingChar) ->
+	ascii_hex_to_bcd2(Value, []).	
+	
 
 %%
 %% Local Functions
@@ -124,6 +131,13 @@ concat_adjacent_bytes([], Result) ->
 concat_adjacent_bytes([Dig1, Dig2|Tail], Result) ->
 	concat_adjacent_bytes(Tail, [Dig1 * 16 + Dig2|Result]).
 
+ascii_hex_to_bcd2([], Result) ->
+	list_to_binary(lists:reverse(Result));
+ascii_hex_to_bcd2([Dig1, Dig2|Tail], Result) ->
+	Byte = ascii_hex_to_digit([Dig1]) * 16 + ascii_hex_to_digit([Dig2]),
+	ascii_hex_to_bcd2(Tail, [Byte|Result]).
+
+	
 %%
 %% Tests
 %%
@@ -168,5 +182,11 @@ integer_to_bcd_test() ->
 	<<16>> = integer_to_bcd(10, 2),
 	<<0, 16>> = integer_to_bcd(10, 3),
 	<<9, 153>> = integer_to_bcd(999, 3),
+	<<0,18,52,86,120>> = integer_to_bcd(12345678, 10),
+	<<1,35,69,103,137>> = integer_to_bcd(123456789, 9),
 	?assertError(_, integer_to_bcd(1000, 3)).
 
+ascii_hex_to_bcd_test() ->
+	<<58, 31>> = ascii_hex_to_bcd("3A1", "F"),
+	<<58, 16>> = ascii_hex_to_bcd("3A1", "0"),
+	<<18, 52>> = ascii_hex_to_bcd("1234", "0").
