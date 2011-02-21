@@ -18,16 +18,13 @@
 unmarshall(Msg) ->
 	unmarshall(Msg, iso8583_fields).
 
-unmarshall(Msg, _EncodingRules) ->
+unmarshall(Msg, EncodingRules) ->
 	IsoMsg1 = iso8583_message:new(),
 	{MtiBin, Rest} = split_binary(Msg, 2),
 	Mti = convert:binary_to_ascii_hex(MtiBin),
 	IsoMsg2 = iso8583_message:set(0, Mti, IsoMsg1),
 	{FieldIds, Fields} = extract_fields(Rest),
-	populate_fields(FieldIds, IsoMsg2),
-	Fields.
-	
-
+	decode_fields(FieldIds, Fields, IsoMsg2, EncodingRules).
 
 %%
 %% Local Functions
@@ -56,8 +53,16 @@ extract_fields([Head|Tail], Offset, Index, {FieldIds, Fields}) ->
 			extract_fields([Head|Tail], Offset, Index-1, {[Offset*8+9-Index|FieldIds], Fields})
 	end.
 
-populate_fields([], Msg) ->
-	Msg;
-populate_fields([Id|Tail], Msg) ->
-	UpdatedMsg = iso8583_message:set(Id, "Value", Msg),
-	populate_fields(Tail, UpdatedMsg).
+decode_fields([], _, Result, _EncodingRules) ->
+	Result;
+decode_fields([Field|Tail], Fields, Result, EncodingRules) ->
+	Encoding = EncodingRules:get_encoding(Field),
+	{Value, UpdatedFields} = decode_field(Encoding, Fields),
+	UpdatedResult = iso8583_message:set(Field, Value, Result),
+	decode_fields(Tail, UpdatedFields, UpdatedResult, EncodingRules).
+	
+decode_field({n, llvar, _MaxLength}, Fields) ->
+	{NBin, RestBin} = split_binary(Fields, 1),
+	N = convert:bcd_to_integer(NBin),
+	{ValueBin, Rest} = split_binary(RestBin, (N+1) div 2), 
+	{convert:bcd_to_ascii_hex(ValueBin, N, "0"), Rest}.
