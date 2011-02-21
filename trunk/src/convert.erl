@@ -20,7 +20,8 @@
 		 concat_binaries/1,
 		 concat_binaries/2,
 		 integer_to_bcd/2,
-		 ascii_hex_to_bcd/2]).
+		 ascii_hex_to_bcd/2,
+		 bcd_to_integer/1]).
 
 %%
 %% API Functions
@@ -58,6 +59,11 @@ ascii_hex_to_bcd(Value, PaddingChar) when length(Value) rem 2 =:= 1 ->
 ascii_hex_to_bcd(Value, _PaddingChar) ->
 	ascii_hex_to_bcd2(Value, []).	
 	
+bcd_to_integer(BcdValue) ->
+	F = fun(Digit, Acc) when Digit =< 57 ->
+				Acc * 10 + ascii_hex_to_digit([Digit])
+		end,
+	lists:foldl(F, 0, BcdValue).
 
 %%
 %% Local Functions
@@ -190,3 +196,8 @@ ascii_hex_to_bcd_test() ->
 	<<58, 31>> = ascii_hex_to_bcd("3A1", "F"),
 	<<58, 16>> = ascii_hex_to_bcd("3A1", "0"),
 	<<18, 52>> = ascii_hex_to_bcd("1234", "0").
+
+bcd_to_integer_test() ->
+	19 = bcd_to_integer("19"),
+	123 = bcd_to_integer("0123"),
+	?assertError(_, bcd_to_integer("3A")).
