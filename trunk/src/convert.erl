@@ -59,11 +59,15 @@ ascii_hex_to_bcd(Value, PaddingChar) when length(Value) rem 2 =:= 1 ->
 ascii_hex_to_bcd(Value, _PaddingChar) ->
 	ascii_hex_to_bcd2(Value, []).	
 	
-bcd_to_integer(BcdValue) ->
-	F = fun(Digit, Acc) when Digit =< 57 ->
-				Acc * 10 + ascii_hex_to_digit([Digit])
+bcd_to_integer(Bcd) ->
+	BcdList = binary_to_list(Bcd),
+	F = fun(Value, Acc) ->
+				Dig1 = Value div 16,
+				Dig2 = Value rem 16,
+				100 * Acc + 10 * Dig1 + Dig2
 		end,
-	lists:foldl(F, 0, BcdValue).
+	lists:foldl(F, 0, BcdList).
+
 
 %%
 %% Local Functions
@@ -198,6 +202,8 @@ ascii_hex_to_bcd_test() ->
 	<<18, 52>> = ascii_hex_to_bcd("1234", "0").
 
 bcd_to_integer_test() ->
-	19 = bcd_to_integer("19"),
-	123 = bcd_to_integer("0123"),
-	?assertError(_, bcd_to_integer("3A")).
+	17 = bcd_to_integer(<<23>>),
+	1 = bcd_to_integer(<<1>>),
+	1 = bcd_to_integer(<<0, 1>>),
+	123 = bcd_to_integer(<<1, 35>>),
+	123456 = bcd_to_integer(<<18, 52, 86>>).
