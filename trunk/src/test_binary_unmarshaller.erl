@@ -82,6 +82,13 @@ field_26_27_test() ->
 	"22" = iso8583_message:get(26, Msg),
 	"1" =  iso8583_message:get(27, Msg).
 
+fields_28_29_test() ->
+	Msg = binary_unmarshaller:unmarshall(<<2, 33, 0, 0, 0, 24, 0, 0, 0, 0, 67, 0, 0, 0, 1, 68, 0, 0, 0, 34>>),
+	"0221" = iso8583_message:get(0, Msg),
+	[0, 28, 29] = iso8583_message:get_fields(Msg),
+	"C00000001" = iso8583_message:get(28, Msg),
+	"D00000022" =  iso8583_message:get(29, Msg).
+	
 fields_33_34_test() ->
 	Msg = binary_unmarshaller:unmarshall(<<2, 33, 0, 0, 0, 0, 192, 0, 0, 0, 5, 18, 52, 80, 6, 53, 54, 55, 56, 57, 48>>),
 	"0221" = iso8583_message:get(0, Msg),

@@ -77,6 +77,14 @@ field_18_19_test() ->
 	<<2, 32, 0, 0, 96, 0, 0, 0, 0, 0, 18, 52, 5, 103>>
 		= binary_marshaller:marshall(Msg4).
 
+fields_28_29_test() ->
+	Msg1 = iso8583_message:new(),
+	Msg2 = iso8583_message:set(0, "0221", Msg1),
+	Msg3 = iso8583_message:set(28, "C1", Msg2),
+	Msg4 = iso8583_message:set(29, "D22", Msg3),
+	<<2, 33, 0, 0, 0, 24, 0, 0, 0, 0, 67, 0, 0, 0, 1, 68, 0, 0, 0, 34>>
+		= binary_marshaller:marshall(Msg4).
+
 fields_33_34_test() ->
 	Msg1 = iso8583_message:new(),
 	Msg2 = iso8583_message:set(0, "0221", Msg1),
