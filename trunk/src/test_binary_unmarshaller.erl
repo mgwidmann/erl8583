@@ -42,3 +42,9 @@ field_2_3_test() ->
 	[0, 2, 3] = iso8583_message:get_fields(Msg1),
 	"1234567890123456" = iso8583_message:get(2, Msg1),
 	"012345" = iso8583_message:get(?PROC_CODE, Msg1).
+
+field_4_test() ->
+	Msg = binary_unmarshaller:unmarshall(<<18, 0, 16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 35>>),
+	"1200" = iso8583_message:get(0, Msg),
+	[0, 4] = iso8583_message:get_fields(Msg),
+	"000000000123" = iso8583_message:get(4, Msg).
