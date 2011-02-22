@@ -81,4 +81,10 @@ field_26_27_test() ->
 	[0, 26, 27] = iso8583_message:get_fields(Msg),
 	"22" = iso8583_message:get(26, Msg),
 	"1" =  iso8583_message:get(27, Msg).
-	
+
+fields_33_34_test() ->
+	Msg = binary_unmarshaller:unmarshall(<<2, 33, 0, 0, 0, 0, 192, 0, 0, 0, 5, 18, 52, 80, 6, 53, 54, 55, 56, 57, 48>>),
+	"0221" = iso8583_message:get(0, Msg),
+	[0, 33, 34] = iso8583_message:get_fields(Msg),
+	"12345" = iso8583_message:get(33, Msg),
+	"567890" =  iso8583_message:get(34, Msg).
