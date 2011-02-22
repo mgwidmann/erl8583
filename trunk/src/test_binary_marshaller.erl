@@ -47,6 +47,13 @@ field_4_test() ->
 	<<18, 0, 16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 35>>
 		= binary_marshaller:marshall(Msg3).
 
+field_5_test() ->
+	Msg1 = iso8583_message:new(),
+	Msg2 = iso8583_message:set(0, "1200", Msg1),
+	Msg3 = iso8583_message:set(5, "10", Msg2),
+	<<18, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 16>>
+		= binary_marshaller:marshall(Msg3).
+
 %%
 %% Local Functions
 %%
