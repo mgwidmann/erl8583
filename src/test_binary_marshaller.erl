@@ -54,6 +54,21 @@ field_5_test() ->
 	<<18, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 16>>
 		= binary_marshaller:marshall(Msg3).
 
+field_6_test() ->
+	Msg1 = iso8583_message:new(),
+	Msg2 = iso8583_message:set(0, "0220", Msg1),
+	Msg3 = iso8583_message:set(6, "098765", Msg2),
+	<<2, 32, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 135, 101>>
+		= binary_marshaller:marshall(Msg3).
+
+fields_8_9_test() ->
+	Msg1 = iso8583_message:new(),
+	Msg2 = iso8583_message:set(0, "0220", Msg1),
+	Msg3 = iso8583_message:set(8, "88", Msg2),
+	Msg4 = iso8583_message:set(9, "99", Msg3),
+	<<2, 32, 1, 128, 0, 0, 0, 0, 0, 0, 0, 0, 0, 136, 0, 0, 0, 153>>
+		= binary_marshaller:marshall(Msg4).
+
 %%
 %% Local Functions
 %%

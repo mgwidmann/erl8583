@@ -55,3 +55,17 @@ field_5_test() ->
 	[0, 5] = iso8583_message:get_fields(Msg),
 	"000000000010" = iso8583_message:get(5, Msg).
 	
+field_6_test() ->
+	Msg = binary_unmarshaller:unmarshall(<<2, 32, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 135, 101>>),
+	"0220" = iso8583_message:get(0, Msg),
+	[0, 6] = iso8583_message:get_fields(Msg),
+	"000000098765" = iso8583_message:get(6, Msg).
+
+field_6_7_test() ->
+	Msg = binary_unmarshaller:unmarshall(<<2, 32, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 152, 118, 84, 2, 34, 25, 6, 18>>),
+	"0220" = iso8583_message:get(0, Msg),
+	[0, 6, 7] = iso8583_message:get_fields(Msg),
+	"000000987654" = iso8583_message:get(6, Msg),
+	"0222190612" =  iso8583_message:get(7, Msg).
+	
+	
