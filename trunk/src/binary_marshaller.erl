@@ -63,5 +63,10 @@ encode_field({n, llvar, Length}, Value) when length(Value) =< Length ->
 	VField = convert:ascii_hex_to_bcd(Value, "0"),
 	convert:concat_binaries(LField, VField);
 encode_field({n, fixed, Length}, Value) ->
-	PaddedValue = convert:integer_to_string(list_to_integer(Value), Length),
+	case Length rem 2 of
+		0 ->
+			PaddedValue = convert:integer_to_string(list_to_integer(Value), Length);
+		1 ->
+			PaddedValue = convert:integer_to_string(list_to_integer(Value), Length+1)
+	end,
 	convert:ascii_hex_to_bcd(PaddedValue, "0").

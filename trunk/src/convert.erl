@@ -88,11 +88,11 @@ digit_to_ascii_hex(D) when D >= 0 andalso D =< 9 ->
 digit_to_ascii_hex(D) when D >= 10 andalso D =< 15 ->
 	[55+D].
 
-ascii_hex_to_digit([A]) when A >= 48 andalso A =< 57 ->
-	A - 48;
-ascii_hex_to_digit([A]) when A >= 65 andalso A =< 70 ->
+ascii_hex_to_digit([A]) when A >= $0 andalso A =< $9 ->
+	A - $0;
+ascii_hex_to_digit([A]) when A >= $A andalso A =< $F ->
 	A - 55;
-ascii_hex_to_digit([A]) when A >= 97 andalso A =< 102 ->
+ascii_hex_to_digit([A]) when A >= $a andalso A =< $f ->
 	A - 87.
 
 string_to_ascii_hex([], Result) ->
