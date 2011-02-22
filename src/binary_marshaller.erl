@@ -56,9 +56,12 @@ encode([Field|Tail], Msg, Result, EncodingRules) ->
 	Encoding = EncodingRules:get_encoding(Field),
 	Value = iso8583_message:get(Field, Msg),
 	EncodedValue = encode_field(Encoding, Value),
-	encode(Tail, Msg, convert:concat_binaries(EncodedValue, Result), EncodingRules).
+	encode(Tail, Msg, convert:concat_binaries(Result, EncodedValue), EncodingRules).
 
 encode_field({n, llvar, Length}, Value) when length(Value) =< Length ->
 	LField = convert:integer_to_bcd(length(Value), 2),
 	VField = convert:ascii_hex_to_bcd(Value, "0"),
-	convert:concat_binaries(LField, VField).
+	convert:concat_binaries(LField, VField);
+encode_field({n, fixed, Length}, Value) ->
+	PaddedValue = convert:integer_to_string(list_to_integer(Value), Length),
+	convert:ascii_hex_to_bcd(PaddedValue, "0").
