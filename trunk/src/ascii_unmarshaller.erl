@@ -85,7 +85,7 @@ decode_field({an, fixed, Length}, Fields) ->
 	lists:split(Length, Fields);
 decode_field({ans, fixed, Length}, Fields) ->
 	lists:split(Length, Fields);
-decode_field({x_n, fixed, Length}, [Head|Tail]) when [Head] =:= $C orelse [Head] =:= $D ->
+decode_field({x_n, fixed, Length}, [Head|Tail]) when Head =:= $C orelse Head =:= $D ->
 	lists:split(Length+1, [Head|Tail]);
 decode_field({z, llvar, _MaxLength}, Fields) ->
 	{N, Rest} = lists:split(2, Fields),
