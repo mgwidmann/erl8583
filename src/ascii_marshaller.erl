@@ -59,6 +59,8 @@ encode_field({n, llvar, Length}, Value) when length(Value) =< Length ->
 	convert:integer_to_string(length(Value), 2) ++ Value;
 encode_field({n, lllvar, Length}, Value) when length(Value) =< Length ->
 	convert:integer_to_string(length(Value), 3) ++ Value;
+encode_field({ns, llvar, Length}, Value) when length(Value) =< Length ->
+	convert:integer_to_string(length(Value), 2) ++ Value;
 encode_field({an, llvar, Length}, Value) when length(Value) =< Length ->
 	convert:integer_to_string(length(Value), 2) ++ Value;
 encode_field({an, lllvar, Length}, Value) when length(Value) =< Length ->
