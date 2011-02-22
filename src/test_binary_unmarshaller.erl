@@ -48,3 +48,10 @@ field_4_test() ->
 	"1200" = iso8583_message:get(0, Msg),
 	[0, 4] = iso8583_message:get_fields(Msg),
 	"000000000123" = iso8583_message:get(4, Msg).
+
+field_5_test() ->
+	Msg = binary_unmarshaller:unmarshall(<<18, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 16>>),
+	"1200" = iso8583_message:get(0, Msg),
+	[0, 5] = iso8583_message:get_fields(Msg),
+	"000000000010" = iso8583_message:get(5, Msg).
+	
