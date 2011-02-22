@@ -68,4 +68,10 @@ decode_field({n, llvar, _MaxLength}, Fields) ->
 	{convert:bcd_to_ascii_hex(ValueBin, N, "0"), Rest};
 decode_field({n, fixed, Length}, Fields) ->
 	{NBin, RestBin} = split_binary(Fields, (Length + 1) div 2),
-	{convert:bcd_to_ascii_hex(NBin, Length, "0"), RestBin}.
+	case Length rem 2 of
+		0 ->
+			{convert:bcd_to_ascii_hex(NBin, Length, "0"), RestBin};
+		1 ->
+			[$0|AsciiHex] = convert:bcd_to_ascii_hex(NBin, Length+1, "0"),
+			{AsciiHex, RestBin}
+	end.
