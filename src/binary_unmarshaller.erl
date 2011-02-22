@@ -79,4 +79,13 @@ decode_field({n, fixed, Length}, Fields) ->
 		1 ->
 			[$0|AsciiHex] = convert:bcd_to_ascii_hex(NBin, Length+1, "0"),
 			{AsciiHex, RestBin}
+	end;
+decode_field({x_n, fixed, Length}, Fields) ->
+	{FieldBin, RestBin} = split_binary(Fields, Length div 2 + 1),
+	{<<X>>, Value} = split_binary(FieldBin, 1),
+	ValueStr = convert:bcd_to_ascii_hex(Value, Length, "0"),
+	case X =:= $C orelse X =:= $D of
+		true ->
+			{[X] ++ ValueStr, RestBin}
 	end.
+

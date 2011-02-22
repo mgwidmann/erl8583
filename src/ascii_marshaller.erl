@@ -76,7 +76,7 @@ encode_field({an, fixed, Length}, Value) when length(Value) =< Length ->
 	convert:pad_with_trailing_spaces(Value, Length);
 encode_field({ans, fixed, Length}, Value) when length(Value) =< Length ->
 	convert:pad_with_trailing_spaces(Value, Length);
-encode_field({x_n, fixed, Length}, [Head | Value]) when [Head] =:= "C" orelse [Head] =:= "D" ->
+encode_field({x_n, fixed, Length}, [Head | Value]) when Head =:= $C orelse Head =:= $D ->
 	IntValue = list_to_integer(Value),
 	[Head] ++ convert:integer_to_string(IntValue, Length);
 encode_field({z, llvar, Length}, Value) when length(Value) =< Length ->
