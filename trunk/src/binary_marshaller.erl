@@ -62,6 +62,10 @@ encode_field({n, llvar, Length}, Value) when length(Value) =< Length ->
 	LField = convert:integer_to_bcd(length(Value), 2),
 	VField = convert:ascii_hex_to_bcd(Value, "0"),
 	convert:concat_binaries(LField, VField);
+encode_field({z, llvar, Length}, Value) when length(Value) =< Length ->
+	LField = convert:integer_to_bcd(length(Value), 2),
+	VField = convert:string_to_track2(Value),
+	convert:concat_binaries(LField, VField);
 encode_field({n, fixed, Length}, Value) ->
 	case Length rem 2 of
 		0 ->
@@ -72,6 +76,9 @@ encode_field({n, fixed, Length}, Value) ->
 	convert:ascii_hex_to_bcd(PaddedValue, "0");
 encode_field({ns, llvar, Length}, Value) when length(Value) =< Length ->
 	LField = convert:integer_to_bcd(length(Value), 2),
+	convert:concat_binaries(LField, list_to_binary(Value));
+encode_field({ans, lllvar, Length}, Value) when length(Value) =< Length ->
+	LField = convert:integer_to_bcd(length(Value), 3),
 	convert:concat_binaries(LField, list_to_binary(Value));
 encode_field({x_n, fixed, Length}, [Head | Value]) when Head =:= $C orelse Head =:= $D ->
 	IntValue = list_to_integer(Value),
