@@ -22,7 +22,8 @@
 		 integer_to_bcd/2,
 		 ascii_hex_to_bcd/2,
 		 bcd_to_integer/1,
-		 bcd_to_ascii_hex/3]).
+		 bcd_to_ascii_hex/3,
+		 track2_to_string/2]).
 
 %%
 %% API Functions
@@ -79,6 +80,9 @@ bcd_to_ascii_hex(Bcd, Length, PaddingChar) when size(Bcd) =:= (Length + 1) div 2
 			0 = StrippedValue rem 10,
 			integer_to_string(StrippedValue div 10, Length)
 	end.
+
+track2_to_string(Data, Length) ->
+	lists:sublist(track2_to_string2(Data, []), 1, Length).
 
 %%
 %% Local Functions
@@ -158,6 +162,11 @@ ascii_hex_to_bcd2([Dig1, Dig2|Tail], Result) ->
 	Byte = ascii_hex_to_digit([Dig1]) * 16 + ascii_hex_to_digit([Dig2]),
 	ascii_hex_to_bcd2(Tail, [Byte|Result]).
 
+track2_to_string2(<<>>, Result) ->
+	lists:reverse(Result);
+track2_to_string2(Data, Result) ->
+	{<<X>>, Rest} = erlang:split_binary(Data, 1),
+	track2_to_string2(Rest, [X rem 16 + $0, X div 16 + $0 | Result]).
 	
 %%
 %% Tests
@@ -226,3 +235,5 @@ bcd_to_ascii_hex_test() ->
 	"123" = bcd_to_ascii_hex(<<18, 48>>, 3, "0"),
 	"401" = bcd_to_ascii_hex(<<64, 31>>, 3, "F").
 
+track2_to_string_test() ->
+	";1234123412341234=0305101193010877?" = convert:track2_to_string(<<177, 35, 65, 35, 65, 35, 65, 35, 77, 3, 5, 16, 17, 147, 1, 8, 119, 240>>,  35).
