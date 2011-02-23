@@ -23,7 +23,8 @@
 		 ascii_hex_to_bcd/2,
 		 bcd_to_integer/1,
 		 bcd_to_ascii_hex/3,
-		 track2_to_string/2]).
+		 track2_to_string/2,
+		 string_to_track2/1]).
 
 %%
 %% API Functions
@@ -83,6 +84,9 @@ bcd_to_ascii_hex(Bcd, Length, PaddingChar) when size(Bcd) =:= (Length + 1) div 2
 
 track2_to_string(Data, Length) ->
 	lists:sublist(track2_to_string2(Data, []), 1, Length).
+
+string_to_track2(Data) ->
+	string_to_track2(Data, <<>>, 0, true).
 
 %%
 %% Local Functions
@@ -167,6 +171,17 @@ track2_to_string2(<<>>, Result) ->
 track2_to_string2(Data, Result) ->
 	{<<X>>, Rest} = erlang:split_binary(Data, 1),
 	track2_to_string2(Rest, [X rem 16 + $0, X div 16 + $0 | Result]).
+
+string_to_track2([], Result, 0, true) ->
+	Result;
+string_to_track2([], Result, X, false) ->
+	concat_binaries(Result, << (X*16) >>);
+string_to_track2([H|T], Result, 0, true) ->
+	string_to_track2(T, Result, H-$0, false);
+string_to_track2([H|T], Result, X, false) ->
+	Xupdated = X*16 + H - $0,
+	string_to_track2(T, concat_binaries(Result, <<Xupdated>>), 0, true).
+
 	
 %%
 %% Tests
@@ -236,4 +251,7 @@ bcd_to_ascii_hex_test() ->
 	"401" = bcd_to_ascii_hex(<<64, 31>>, 3, "F").
 
 track2_to_string_test() ->
-	";1234123412341234=0305101193010877?" = convert:track2_to_string(<<177, 35, 65, 35, 65, 35, 65, 35, 77, 3, 5, 16, 17, 147, 1, 8, 119, 240>>,  35).
+	";1234123412341234=0305101193010877?" = track2_to_string(<<177, 35, 65, 35, 65, 35, 65, 35, 77, 3, 5, 16, 17, 147, 1, 8, 119, 240>>,  35).
+
+string_to_track2_test() ->
+	<<177, 35, 65, 35, 65, 35, 65, 35, 77, 3, 5, 16, 17, 147, 1, 8, 119, 240>> = convert:string_to_track2(";1234123412341234=0305101193010877?").
