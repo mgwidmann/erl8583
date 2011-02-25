@@ -10,15 +10,15 @@
 %%
 %% Exported Functions
 %%
--export([marshall/1, marshall/2]).
+-export([marshal/1, marshal/2]).
 
 %%
 %% API Functions
 %%
-marshall(Msg) ->
-	marshall(Msg, iso8583_fields).
+marshal(Msg) ->
+	marshal(Msg, iso8583_fields).
 
-marshall(Msg, EncodingRules) ->
+marshal(Msg, EncodingRules) ->
 	Mti = iso8583_message:get(0, Msg),
 	MtiBits = convert:ascii_hex_to_binary(Mti),
 	[0|Fields] = iso8583_message:get_fields(Msg),
