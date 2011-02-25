@@ -21,7 +21,7 @@ xml_unmarshall_test() ->
 					 "<field id=\"0\" value=\"0800\"/>" ++
 					 "<field id=\"3\" value=\"333333\"/>" ++
 					 "</isomsg>",
-	Message = xml_unmarshaller:unmarshall(XmlMessage),
+	Message = xml_unmarshaller:unmarshal(XmlMessage),
 	?assertEqual("0800", iso8583_message:get(0, Message)),
 	?assertEqual("333333", iso8583_message:get(3, Message)),
 	?assertEqual([0, 3], iso8583_message:get_fields(Message)).
@@ -31,7 +31,7 @@ xml_unmarshall_with_text_test() ->
 					 "<field value=\"0800\" id=\"0\">more text</field>" ++
 					 "<field id=\"3\" value=\"333333\"/>" ++
 					 "</isomsg>",
-	Message = xml_unmarshaller:unmarshall(XmlMessage),
+	Message = xml_unmarshaller:unmarshal(XmlMessage),
 	?assertEqual("0800", iso8583_message:get(0, Message)),
 	?assertEqual("333333", iso8583_message:get(3, Message)),
 	?assertEqual([0, 3], iso8583_message:get_fields(Message)).
@@ -45,7 +45,7 @@ xml_unmarshall_complex_test() ->
         "<field id=\"1\" value=\"hello\"/>" ++
       "</isomsg>" ++
     "</isomsg>",
-	Message = xml_unmarshaller:unmarshall(XmlMessage),
+	Message = xml_unmarshaller:unmarshal(XmlMessage),
 	?assertEqual("0810", iso8583_message:get(0, Message)),
 	?assertEqual("333333", iso8583_message:get(3, Message)),
 	?assertEqual("00", iso8583_message:get(39, Message)),
@@ -55,16 +55,16 @@ xml_unmarshall_complex_test() ->
 	"hello" = iso8583_message:get(1, BitMap).
 
 xml_unmarshall_with_attributes_test() ->
-	Message = xml_unmarshaller:unmarshall("<isomsg foo=\"bar\"""/>"),
+	Message = xml_unmarshaller:unmarshal("<isomsg foo=\"bar\"""/>"),
 	[{"foo", "bar"}] = iso8583_message:get_attributes(Message).
 
 xml_unmarshall_with_attributes2_test() ->
-	Message = xml_unmarshaller:unmarshall("<isomsg><isomsg id=\"48\" foo=\"bar\"""/></isomsg>"),
+	Message = xml_unmarshaller:unmarshal("<isomsg><isomsg id=\"48\" foo=\"bar\"""/></isomsg>"),
 	Field = iso8583_message:get(48, Message),
 	[{"foo", "bar"}] = iso8583_message:get_attributes(Field).
 	
 xml_unmarshall_complex2_test() ->
-	Message = xml_unmarshaller:unmarshall("<isomsg><isomsg id=\"48\"><isomsg id=\"105\" baz=\"hello\"""/></isomsg></isomsg>"),
+	Message = xml_unmarshaller:unmarshal("<isomsg><isomsg id=\"48\"><isomsg id=\"105\" baz=\"hello\"""/></isomsg></isomsg>"),
 	[48] = iso8583_message:get_fields(Message),
 	Message2 = iso8583_message:get(48, Message),
 	[105] = iso8583_message:get_fields(Message2),
@@ -80,11 +80,11 @@ foo() ->
 	Field = iso8583_message:new(),
 	Field2 = iso8583_message:set(1, "help", Field),
 	IsoMsg4 = iso8583_message:set(40, Field2, IsoMsg3),
-	Marshalled = xml_marshaller:marshall(IsoMsg4),
+	Marshalled = xml_marshaller:marshal(IsoMsg4),
 	ok = gen_tcp:send(Sock, Marshalled),
 	ok = gen_tcp:send(Sock, "\n").
 	%receive {tcp, _, IsoResp} -> IsoResp end,
-	%IsoResp1 = xml_unmarshaller:unmarshall(IsoResp),
+	%IsoResp1 = xml_unmarshaller:unmarshal(IsoResp),
 	%iso8583_message:get(39, IsoResp1).	
 
 %%
