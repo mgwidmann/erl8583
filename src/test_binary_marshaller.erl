@@ -131,6 +131,15 @@ field_44_test() ->
 	Msg3 = iso8583_message:set(44, "additional rep0n5e data", Msg2),
 	<<2, 0, 0, 0, 0, 0, 0, 16, 0, 0, 35, 97, 100, 100, 105, 116, 105, 111, 110, 97, 108, 32, 114, 101, 112, 48, 110, 53, 101, 32, 100, 97, 116, 97>> =
 		binary_marshaller:marshal(Msg3).
+
+field_52_test() ->
+	Msg1 = iso8583_message:new(),
+	Msg2 = iso8583_message:set(0, "0200", Msg1),
+	Msg3 = iso8583_message:set(2, "1234567890123456", Msg2),
+	Msg4 = iso8583_message:set(52, <<"12345678">>, Msg3),
+	<<2, 0, 64, 0, 0, 0, 0, 0, 16, 0, 22, 18, 52, 86, 120, 144, 18, 52, 86, 49, 50, 51, 52, 53, 54, 55, 56>> =
+		binary_marshaller:marshal(Msg4).
+
 	
 %%
 %% Local Functions

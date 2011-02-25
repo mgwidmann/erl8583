@@ -115,4 +115,6 @@ decode_field({z, llvar, _MaxLength}, Fields) ->
 	{NBin, RestBin} = split_binary(Fields, 1),
 	N = convert:bcd_to_integer(NBin),
 	{ValueBin, Rest} = split_binary(RestBin, (N+1) div 2), 
-	{convert:track2_to_string(ValueBin, N), Rest}.
+	{convert:track2_to_string(ValueBin, N), Rest};
+decode_field({b, Length}, Fields) ->
+	split_binary(Fields, Length).
