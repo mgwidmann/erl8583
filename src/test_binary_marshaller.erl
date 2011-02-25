@@ -118,6 +118,13 @@ field_37_test() ->
 	<<2, 33, 0, 0, 0, 0, 8, 0, 0, 0, 65, 49, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32>> =
 		binary_marshaller:marshall(Msg3).
 
+field_41_test() ->
+	Msg1 = iso8583_message:new(),
+	Msg2 = iso8583_message:set(0, "0200", Msg1),
+	Msg3 = iso8583_message:set(41, "CATI 1", Msg2),
+	<<2, 0, 0, 0, 0, 0, 0, 128, 0, 0, 67, 65, 84, 73, 32, 49, 32, 32>> =
+		binary_marshaller:marshall(Msg3).
+
 	
 %%
 %% Local Functions
