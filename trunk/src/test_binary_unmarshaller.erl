@@ -118,4 +118,9 @@ field_37_test() ->
 	[0, 37] = iso8583_message:get_fields(Msg),
 	"A1          " = iso8583_message:get(?RETRIEVAL_REF_NUM, Msg).
 
+field_41_test() ->
+	Msg = binary_unmarshaller:unmarshall(<<2, 0, 0, 0, 0, 0, 0, 128, 0, 0, 67, 65, 84, 73, 32, 49, 32, 32>>),
+	[0, 41] = iso8583_message:get_fields(Msg),
+	"CATI 1  " = iso8583_message:get(?CARD_ACCEPTOR_TERMINAL_ID, Msg).
+
 	
