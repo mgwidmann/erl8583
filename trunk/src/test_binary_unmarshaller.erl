@@ -128,4 +128,9 @@ field_44_test() ->
 	[0, 44] = iso8583_message:get_fields(Msg),
 	"additional rep0n5e data" = iso8583_message:get(44, Msg).
 	
+field_46_test() ->
+	Msg = binary_unmarshaller:unmarshal(<<2, 0, 64, 0, 0, 0, 0, 4, 0, 0, 25, 18, 52, 86, 120, 144, 18, 52, 86, 120, 144, 0, 33, 97, 100, 100, 105, 116, 105, 111, 110, 97, 108, 32, 100, 97, 116, 97, 32, 45, 32, 105, 115, 111>>),
+	[0, 2, 46] = iso8583_message:get_fields(Msg),
+	"additional data - iso" = iso8583_message:get(46, Msg).
+	
 	
