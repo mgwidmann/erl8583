@@ -12,16 +12,16 @@
 %%
 %% Exported Functions
 %%
--export([unmarshall/1]).
+-export([unmarshal/1]).
 
 %%
 %% API Functions
 %%
-unmarshall(XmlMessage) ->
+unmarshal(XmlMessage) ->
 	{Xml, []} = xmerl_scan:string(XmlMessage),
 	isomsg = Xml#xmlElement.name,
 	ChildNodes = Xml#xmlElement.content,
-	Msg = unmarshall(ChildNodes, iso8583_message:new()),
+	Msg = unmarshal(ChildNodes, iso8583_message:new()),
 	Attrs = Xml#xmlElement.attributes,
 	iso8583_message:set_attributes(attributes_to_list(Attrs, []), Msg).
 
@@ -29,9 +29,9 @@ unmarshall(XmlMessage) ->
 %%
 %% Local Functions
 %%
-unmarshall([], Iso8583Msg) ->
+unmarshal([], Iso8583Msg) ->
 	Iso8583Msg;
-unmarshall([Field|T], Iso8583Msg) when is_record(Field, xmlElement) ->
+unmarshal([Field|T], Iso8583Msg) when is_record(Field, xmlElement) ->
 	case Field#xmlElement.name of
 		field ->
 			Attributes = Field#xmlElement.attributes,
@@ -51,12 +51,12 @@ unmarshall([Field|T], Iso8583Msg) when is_record(Field, xmlElement) ->
 			Id = get_attribute_value("id", AttrList),
 			AttrsExceptId = AttrList -- [{"id", Id}],
 			ChildNodes = Field#xmlElement.content,
-			Value = unmarshall(ChildNodes, iso8583_message:new(AttrsExceptId))
+			Value = unmarshal(ChildNodes, iso8583_message:new(AttrsExceptId))
 	end,	
 	UpdatedMsg = iso8583_message:set(list_to_integer(Id), Value, Iso8583Msg),
-	unmarshall(T, UpdatedMsg);
-unmarshall([_H|T], Iso8583Msg) ->
-	unmarshall(T, Iso8583Msg).
+	unmarshal(T, UpdatedMsg);
+unmarshal([_H|T], Iso8583Msg) ->
+	unmarshal(T, Iso8583Msg).
 
 attributes_to_list([], Result) ->
 	Result;

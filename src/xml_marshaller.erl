@@ -10,38 +10,38 @@
 %%
 %% Exported Functions
 %%
--export([marshall/1]).
+-export([marshal/1]).
 
 %%
 %% API Functions
 %%
-marshall(IsoMsg) ->
+marshal(IsoMsg) ->
 	"<isomsg" ++ 
 		encode_attributes(iso8583_message:get_attributes(IsoMsg)) ++ 
 		">" ++ 
-		marshall_fields(iso8583_message:to_list(IsoMsg), []) ++ 
+		marshal_fields(iso8583_message:to_list(IsoMsg), []) ++ 
 		"</isomsg>\n".
 
 
 %%
 %% Local Functions
 %%
-marshall_fields([], Result) ->
+marshal_fields([], Result) ->
 	Result;
-marshall_fields([{K, V}|Tail], Result) when is_list(V)  ->
+marshal_fields([{K, V}|Tail], Result) when is_list(V)  ->
 	Id = integer_to_list(K),
-	marshall_fields(Tail, "<field id=\"" ++ Id ++ "\" value=\"" ++ V ++ "\" />" ++ Result);
-marshall_fields([{K, V}|Tail], Result) when is_binary(V) ->
+	marshal_fields(Tail, "<field id=\"" ++ Id ++ "\" value=\"" ++ V ++ "\" />" ++ Result);
+marshal_fields([{K, V}|Tail], Result) when is_binary(V) ->
 	Id = integer_to_list(K),
-	marshall_fields(Tail, "<field id=\"" ++ Id ++ "\" value=\"" ++ 
+	marshal_fields(Tail, "<field id=\"" ++ Id ++ "\" value=\"" ++ 
 						convert:binary_to_ascii_hex(V) ++ 
 						"\" type=\"binary\" />" ++ Result);	
-marshall_fields([{K, V}|Tail], Result) ->
+marshal_fields([{K, V}|Tail], Result) ->
 	Id = integer_to_list(K),
-	marshall_fields(Tail, "<isomsg id=\"" ++ Id ++ "\"" ++
+	marshal_fields(Tail, "<isomsg id=\"" ++ Id ++ "\"" ++
 						encode_attributes(iso8583_message:get_attributes(V)) ++ 
 						">" ++ 
-						marshall_fields(iso8583_message:to_list(V), "") ++ 
+						marshal_fields(iso8583_message:to_list(V), "") ++ 
 						"</isomsg>" ++ 
 						Result).
 	
