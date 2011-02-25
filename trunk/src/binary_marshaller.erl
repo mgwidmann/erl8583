@@ -89,4 +89,6 @@ encode_field({ans, lllvar, Length}, Value) when length(Value) =< Length ->
 	convert:concat_binaries(LField, list_to_binary(Value));
 encode_field({x_n, fixed, Length}, [Head | Value]) when Head =:= $C orelse Head =:= $D ->
 	IntValue = list_to_integer(Value),
-	convert:concat_binaries(<<Head>>,  convert:integer_to_bcd(IntValue, Length)).
+	convert:concat_binaries(<<Head>>,  convert:integer_to_bcd(IntValue, Length));
+encode_field({b, Length}, Value) when size(Value) =:= Length ->
+	Value.
