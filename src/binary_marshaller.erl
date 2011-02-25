@@ -74,6 +74,8 @@ encode_field({n, fixed, Length}, Value) ->
 			PaddedValue = convert:integer_to_string(list_to_integer(Value), Length+1)
 	end,
 	convert:ascii_hex_to_bcd(PaddedValue, "0");
+encode_field({an, fixed, Length}, Value) ->
+	list_to_binary(convert:pad_with_trailing_spaces(Value, Length));
 encode_field({ns, llvar, Length}, Value) when length(Value) =< Length ->
 	LField = convert:integer_to_bcd(length(Value), 2),
 	convert:concat_binaries(LField, list_to_binary(Value));

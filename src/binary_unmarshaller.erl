@@ -90,6 +90,10 @@ decode_field({n, fixed, Length}, Fields) ->
 			[$0|AsciiHex] = convert:bcd_to_ascii_hex(NBin, Length+1, "0"),
 			{AsciiHex, RestBin}
 	end;
+decode_field({an, fixed, Length}, Fields) ->
+	{FieldBin, RestBin} = split_binary(Fields, Length),
+	FieldStr = binary_to_list(FieldBin),
+	{convert:pad_with_trailing_spaces(FieldStr, Length), RestBin};
 decode_field({x_n, fixed, Length}, Fields) ->
 	{FieldBin, RestBin} = split_binary(Fields, Length div 2 + 1),
 	{<<X>>, Value} = split_binary(FieldBin, 1),
