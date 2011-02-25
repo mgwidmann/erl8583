@@ -112,4 +112,10 @@ fields_35_36b_test() ->
 	";12?" = iso8583_message:get(35, Msg),
 	Expected = lists:duplicate(104, $A),
 	Expected =  iso8583_message:get(36, Msg).
+
+field_37_test() ->
+	Msg = binary_unmarshaller:unmarshall(<<2, 33, 0, 0, 0, 0, 8, 0, 0, 0, 65, 49, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32>>),
+	[0, 37] = iso8583_message:get_fields(Msg),
+	"A1          " = iso8583_message:get(?RETRIEVAL_REF_NUM, Msg).
+
 	
