@@ -78,6 +78,9 @@ encode_field({an, fixed, Length}, Value) ->
 	list_to_binary(convert:pad_with_trailing_spaces(Value, Length));
 encode_field({ans, fixed, Length}, Value) ->
 	list_to_binary(convert:pad_with_trailing_spaces(Value, Length));
+encode_field({an, llvar, Length}, Value) when length(Value) =< Length ->
+	LField = convert:integer_to_bcd(length(Value), 2),
+	convert:concat_binaries(LField, list_to_binary(Value));
 encode_field({ns, llvar, Length}, Value) when length(Value) =< Length ->
 	LField = convert:integer_to_bcd(length(Value), 2),
 	convert:concat_binaries(LField, list_to_binary(Value));

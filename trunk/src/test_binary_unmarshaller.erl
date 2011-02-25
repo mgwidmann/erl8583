@@ -123,4 +123,9 @@ field_41_test() ->
 	[0, 41] = iso8583_message:get_fields(Msg),
 	"CATI 1  " = iso8583_message:get(?CARD_ACCEPTOR_TERMINAL_ID, Msg).
 
+field_44_test() ->
+	Msg = binary_unmarshaller:unmarshal(<<2, 0, 0, 0, 0, 0, 0, 16, 0, 0, 35, 97, 100, 100, 105, 116, 105, 111, 110, 97, 108, 32, 114, 101, 112, 48, 110, 53, 101, 32, 100, 97, 116, 97>>),
+	[0, 44] = iso8583_message:get_fields(Msg),
+	"additional rep0n5e data" = iso8583_message:get(44, Msg).
+	
 	
