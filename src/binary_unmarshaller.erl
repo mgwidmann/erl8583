@@ -10,15 +10,15 @@
 %%
 %% Exported Functions
 %%
--export([unmarshall/1, unmarshall/2]).
+-export([unmarshal/1, unmarshal/2]).
 
 %%
 %% API Functions
 %%
-unmarshall(Msg) ->
-	unmarshall(Msg, iso8583_fields).
+unmarshal(Msg) ->
+	unmarshal(Msg, iso8583_fields).
 
-unmarshall(Msg, EncodingRules) ->
+unmarshal(Msg, EncodingRules) ->
 	IsoMsg1 = iso8583_message:new(),
 	{MtiBin, Rest} = split_binary(Msg, 2),
 	Mti = convert:binary_to_ascii_hex(MtiBin),
