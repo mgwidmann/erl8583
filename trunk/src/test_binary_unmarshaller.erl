@@ -170,3 +170,7 @@ field_66_test() ->
 field_91_test() ->
 	Msg = binary_unmarshaller:unmarshal(<<2, 0, 192, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 32, 0, 0, 0, 0, 22, 18, 52, 86, 120, 144, 18, 52, 86, 65>>),
 	"A" = iso8583_message:get(91, Msg).
+
+field_101_test() ->
+	Msg = binary_unmarshaller:unmarshal(<<2, 0, 192, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 22, 18, 52, 86, 120, 144, 18, 52, 86, 8, 70, 105, 108, 101, 78, 97, 109, 101>>),
+	"FileName" = iso8583_message:get(101, Msg).

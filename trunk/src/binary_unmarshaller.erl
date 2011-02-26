@@ -88,6 +88,11 @@ decode_field({ns, llvar, _MaxLength}, Fields) ->
 	N = convert:bcd_to_integer(NBin),
 	{ValueBin, Rest} = split_binary(RestBin, N), 
 	{binary_to_list(ValueBin), Rest};
+decode_field({ans, llvar, _MaxLength}, Fields) ->
+	{NBin, RestBin} = split_binary(Fields, 1),
+	N = convert:bcd_to_integer(NBin),
+	{ValueBin, Rest} = split_binary(RestBin, N), 
+	{binary_to_list(ValueBin), Rest};
 decode_field({ans, lllvar, _MaxLength}, Fields) ->
 	{NBin, RestBin} = split_binary(Fields, 2),
 	N = convert:bcd_to_integer(NBin),
