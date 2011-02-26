@@ -137,3 +137,9 @@ field_52_test() ->
 	Msg = binary_unmarshaller:unmarshal(<<2, 0, 64, 0, 0, 0, 0, 0, 16, 0, 22, 18, 52, 86, 120, 144, 18, 52, 86, 49, 50, 51, 52, 53, 54, 55, 56>>),
 	[0, 2, 52] = iso8583_message:get_fields(Msg),
 	<<"12345678">> = iso8583_message:get(52, Msg).
+
+field_53_test() ->
+	Msg = binary_unmarshaller:unmarshal(<<2, 0, 64, 0, 0, 0, 0, 0, 8, 0, 22, 18, 52, 86, 120, 144, 18, 52, 86, 0, 0, 0, 0, 0, 0, 0, 1>>),
+	[0, 2, 53] = iso8583_message:get_fields(Msg),
+	"0000000000000001" = iso8583_message:get(53, Msg).
+	
