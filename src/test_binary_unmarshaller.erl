@@ -158,3 +158,6 @@ field_55_test() ->
 	Expected = lists:duplicate(123, $A),
 	Expected = iso8583_message:get(55, Msg).
 
+field_64_test() ->
+	Msg = binary_unmarshaller:unmarshal(<<2, 0, 64, 0, 0, 0, 0, 0, 0, 1, 22, 18, 52, 86, 120, 144, 18, 52, 86, 0, 0, 0, 0, 0, 0, 0, 0>>),
+	<<0, 0, 0, 0, 0, 0, 0, 0>> = iso8583_message:get(64, Msg).
