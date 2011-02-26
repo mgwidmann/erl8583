@@ -147,7 +147,14 @@ field_66_test() ->
 	Msg4 = iso8583_message:set(66, "1", Msg3),
 	<<2, 0, 192, 0, 0, 0, 0, 0, 0, 0, 64, 0, 0, 0, 0, 0, 0, 0, 22, 18, 52, 86, 120, 144, 18, 52, 86, 1>> =
 		binary_marshaller:marshal(Msg4).
-	
+
+field_101_test() ->
+	Msg1 = iso8583_message:new(),
+	Msg2 = iso8583_message:set(0, "0200", Msg1),
+	Msg3 = iso8583_message:set(2, "1234567890123456", Msg2),
+	Msg4 = iso8583_message:set(101, "FileName", Msg3),
+	<<2, 0, 192, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 22, 18, 52, 86, 120, 144, 18, 52, 86, 8, 70, 105, 108, 101, 78, 97, 109, 101>> =
+		binary_marshaller:marshal(Msg4).
 	
 %%
 %% Local Functions

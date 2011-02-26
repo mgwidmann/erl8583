@@ -84,6 +84,9 @@ encode_field({an, llvar, Length}, Value) when length(Value) =< Length ->
 encode_field({ns, llvar, Length}, Value) when length(Value) =< Length ->
 	LField = convert:integer_to_bcd(length(Value), 2),
 	convert:concat_binaries(LField, list_to_binary(Value));
+encode_field({ans, llvar, Length}, Value) when length(Value) =< Length ->
+	LField = convert:integer_to_bcd(length(Value), 2),
+	convert:concat_binaries(LField, list_to_binary(Value));
 encode_field({ans, lllvar, Length}, Value) when length(Value) =< Length ->
 	LField = convert:integer_to_bcd(length(Value), 3),
 	convert:concat_binaries(LField, list_to_binary(Value));
