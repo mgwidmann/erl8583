@@ -37,8 +37,15 @@ extract_fields(Message) ->
 	BitMap = binary_to_list(BinaryBitMap),
 	extract_fields(BitMap, 0, 8, {[], Fields}).
 
-get_bit_map_length(_Message) ->
-	8.
+get_bit_map_length(Message) ->
+	[Head|_Tail] = binary_to_list(Message),
+	case Head >= 128 of
+		false ->
+			8;
+		true ->
+			{_, Rest} = erlang:split_binary(Message, 8),
+			8 + get_bit_map_length(Rest)
+	end.
 
 extract_fields([], _Offset, _Index, {FieldIds, Fields}) ->
 	Ids = lists:sort(FieldIds),
