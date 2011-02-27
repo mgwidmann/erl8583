@@ -3,6 +3,8 @@
 %% Description: TODO: Add description to test_ascii_marshaller
 -module(test_ascii_marshaller).
 
+-behaviour(encoding_rules).
+
 %%
 %% Include files
 %%
@@ -12,7 +14,11 @@
 %%
 %% Exported Functions
 %%
--export([]).
+-export([get_encoding/1]).
+
+% Self-shunting for tests.
+get_encoding(2) ->
+	{n, fixed, 4}.
 
 %%
 %% API Functions
@@ -277,6 +283,12 @@ field_101_test() ->
 	Msg2 = iso8583_message:set(0, "0200", Msg1),
 	Msg3 = iso8583_message:set(?FILE_NAME, "A loong file name", Msg2),
 	"02008000000000000000000000000800000017A loong file name" = ascii_marshaller:marshal(Msg3).
+	
+encoding_rules_test() ->
+	Msg1 = iso8583_message:new(),
+	Msg2 = iso8583_message:set(0, "0200", Msg1),
+	Msg3 = iso8583_message:set(2, "1", Msg2),
+	"020040000000000000000001" = ascii_marshaller:marshal(Msg3, ?MODULE).
 	
 %%
 %% Local Functions
