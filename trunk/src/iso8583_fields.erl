@@ -3,6 +3,8 @@
 %% Description: TODO: Add description to iso8583_fields
 -module(iso8583_fields).
 
+-behaviour(encoding_rules).
+
 %%
 %% Include files
 %%

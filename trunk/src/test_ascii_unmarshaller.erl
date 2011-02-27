@@ -3,6 +3,8 @@
 %% Description: TODO: Add description to test_ascii_unmarshaller
 -module(test_ascii_unmarshaller).
 
+-behaviour(encoding_rules).
+
 %%
 %% Include files
 %%
@@ -12,12 +14,13 @@
 %%
 %% Exported Functions
 %%
--export([]).
+-export([get_encoding/1]).
 
 %%
 %% API Functions
 %%
-
+get_encoding(2) ->
+	{n, fixed, 4}.
 
 
 %%
@@ -222,4 +225,8 @@ fields_102_103_104_128_test() ->
 	Msg = ascii_unmarshaller:unmarshal("02008000000000000000000000000700000104ID 1281234567890123456789012345678009txn desc.0000000000000000"),
 	[0, ?ACCOUNT_ID1, ?ACCOUNT_ID2, ?TRAN_DESCRIPTION, ?MESSAGE_AUTHENTICATION_CODE2] = iso8583_message:get_fields(Msg),
 	<<0, 0, 0, 0, 0, 0, 0, 0>> = iso8583_message:get(?MESSAGE_AUTHENTICATION_CODE2, Msg).
+
+encoding_rules_test() ->
+	Msg = ascii_unmarshaller:unmarshal("020040000000000000000001", ?MODULE),
+	"0001" = iso8583_message:get(2, Msg).
 
