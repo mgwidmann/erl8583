@@ -4,6 +4,7 @@
 -module(test_ascii_marshaller).
 
 -behaviour(encoding_rules).
+-behaviour(custom_marshaller).
 
 %%
 %% Include files
@@ -14,15 +15,26 @@
 %%
 %% Exported Functions
 %%
--export([get_encoding/1]).
-
-% Self-shunting for tests.
-get_encoding(2) ->
-	{n, fixed, 4}.
+-export([get_encoding/1, marshal/2, unmarshal/2]).
 
 %%
 %% API Functions
 %%
+
+% Self-shunting for tests.
+get_encoding(2) ->
+	{n, fixed, 4};
+get_encoding(3) ->
+	{custom, ?MODULE};
+get_encoding(4) ->
+	{custom, ?MODULE}.
+
+marshal(3, _Value) ->
+	"Field 3";
+marshal(4, _Value) ->
+	"Field 4".
+unmarshal(_Field, _Value) ->
+	erlang:error("Shouldn't have been invoked.").
 
 %% Test that a message with only an MTI can be exported.
 mti_only_test() ->
@@ -289,6 +301,13 @@ encoding_rules_test() ->
 	Msg2 = iso8583_message:set(0, "0200", Msg1),
 	Msg3 = iso8583_message:set(2, "1", Msg2),
 	"020040000000000000000001" = ascii_marshaller:marshal(Msg3, ?MODULE).
+	
+custom_marshaller_test() ->
+	Msg1 = iso8583_message:new(),
+	Msg2 = iso8583_message:set(0, "0200", Msg1),
+	Msg3 = iso8583_message:set(3, "1", Msg2),
+	Msg4 = iso8583_message:set(4, "4", Msg3),
+	"02003000000000000000Field 3Field 4" = ascii_marshaller:marshal(Msg4, ?MODULE).
 	
 %%
 %% Local Functions
