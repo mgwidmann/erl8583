@@ -4,6 +4,7 @@
 -module(test_binary_unmarshaller).
 
 -behaviour(encoding_rules).
+-behaviour(custom_marshaller).
 
 %%
 %% Include files
@@ -14,13 +15,24 @@
 %%
 %% Exported Functions
 %%
--export([get_encoding/1]).
+-export([get_encoding/1, marshal/2, unmarshal/2]).
 
 %%
 %% API Functions
 %%
 get_encoding(2) ->
-	{n, fixed, 4}.
+	{n, fixed, 4};
+get_encoding(3) ->
+	{custom, ?MODULE};
+get_encoding(4) ->
+	{custom, ?MODULE}.
+
+marshal(_Field, _Value) ->
+	erlang:error("Shouldn't have been invoked.").
+unmarshal(3, <<3, 0, 4, 0>>) ->
+	{"3", <<4, 0>>};
+unmarshal(4, <<4, 0>>) ->
+	{"4", <<>>}.
 
 
 %%
@@ -181,3 +193,8 @@ field_101_test() ->
 encoding_rules_test() ->
 	Msg = binary_unmarshaller:unmarshal(<<2, 16, 64, 0, 0, 0, 0, 0, 0, 0, 0, 1>>, ?MODULE),
 	"0001" = iso8583_message:get(2, Msg).
+
+custom_marshaller_test() ->
+	Msg = binary_unmarshaller:unmarshal(<<2, 0, 48, 0, 0, 0, 0, 0, 0, 0, 3, 0, 4, 0>>, ?MODULE),
+	"3" = iso8583_message:get(3, Msg),
+	"4" = iso8583_message:get(4, Msg).
