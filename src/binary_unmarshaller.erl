@@ -64,41 +64,41 @@ decode_fields([], _, Result, _EncodingRules) ->
 	Result;
 decode_fields([Field|Tail], Fields, Result, EncodingRules) ->
 	Encoding = EncodingRules:get_encoding(Field),
-	{Value, UpdatedFields} = decode_field(Encoding, Fields),
+	{Value, UpdatedFields} = decode_field(Field, Encoding, Fields),
 	UpdatedResult = iso8583_message:set(Field, Value, Result),
 	decode_fields(Tail, UpdatedFields, UpdatedResult, EncodingRules).
 	
-decode_field({n, llvar, _MaxLength}, Fields) ->
+decode_field(_FieldId, {n, llvar, _MaxLength}, Fields) ->
 	{NBin, RestBin} = split_binary(Fields, 1),
 	N = convert:bcd_to_integer(NBin),
 	{ValueBin, Rest} = split_binary(RestBin, (N+1) div 2), 
 	{convert:bcd_to_ascii_hex(ValueBin, N, "0"), Rest};
-decode_field({n, lllvar, _MaxLength}, Fields) ->
+decode_field(_FieldId, {n, lllvar, _MaxLength}, Fields) ->
 	{NBin, RestBin} = split_binary(Fields, 2),
 	N = convert:bcd_to_integer(NBin),
 	{ValueBin, Rest} = split_binary(RestBin, (N+1) div 2), 
 	{convert:bcd_to_ascii_hex(ValueBin, N, "0"), Rest};
-decode_field({an, llvar, _MaxLength}, Fields) ->
+decode_field(_FieldId, {an, llvar, _MaxLength}, Fields) ->
 	{NBin, RestBin} = split_binary(Fields, 1),
 	N = convert:bcd_to_integer(NBin),
 	{ValueBin, Rest} = split_binary(RestBin, N), 
 	{binary_to_list(ValueBin), Rest};
-decode_field({ns, llvar, _MaxLength}, Fields) ->
+decode_field(_FieldId, {ns, llvar, _MaxLength}, Fields) ->
 	{NBin, RestBin} = split_binary(Fields, 1),
 	N = convert:bcd_to_integer(NBin),
 	{ValueBin, Rest} = split_binary(RestBin, N), 
 	{binary_to_list(ValueBin), Rest};
-decode_field({ans, llvar, _MaxLength}, Fields) ->
+decode_field(_FieldId, {ans, llvar, _MaxLength}, Fields) ->
 	{NBin, RestBin} = split_binary(Fields, 1),
 	N = convert:bcd_to_integer(NBin),
 	{ValueBin, Rest} = split_binary(RestBin, N), 
 	{binary_to_list(ValueBin), Rest};
-decode_field({ans, lllvar, _MaxLength}, Fields) ->
+decode_field(_FieldId, {ans, lllvar, _MaxLength}, Fields) ->
 	{NBin, RestBin} = split_binary(Fields, 2),
 	N = convert:bcd_to_integer(NBin),
 	{ValueBin, Rest} = split_binary(RestBin, N), 
 	{binary_to_list(ValueBin), Rest};
-decode_field({n, fixed, Length}, Fields) ->
+decode_field(_FieldId, {n, fixed, Length}, Fields) ->
 	{NBin, RestBin} = split_binary(Fields, (Length + 1) div 2),
 	case Length rem 2 of
 		0 ->
@@ -107,15 +107,15 @@ decode_field({n, fixed, Length}, Fields) ->
 			[$0|AsciiHex] = convert:bcd_to_ascii_hex(NBin, Length+1, "0"),
 			{AsciiHex, RestBin}
 	end;
-decode_field({an, fixed, Length}, Fields) ->
+decode_field(_FieldId, {an, fixed, Length}, Fields) ->
 	{FieldBin, RestBin} = split_binary(Fields, Length),
 	FieldStr = binary_to_list(FieldBin),
 	{convert:pad_with_trailing_spaces(FieldStr, Length), RestBin};
-decode_field({ans, fixed, Length}, Fields) ->
+decode_field(_FieldId, {ans, fixed, Length}, Fields) ->
 	{FieldBin, RestBin} = split_binary(Fields, Length),
 	FieldStr = binary_to_list(FieldBin),
 	{convert:pad_with_trailing_spaces(FieldStr, Length), RestBin};
-decode_field({x_n, fixed, Length}, Fields) ->
+decode_field(_FieldId, {x_n, fixed, Length}, Fields) ->
 	{FieldBin, RestBin} = split_binary(Fields, Length div 2 + 1),
 	{<<X>>, Value} = split_binary(FieldBin, 1),
 	ValueStr = convert:bcd_to_ascii_hex(Value, Length, "0"),
@@ -123,10 +123,12 @@ decode_field({x_n, fixed, Length}, Fields) ->
 		true ->
 			{[X] ++ ValueStr, RestBin}
 	end;
-decode_field({z, llvar, _MaxLength}, Fields) ->
+decode_field(_FieldId, {z, llvar, _MaxLength}, Fields) ->
 	{NBin, RestBin} = split_binary(Fields, 1),
 	N = convert:bcd_to_integer(NBin),
 	{ValueBin, Rest} = split_binary(RestBin, (N+1) div 2), 
 	{convert:track2_to_string(ValueBin, N), Rest};
-decode_field({b, Length}, Fields) ->
-	split_binary(Fields, Length).
+decode_field(_FieldId, {b, Length}, Fields) ->
+	split_binary(Fields, Length);
+decode_field(FieldId, {custom, Marshaller}, Value) ->
+	Marshaller:unmarshal(FieldId, Value).
