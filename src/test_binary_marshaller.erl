@@ -3,6 +3,8 @@
 %% Description: TODO: Add description to test_binary_marshaller
 -module(test_binary_marshaller).
 
+-behaviour(encoding_rules).
+
 %%
 %% Include files
 %%
@@ -12,11 +14,18 @@
 %%
 %% Exported Functions
 %%
--export([]).
+-export([get_encoding/1]).
 
 %%
 %% API Functions
 %%
+get_encoding(2) ->
+	{n, fixed, 4}.
+
+%%
+%% Local Functions
+%%
+
 %% Test that a message with only an MTI can be exported.
 mti_only_test() ->
 	Msg1 = iso8583_message:new(),
@@ -155,8 +164,10 @@ field_101_test() ->
 	Msg4 = iso8583_message:set(101, "FileName", Msg3),
 	<<2, 0, 192, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 22, 18, 52, 86, 120, 144, 18, 52, 86, 8, 70, 105, 108, 101, 78, 97, 109, 101>> =
 		binary_marshaller:marshal(Msg4).
-	
-%%
-%% Local Functions
-%%
 
+encoding_rules_test() ->
+	Msg1 = iso8583_message:new(),
+	Msg2 = iso8583_message:set(0, "0210", Msg1),
+	Msg3 = iso8583_message:set(?PAN, "1", Msg2),
+	<<2, 16, 64, 0, 0, 0, 0, 0, 0, 0, 0, 1>> 
+		= binary_marshaller:marshal(Msg3, ?MODULE).

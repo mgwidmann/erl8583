@@ -3,6 +3,8 @@
 %% Description: TODO: Add description to test_binary_unmarshaller
 -module(test_binary_unmarshaller).
 
+-behaviour(encoding_rules).
+
 %%
 %% Include files
 %%
@@ -12,12 +14,13 @@
 %%
 %% Exported Functions
 %%
--export([]).
+-export([get_encoding/1]).
 
 %%
 %% API Functions
 %%
-
+get_encoding(2) ->
+	{n, fixed, 4}.
 
 
 %%
@@ -174,3 +177,7 @@ field_91_test() ->
 field_101_test() ->
 	Msg = binary_unmarshaller:unmarshal(<<2, 0, 192, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 22, 18, 52, 86, 120, 144, 18, 52, 86, 8, 70, 105, 108, 101, 78, 97, 109, 101>>),
 	"FileName" = iso8583_message:get(101, Msg).
+
+encoding_rules_test() ->
+	Msg = binary_unmarshaller:unmarshal(<<2, 16, 64, 0, 0, 0, 0, 0, 0, 0, 0, 1>>, ?MODULE),
+	"0001" = iso8583_message:get(2, Msg).
