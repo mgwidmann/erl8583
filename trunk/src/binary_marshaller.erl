@@ -55,18 +55,18 @@ encode([], _Msg, Result, _EncodingRules) ->
 encode([Field|Tail], Msg, Result, EncodingRules) ->
 	Encoding = EncodingRules:get_encoding(Field),
 	Value = iso8583_message:get(Field, Msg),
-	EncodedValue = encode_field(Encoding, Value),
+	EncodedValue = encode_field(Field, Encoding, Value),
 	encode(Tail, Msg, convert:concat_binaries(Result, EncodedValue), EncodingRules).
 
-encode_field({n, llvar, Length}, Value) when length(Value) =< Length ->
+encode_field(_FieldId, {n, llvar, Length}, Value) when length(Value) =< Length ->
 	LField = convert:integer_to_bcd(length(Value), 2),
 	VField = convert:ascii_hex_to_bcd(Value, "0"),
 	convert:concat_binaries(LField, VField);
-encode_field({z, llvar, Length}, Value) when length(Value) =< Length ->
+encode_field(_FieldId, {z, llvar, Length}, Value) when length(Value) =< Length ->
 	LField = convert:integer_to_bcd(length(Value), 2),
 	VField = convert:string_to_track2(Value),
 	convert:concat_binaries(LField, VField);
-encode_field({n, fixed, Length}, Value) ->
+encode_field(_FieldId, {n, fixed, Length}, Value) ->
 	case Length rem 2 of
 		0 ->
 			PaddedValue = convert:integer_to_string(list_to_integer(Value), Length);
@@ -74,24 +74,26 @@ encode_field({n, fixed, Length}, Value) ->
 			PaddedValue = convert:integer_to_string(list_to_integer(Value), Length+1)
 	end,
 	convert:ascii_hex_to_bcd(PaddedValue, "0");
-encode_field({an, fixed, Length}, Value) ->
+encode_field(_FieldId, {an, fixed, Length}, Value) ->
 	list_to_binary(convert:pad_with_trailing_spaces(Value, Length));
-encode_field({ans, fixed, Length}, Value) ->
+encode_field(_FieldId, {ans, fixed, Length}, Value) ->
 	list_to_binary(convert:pad_with_trailing_spaces(Value, Length));
-encode_field({an, llvar, Length}, Value) when length(Value) =< Length ->
+encode_field(_FieldId, {an, llvar, Length}, Value) when length(Value) =< Length ->
 	LField = convert:integer_to_bcd(length(Value), 2),
 	convert:concat_binaries(LField, list_to_binary(Value));
-encode_field({ns, llvar, Length}, Value) when length(Value) =< Length ->
+encode_field(_FieldId, {ns, llvar, Length}, Value) when length(Value) =< Length ->
 	LField = convert:integer_to_bcd(length(Value), 2),
 	convert:concat_binaries(LField, list_to_binary(Value));
-encode_field({ans, llvar, Length}, Value) when length(Value) =< Length ->
+encode_field(_FieldId, {ans, llvar, Length}, Value) when length(Value) =< Length ->
 	LField = convert:integer_to_bcd(length(Value), 2),
 	convert:concat_binaries(LField, list_to_binary(Value));
-encode_field({ans, lllvar, Length}, Value) when length(Value) =< Length ->
+encode_field(_FieldId, {ans, lllvar, Length}, Value) when length(Value) =< Length ->
 	LField = convert:integer_to_bcd(length(Value), 3),
 	convert:concat_binaries(LField, list_to_binary(Value));
-encode_field({x_n, fixed, Length}, [Head | Value]) when Head =:= $C orelse Head =:= $D ->
+encode_field(_FieldId, {x_n, fixed, Length}, [Head | Value]) when Head =:= $C orelse Head =:= $D ->
 	IntValue = list_to_integer(Value),
 	convert:concat_binaries(<<Head>>,  convert:integer_to_bcd(IntValue, Length));
-encode_field({b, Length}, Value) when size(Value) =:= Length ->
-	Value.
+encode_field(_FieldId, {b, Length}, Value) when size(Value) =:= Length ->
+	Value;
+encode_field(FieldId, {custom, Marshaller}, Value) ->
+	Marshaller:marshal(FieldId, Value).

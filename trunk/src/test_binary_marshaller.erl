@@ -4,6 +4,7 @@
 -module(test_binary_marshaller).
 
 -behaviour(encoding_rules).
+-behaviour(custom_marshaller).
 
 %%
 %% Include files
@@ -14,13 +15,24 @@
 %%
 %% Exported Functions
 %%
--export([get_encoding/1]).
+-export([get_encoding/1, marshal/2, unmarshal/2]).
 
 %%
 %% API Functions
 %%
 get_encoding(2) ->
-	{n, fixed, 4}.
+	{n, fixed, 4};
+get_encoding(3) ->
+	{custom, ?MODULE};
+get_encoding(4) ->
+	{custom, ?MODULE}.
+
+marshal(3, 3) ->
+	<<3>>;
+marshal(4, 4) ->
+	<<4>>.
+unmarshal(_Field, _Value) ->
+	erlang:error("Shouldn't have been invoked.").
 
 %%
 %% Local Functions
@@ -171,3 +183,12 @@ encoding_rules_test() ->
 	Msg3 = iso8583_message:set(?PAN, "1", Msg2),
 	<<2, 16, 64, 0, 0, 0, 0, 0, 0, 0, 0, 1>> 
 		= binary_marshaller:marshal(Msg3, ?MODULE).
+
+custom_marshaller_test() ->
+	Msg1 = iso8583_message:new(),
+	Msg2 = iso8583_message:set(0, "0200", Msg1),
+	Msg3 = iso8583_message:set(3, 3, Msg2),
+	Msg4 = iso8583_message:set(4, 4, Msg3),
+	<<2, 0, 48, 0, 0, 0, 0, 0, 0, 0, 3, 4>> 
+		= binary_marshaller:marshal(Msg4, ?MODULE).
+
