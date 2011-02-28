@@ -4,6 +4,7 @@
 -module(test_ascii_unmarshaller).
 
 -behaviour(encoding_rules).
+-behaviour(custom_marshaller).
 
 %%
 %% Include files
@@ -14,13 +15,24 @@
 %%
 %% Exported Functions
 %%
--export([get_encoding/1]).
+-export([get_encoding/1, marshal/2, unmarshal/2]).
 
 %%
 %% API Functions
 %%
 get_encoding(2) ->
-	{n, fixed, 4}.
+	{n, fixed, 4};
+get_encoding(3) ->
+	{custom, ?MODULE};
+get_encoding(4) ->
+	{custom, ?MODULE}.
+
+marshal(3, _Value) ->
+	erlang:error("Shouldn't have been invoked.").
+unmarshal(3, [$3|Tail]) ->
+	{"Field 3", Tail};
+unmarshal(4, [$4|Tail]) ->
+	{"Field 4", Tail}.
 
 
 %%
@@ -230,3 +242,7 @@ encoding_rules_test() ->
 	Msg = ascii_unmarshaller:unmarshal("020040000000000000000001", ?MODULE),
 	"0001" = iso8583_message:get(2, Msg).
 
+custom_marshaller_test() ->
+	Msg = ascii_unmarshaller:unmarshal("0200300000000000000034", ?MODULE),
+	"Field 3" = iso8583_message:get(3, Msg),
+	"Field 4" = iso8583_message:get(4, Msg).

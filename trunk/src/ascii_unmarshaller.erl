@@ -54,46 +54,48 @@ decode_fields([], _, Result, _EncodingRules) ->
 	Result;
 decode_fields([Field|Tail], Fields, Result, EncodingRules) ->
 	Encoding = EncodingRules:get_encoding(Field),
-	{Value, UpdatedFields} = decode_field(Encoding, Fields),
+	{Value, UpdatedFields} = decode_field(Field, Encoding, Fields),
 	UpdatedResult = iso8583_message:set(Field, Value, Result),
 	decode_fields(Tail, UpdatedFields, UpdatedResult, EncodingRules).
 	
-decode_field({n, llvar, _MaxLength}, Fields) ->
+decode_field(_FieldId, {n, llvar, _MaxLength}, Fields) ->
 	{N, Rest} = lists:split(2, Fields),
 	lists:split(list_to_integer(N), Rest);
-decode_field({n, lllvar, _MaxLength}, Fields) ->
+decode_field(_FieldId, {n, lllvar, _MaxLength}, Fields) ->
 	{N, Rest} = lists:split(3, Fields),
 	lists:split(list_to_integer(N), Rest);
-decode_field({ns, llvar, _MaxLength}, Fields) ->
+decode_field(_FieldId, {ns, llvar, _MaxLength}, Fields) ->
 	{N, Rest} = lists:split(2, Fields),
 	lists:split(list_to_integer(N), Rest);
-decode_field({an, llvar, _MaxLength}, Fields) ->
+decode_field(_FieldId, {an, llvar, _MaxLength}, Fields) ->
 	{N, Rest} = lists:split(2, Fields),
 	lists:split(list_to_integer(N), Rest);
-decode_field({an, lllvar, _MaxLength}, Fields) ->
+decode_field(_FieldId, {an, lllvar, _MaxLength}, Fields) ->
 	{N, Rest} = lists:split(3, Fields),
 	lists:split(list_to_integer(N), Rest);
-decode_field({ans, llvar, _MaxLength}, Fields) ->
+decode_field(_FieldId, {ans, llvar, _MaxLength}, Fields) ->
 	{N, Rest} = lists:split(2, Fields),
 	lists:split(list_to_integer(N), Rest);
-decode_field({ans, lllvar, _MaxLength}, Fields) ->
+decode_field(_FieldId, {ans, lllvar, _MaxLength}, Fields) ->
 	{N, Rest} = lists:split(3, Fields),
 	lists:split(list_to_integer(N), Rest);
-decode_field({n, fixed, Length}, Fields) ->
+decode_field(_FieldId, {n, fixed, Length}, Fields) ->
 	lists:split(Length, Fields);
-decode_field({an, fixed, Length}, Fields) ->
+decode_field(_FieldId, {an, fixed, Length}, Fields) ->
 	lists:split(Length, Fields);
-decode_field({ans, fixed, Length}, Fields) ->
+decode_field(_FieldId, {ans, fixed, Length}, Fields) ->
 	lists:split(Length, Fields);
-decode_field({x_n, fixed, Length}, [Head|Tail]) when Head =:= $C orelse Head =:= $D ->
+decode_field(_FieldId, {x_n, fixed, Length}, [Head|Tail]) when Head =:= $C orelse Head =:= $D ->
 	lists:split(Length+1, [Head|Tail]);
-decode_field({z, llvar, _MaxLength}, Fields) ->
+decode_field(_FieldId, {z, llvar, _MaxLength}, Fields) ->
 	{N, Rest} = lists:split(2, Fields),
 	lists:split(list_to_integer(N), Rest);
-decode_field({b, Length}, Fields) ->
+decode_field(_FieldId, {b, Length}, Fields) ->
 	{ValueStr, Rest} = lists:split(2 * Length, Fields),
 	Value = convert:ascii_hex_to_binary(ValueStr),
-	{Value, Rest}.
+	{Value, Rest};
+decode_field(FieldId, {custom, Marshaller}, Fields) ->
+	Marshaller:unmarshal(FieldId, Fields).
 
 get_bit_map_length(Msg) ->
 	get_bit_map_length(Msg, 16).
