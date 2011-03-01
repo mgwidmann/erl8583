@@ -1,22 +1,28 @@
 %% Author: carl
-%% Created: 29 Jan 2011
-%% Description: TODO: Add description to xml_unmarshaller
--module(xml_unmarshaller).
+%% Created: 06 Feb 2011
+%% Description: TODO: Add description to marshaller_xml
+-module(marshaller_xml).
 
 %%
 %% Include files
 %%
 -include_lib("xmerl/include/xmerl.hrl").
 
-
 %%
 %% Exported Functions
 %%
--export([unmarshal/1]).
+-export([marshal/1, unmarshal/1]).
 
 %%
 %% API Functions
 %%
+marshal(IsoMsg) ->
+	"<isomsg" ++ 
+		encode_attributes(iso8583_message:get_attributes(IsoMsg)) ++ 
+		">" ++ 
+		marshal_fields(iso8583_message:to_list(IsoMsg), []) ++ 
+		"</isomsg>\n".
+
 unmarshal(XmlMessage) ->
 	{Xml, []} = xmerl_scan:string(XmlMessage),
 	isomsg = Xml#xmlElement.name,
@@ -25,10 +31,36 @@ unmarshal(XmlMessage) ->
 	Attrs = Xml#xmlElement.attributes,
 	iso8583_message:set_attributes(attributes_to_list(Attrs, []), Msg).
 
-
 %%
 %% Local Functions
 %%
+marshal_fields([], Result) ->
+	Result;
+marshal_fields([{K, V}|Tail], Result) when is_list(V)  ->
+	Id = integer_to_list(K),
+	marshal_fields(Tail, "<field id=\"" ++ Id ++ "\" value=\"" ++ V ++ "\" />" ++ Result);
+marshal_fields([{K, V}|Tail], Result) when is_binary(V) ->
+	Id = integer_to_list(K),
+	marshal_fields(Tail, "<field id=\"" ++ Id ++ "\" value=\"" ++ 
+						convert:binary_to_ascii_hex(V) ++ 
+						"\" type=\"binary\" />" ++ Result);	
+marshal_fields([{K, V}|Tail], Result) ->
+	Id = integer_to_list(K),
+	marshal_fields(Tail, "<isomsg id=\"" ++ Id ++ "\"" ++
+						encode_attributes(iso8583_message:get_attributes(V)) ++ 
+						">" ++ 
+						marshal_fields(iso8583_message:to_list(V), "") ++ 
+						"</isomsg>" ++ 
+						Result).
+	
+encode_attributes(List) ->
+	encode_attributes(List, "").
+
+encode_attributes([], Result) ->
+	Result;
+encode_attributes([{Key, Value} | Tail], Result) ->
+	encode_attributes(Tail, " " ++ Key ++ "=\"" ++ Value ++ "\"" ++  Result).
+
 unmarshal([], Iso8583Msg) ->
 	Iso8583Msg;
 unmarshal([Field|T], Iso8583Msg) when is_record(Field, xmlElement) ->
