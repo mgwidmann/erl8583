@@ -10,7 +10,7 @@
 %%
 %% Exported Functions
 %%
--export([marshal/1, marshal/2, unmarshal/1, unmarshal/2]).
+-export([marshal/1, marshal/2, unmarshal/1, unmarshal/2, construct_bitmap/1]).
 
 %%
 %% API Functions
@@ -22,7 +22,7 @@ marshal(Msg, EncodingRules) ->
 	Mti = iso8583_message:get(0, Msg),
 	MtiBits = convert:ascii_hex_to_binary(Mti),
 	[0|Fields] = iso8583_message:get_fields(Msg),
-	BitMap = bitmap(Fields),
+	BitMap = construct_bitmap(Fields),
 	EncodedFields = encode(Fields, Msg, EncodingRules),
 	<< MtiBits/binary, BitMap/binary, EncodedFields/binary>>.
 
@@ -37,25 +37,25 @@ unmarshal(Msg, EncodingRules) ->
 	{FieldIds, Fields} = extract_fields(Rest),
 	decode_fields(FieldIds, Fields, IsoMsg2, EncodingRules).
 
-%%
-%% Local Functions
-%%
-bitmap([]) ->
+construct_bitmap([]) ->
 	<<>>;
-bitmap(Fields) ->
+construct_bitmap(Fields) ->
 	NumBitMaps = (lists:max(Fields) + 63) div 64,
 	ExtensionBits = [Bit * 64 - 127 || Bit <- lists:seq(2, NumBitMaps)],
 	BitMap = lists:duplicate(NumBitMaps * 8, 0),
-	bitmap(lists:sort(ExtensionBits ++ Fields), BitMap).
+	construct_bitmap(lists:sort(ExtensionBits ++ Fields), BitMap).
 
-bitmap([], Result) ->
+%%
+%% Local Functions
+%%
+construct_bitmap([], Result) ->
 	list_to_binary(Result);
-bitmap([Field|Tail], Result) when Field > 0 ->
+construct_bitmap([Field|Tail], Result) when Field > 0 ->
 	ByteNum = (Field - 1) div 8,
 	BitNum = 7 - ((Field - 1) rem 8),
 	{Left, Right} = lists:split(ByteNum, Result),
 	[ToUpdate | RightRest] = Right,
-	bitmap(Tail, Left ++ ([ToUpdate + (1 bsl BitNum)]) ++ RightRest).
+	construct_bitmap(Tail, Left ++ ([ToUpdate + (1 bsl BitNum)]) ++ RightRest).
 
 encode(Fields, Msg, EncodingRules) ->
 	encode(Fields, Msg, <<>>, EncodingRules).
