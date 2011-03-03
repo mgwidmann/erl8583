@@ -10,7 +10,7 @@
 %%
 %% Exported Functions
 %%
--export([marshal/1, marshal/2, unmarshal/1, unmarshal/2, construct_bitmap/1]).
+-export([marshal/1, marshal/2, unmarshal/1, unmarshal/2, construct_bitmap/1, extract_fields/1]).
 
 %%
 %% API Functions
@@ -44,6 +44,15 @@ construct_bitmap(Fields) ->
 	ExtensionBits = [Bit * 64 - 127 || Bit <- lists:seq(2, NumBitMaps)],
 	BitMap = lists:duplicate(NumBitMaps * 8, 0),
 	construct_bitmap(lists:sort(ExtensionBits ++ Fields), BitMap).
+
+extract_fields(<<>>) ->
+	{[], <<>>};
+extract_fields(Message) ->
+	BitMapLength = get_bit_map_length(Message),
+	{BinaryBitMap, Fields} = split_binary(Message, BitMapLength),
+	BitMap = binary_to_list(BinaryBitMap),
+	extract_fields(BitMap, 0, 8, {[], Fields}).
+
 
 %%
 %% Local Functions
@@ -107,14 +116,6 @@ encode_field(_FieldId, {b, Length}, Value) when size(Value) =:= Length ->
 	Value;
 encode_field(FieldId, {custom, Marshaller}, Value) ->
 	Marshaller:marshal(FieldId, Value).
-
-extract_fields(<<>>) ->
-	{[], <<>>};
-extract_fields(Message) ->
-	BitMapLength = get_bit_map_length(Message),
-	{BinaryBitMap, Fields} = split_binary(Message, BitMapLength),
-	BitMap = binary_to_list(BinaryBitMap),
-	extract_fields(BitMap, 0, 8, {[], Fields}).
 
 get_bit_map_length(Message) ->
 	[Head|_Tail] = binary_to_list(Message),
