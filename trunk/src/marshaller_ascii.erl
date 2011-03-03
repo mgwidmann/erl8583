@@ -11,7 +11,7 @@
 %%
 %% Exported Functions
 %%
--export([marshal/1, marshal/2, unmarshal/1, unmarshal/2]).
+-export([marshal/1, marshal/2, unmarshal/1, unmarshal/2, construct_bitmap/1, extract_fields/1]).
 
 %%
 %% API Functions
@@ -22,7 +22,7 @@ marshal(Msg) ->
 marshal(Msg, EncodingRules) ->
 	Mti = iso8583_message:get(0, Msg),
 	[0|Fields] = iso8583_message:get_fields(Msg),
-	Mti ++ bitmap(Fields) ++ encode(Fields, Msg, EncodingRules).
+	Mti ++ construct_bitmap(Fields) ++ encode(Fields, Msg, EncodingRules).
 	
 unmarshal(Msg) ->
 	unmarshal(Msg, iso8583_fields).
@@ -34,25 +34,33 @@ unmarshal(Msg, EncodingRules) ->
 	{FieldIds, Fields} = extract_fields(Rest),
 	decode_fields(FieldIds, Fields, IsoMsg2, EncodingRules).
 
-%%
-%% Local Functions
-%%
-bitmap([]) ->
+construct_bitmap([]) ->
 	[];
-bitmap(Fields) ->
+construct_bitmap(Fields) ->
 	NumBitMaps = (lists:max(Fields) + 63) div 64,
 	ExtensionBits = [Bit * 64 - 127 || Bit <- lists:seq(2, NumBitMaps)],
 	BitMap = lists:duplicate(NumBitMaps * 8, 0),
-	convert:string_to_ascii_hex(bitmap(lists:sort(ExtensionBits ++ Fields), BitMap)).
+	convert:string_to_ascii_hex(construct_bitmap(lists:sort(ExtensionBits ++ Fields), BitMap)).
 
-bitmap([], Result) ->
+extract_fields([]) ->
+	{[], []};
+extract_fields(Message) ->
+	BitMapLength = get_bit_map_length(Message),
+	{AsciiBitMap, Fields} = lists:split(BitMapLength, Message),
+	BitMap = convert:ascii_hex_to_string(AsciiBitMap),
+	extract_fields(BitMap, 0, 8, {[], Fields}).
+
+%%
+%% Local Functions
+%%
+construct_bitmap([], Result) ->
 	Result;
-bitmap([Field|Tail], Result) when Field > 0 ->
+construct_bitmap([Field|Tail], Result) when Field > 0 ->
 	ByteNum = (Field - 1) div 8,
 	BitNum = 7 - ((Field - 1) rem 8),
 	{Left, Right} = lists:split(ByteNum, Result),
 	[ToUpdate | RightRest] = Right,
-	bitmap(Tail, Left ++ ([ToUpdate + (1 bsl BitNum)]) ++ RightRest).
+	construct_bitmap(Tail, Left ++ ([ToUpdate + (1 bsl BitNum)]) ++ RightRest).
 
 encode(Fields, Msg, EncodingRules) ->
 	lists:reverse(encode(Fields, Msg, [], EncodingRules)).
@@ -95,14 +103,6 @@ encode_field(_Field, {b, Length}, Value) when size(Value) =:= Length ->
 	convert:binary_to_ascii_hex(Value);
 encode_field(Field, {custom, Marshaller}, Value) ->
 	Marshaller:marshal(Field, Value).
-
-extract_fields([]) ->
-	{[], []};
-extract_fields(Message) ->
-	BitMapLength = get_bit_map_length(Message),
-	{AsciiBitMap, Fields} = lists:split(BitMapLength, Message),
-	BitMap = convert:ascii_hex_to_string(AsciiBitMap),
-	extract_fields(BitMap, 0, 8, {[], Fields}).
 
 extract_fields([], _Offset, _Index, {FieldIds, Fields}) ->
 	Ids = lists:sort(FieldIds),
