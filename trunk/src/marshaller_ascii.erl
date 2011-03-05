@@ -19,8 +19,8 @@
 		 extract_fields/1,
 		 encode_field/3,
 		 encode_data_element/2,
-		 decode_field/3]).
-		 %decode_data_element/3]).
+		 decode_field/3,
+		 decode_data_element/2]).
 
 %%
 %% API Functions
@@ -88,6 +88,43 @@ encode_data_element({z, llvar, Length}, Value) when length(Value) =< Length ->
 encode_data_element({b, Length}, Value) when size(Value) =:= Length ->
 	convert:binary_to_ascii_hex(Value).
 
+decode_data_element({n, llvar, _MaxLength}, Fields) ->
+	{N, Rest} = lists:split(2, Fields),
+	lists:split(list_to_integer(N), Rest);
+decode_data_element({n, lllvar, _MaxLength}, Fields) ->
+	{N, Rest} = lists:split(3, Fields),
+	lists:split(list_to_integer(N), Rest);
+decode_data_element({ns, llvar, _MaxLength}, Fields) ->
+	{N, Rest} = lists:split(2, Fields),
+	lists:split(list_to_integer(N), Rest);
+decode_data_element({an, llvar, _MaxLength}, Fields) ->
+	{N, Rest} = lists:split(2, Fields),
+	lists:split(list_to_integer(N), Rest);
+decode_data_element({an, lllvar, _MaxLength}, Fields) ->
+	{N, Rest} = lists:split(3, Fields),
+	lists:split(list_to_integer(N), Rest);
+decode_data_element({ans, llvar, _MaxLength}, Fields) ->
+	{N, Rest} = lists:split(2, Fields),
+	lists:split(list_to_integer(N), Rest);
+decode_data_element({ans, lllvar, _MaxLength}, Fields) ->
+	{N, Rest} = lists:split(3, Fields),
+	lists:split(list_to_integer(N), Rest);
+decode_data_element({n, fixed, Length}, Fields) ->
+	lists:split(Length, Fields);
+decode_data_element({an, fixed, Length}, Fields) ->
+	lists:split(Length, Fields);
+decode_data_element({ans, fixed, Length}, Fields) ->
+	lists:split(Length, Fields);
+decode_data_element({x_n, fixed, Length}, [Head|Tail]) when Head =:= $C orelse Head =:= $D ->
+	lists:split(Length+1, [Head|Tail]);
+decode_data_element({z, llvar, _MaxLength}, Fields) ->
+	{N, Rest} = lists:split(2, Fields),
+	lists:split(list_to_integer(N), Rest);
+decode_data_element({b, Length}, Fields) ->
+	{ValueStr, Rest} = lists:split(2 * Length, Fields),
+	Value = convert:ascii_hex_to_binary(ValueStr),
+	{Value, Rest}.
+
 %%
 %% Local Functions
 %%
@@ -137,44 +174,11 @@ decode_fields([Field|Tail], Fields, Result, EncodingRules) ->
 	UpdatedResult = iso8583_message:set(Field, Value, Result),
 	decode_fields(Tail, UpdatedFields, UpdatedResult, EncodingRules).
 	
-decode_field(_FieldId, {n, llvar, _MaxLength}, Fields) ->
-	{N, Rest} = lists:split(2, Fields),
-	lists:split(list_to_integer(N), Rest);
-decode_field(_FieldId, {n, lllvar, _MaxLength}, Fields) ->
-	{N, Rest} = lists:split(3, Fields),
-	lists:split(list_to_integer(N), Rest);
-decode_field(_FieldId, {ns, llvar, _MaxLength}, Fields) ->
-	{N, Rest} = lists:split(2, Fields),
-	lists:split(list_to_integer(N), Rest);
-decode_field(_FieldId, {an, llvar, _MaxLength}, Fields) ->
-	{N, Rest} = lists:split(2, Fields),
-	lists:split(list_to_integer(N), Rest);
-decode_field(_FieldId, {an, lllvar, _MaxLength}, Fields) ->
-	{N, Rest} = lists:split(3, Fields),
-	lists:split(list_to_integer(N), Rest);
-decode_field(_FieldId, {ans, llvar, _MaxLength}, Fields) ->
-	{N, Rest} = lists:split(2, Fields),
-	lists:split(list_to_integer(N), Rest);
-decode_field(_FieldId, {ans, lllvar, _MaxLength}, Fields) ->
-	{N, Rest} = lists:split(3, Fields),
-	lists:split(list_to_integer(N), Rest);
-decode_field(_FieldId, {n, fixed, Length}, Fields) ->
-	lists:split(Length, Fields);
-decode_field(_FieldId, {an, fixed, Length}, Fields) ->
-	lists:split(Length, Fields);
-decode_field(_FieldId, {ans, fixed, Length}, Fields) ->
-	lists:split(Length, Fields);
-decode_field(_FieldId, {x_n, fixed, Length}, [Head|Tail]) when Head =:= $C orelse Head =:= $D ->
-	lists:split(Length+1, [Head|Tail]);
-decode_field(_FieldId, {z, llvar, _MaxLength}, Fields) ->
-	{N, Rest} = lists:split(2, Fields),
-	lists:split(list_to_integer(N), Rest);
-decode_field(_FieldId, {b, Length}, Fields) ->
-	{ValueStr, Rest} = lists:split(2 * Length, Fields),
-	Value = convert:ascii_hex_to_binary(ValueStr),
-	{Value, Rest};
 decode_field(FieldId, {custom, Marshaller}, Fields) ->
-	Marshaller:unmarshal(FieldId, Fields).
+	Marshaller:unmarshal(FieldId, Fields);
+decode_field(_FieldId, Pattern, Fields) ->
+	marshaller_ascii:decode_data_element(Pattern, Fields).
+
 
 get_bit_map_length(Msg) ->
 	get_bit_map_length(Msg, 16).
