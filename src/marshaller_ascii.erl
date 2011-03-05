@@ -11,7 +11,16 @@
 %%
 %% Exported Functions
 %%
--export([marshal/1, marshal/2, unmarshal/1, unmarshal/2, construct_bitmap/1, extract_fields/1]).
+-export([marshal/1, 
+		 marshal/2, 
+		 unmarshal/1, 
+		 unmarshal/2, 
+		 construct_bitmap/1, 
+		 extract_fields/1,
+		 encode_field/3,
+		 encode_data_element/2,
+		 decode_field/3]).
+		 %decode_data_element/3]).
 
 %%
 %% API Functions
@@ -50,6 +59,35 @@ extract_fields(Message) ->
 	BitMap = convert:ascii_hex_to_string(AsciiBitMap),
 	extract_fields(BitMap, 0, 8, {[], Fields}).
 
+encode_data_element({n, llvar, Length}, Value) when length(Value) =< Length ->
+	convert:integer_to_string(length(Value), 2) ++ Value;
+encode_data_element({n, lllvar, Length}, Value) when length(Value) =< Length ->
+	convert:integer_to_string(length(Value), 3) ++ Value;
+encode_data_element({ns, llvar, Length}, Value) when length(Value) =< Length ->
+	convert:integer_to_string(length(Value), 2) ++ Value;
+encode_data_element({an, llvar, Length}, Value) when length(Value) =< Length ->
+	convert:integer_to_string(length(Value), 2) ++ Value;
+encode_data_element({an, lllvar, Length}, Value) when length(Value) =< Length ->
+	convert:integer_to_string(length(Value), 3) ++ Value;
+encode_data_element({ans, llvar, Length}, Value) when length(Value) =< Length ->
+	convert:integer_to_string(length(Value), 2) ++ Value;
+encode_data_element({ans, lllvar, Length}, Value) when length(Value) =< Length ->
+	convert:integer_to_string(length(Value), 3) ++ Value;
+encode_data_element({n, fixed, Length}, Value) when length(Value) =< Length ->
+	IntValue = list_to_integer(Value),
+	convert:integer_to_string(IntValue, Length);
+encode_data_element({an, fixed, Length}, Value) when length(Value) =< Length ->
+	convert:pad_with_trailing_spaces(Value, Length);
+encode_data_element({ans, fixed, Length}, Value) when length(Value) =< Length ->
+	convert:pad_with_trailing_spaces(Value, Length);
+encode_data_element({x_n, fixed, Length}, [Head | Value]) when Head =:= $C orelse Head =:= $D ->
+	IntValue = list_to_integer(Value),
+	[Head] ++ convert:integer_to_string(IntValue, Length);
+encode_data_element({z, llvar, Length}, Value) when length(Value) =< Length ->
+	convert:integer_to_string(length(Value), 2) ++ Value;
+encode_data_element({b, Length}, Value) when size(Value) =:= Length ->
+	convert:binary_to_ascii_hex(Value).
+
 %%
 %% Local Functions
 %%
@@ -73,36 +111,10 @@ encode([Field|Tail], Msg, Result, EncodingRules) ->
 	EncodedValue = encode_field(Field, Encoding, Value),
 	encode(Tail, Msg, lists:reverse(EncodedValue) ++ Result, EncodingRules).
 
-encode_field(_Field, {n, llvar, Length}, Value) when length(Value) =< Length ->
-	convert:integer_to_string(length(Value), 2) ++ Value;
-encode_field(_Field, {n, lllvar, Length}, Value) when length(Value) =< Length ->
-	convert:integer_to_string(length(Value), 3) ++ Value;
-encode_field(_Field, {ns, llvar, Length}, Value) when length(Value) =< Length ->
-	convert:integer_to_string(length(Value), 2) ++ Value;
-encode_field(_Field, {an, llvar, Length}, Value) when length(Value) =< Length ->
-	convert:integer_to_string(length(Value), 2) ++ Value;
-encode_field(_Field, {an, lllvar, Length}, Value) when length(Value) =< Length ->
-	convert:integer_to_string(length(Value), 3) ++ Value;
-encode_field(_Field, {ans, llvar, Length}, Value) when length(Value) =< Length ->
-	convert:integer_to_string(length(Value), 2) ++ Value;
-encode_field(_Field, {ans, lllvar, Length}, Value) when length(Value) =< Length ->
-	convert:integer_to_string(length(Value), 3) ++ Value;
-encode_field(_Field, {n, fixed, Length}, Value) when length(Value) =< Length ->
-	IntValue = list_to_integer(Value),
-	convert:integer_to_string(IntValue, Length);
-encode_field(_Field, {an, fixed, Length}, Value) when length(Value) =< Length ->
-	convert:pad_with_trailing_spaces(Value, Length);
-encode_field(_Field, {ans, fixed, Length}, Value) when length(Value) =< Length ->
-	convert:pad_with_trailing_spaces(Value, Length);
-encode_field(_Field, {x_n, fixed, Length}, [Head | Value]) when Head =:= $C orelse Head =:= $D ->
-	IntValue = list_to_integer(Value),
-	[Head] ++ convert:integer_to_string(IntValue, Length);
-encode_field(_Field, {z, llvar, Length}, Value) when length(Value) =< Length ->
-	convert:integer_to_string(length(Value), 2) ++ Value;
-encode_field(_Field, {b, Length}, Value) when size(Value) =:= Length ->
-	convert:binary_to_ascii_hex(Value);
 encode_field(Field, {custom, Marshaller}, Value) ->
-	Marshaller:marshal(Field, Value).
+	Marshaller:marshal(Field, Value);
+encode_field(_Field, Pattern, Value) ->
+	encode_data_element(Pattern, Value).
 
 extract_fields([], _Offset, _Index, {FieldIds, Fields}) ->
 	Ids = lists:sort(FieldIds),
