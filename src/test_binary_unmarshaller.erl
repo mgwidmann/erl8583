@@ -12,16 +12,15 @@
 %%
 %% Exported Functions
 %%
--export([decode_field/2]).
+-export([unmarshal/2]).
 
 %%
 %% API Functions
 %%
-decode_field(3, <<3, 0, 4, 0>>) ->
+unmarshal(3, <<3, 0, 4, 0>>) ->
 	{"3", <<4, 0>>};
-decode_field(4, <<4, 0>>) ->
+unmarshal(4, <<4, 0>>) ->
 	{"4", <<>>}.
-
 
 %%
 %% Local Functions
