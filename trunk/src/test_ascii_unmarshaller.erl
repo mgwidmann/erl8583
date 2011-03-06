@@ -12,14 +12,14 @@
 %%
 %% Exported Functions
 %%
--export([decode_field/2]).
+-export([unmarshal/2]).
 
 %%
 %% API Functions
 %%
-decode_field(3, [$3|Tail]) ->
+unmarshal(3, [$3|Tail]) ->
 	{"Field 3", Tail};
-decode_field(4, [$4|Tail]) ->
+unmarshal(4, [$4|Tail]) ->
 	{"Field 4", Tail}.
 
 
