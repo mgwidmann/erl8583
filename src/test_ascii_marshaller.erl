@@ -12,18 +12,18 @@
 %%
 %% Exported Functions
 %%
--export([encode_field/2]).
+-export([marshal/2]).
 
 %%
 %% API Functions
 %%
 
 % Self-shunting for tests.
-encode_field(3, _Msg) ->
+marshal(3, _Msg) ->
 	"Field 3";
-encode_field(4, _Msg) ->
+marshal(4, _Msg) ->
 	"Field 4";
-encode_field(FieldId, Msg) ->
+marshal(FieldId, Msg) ->
 	marshaller_ascii:encode_field(FieldId, Msg).
 
 %% Test that a message with only an MTI can be exported.

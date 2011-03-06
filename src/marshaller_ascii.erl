@@ -69,7 +69,7 @@ encode([], _Msg, Result, _FieldMarshaller) ->
 	Result;
 encode([FieldId|Tail], Msg, Result, FieldMarshaller) ->
 	Value = iso8583_message:get(FieldId, Msg),
-	EncodedValue = FieldMarshaller:encode_field(FieldId, Value),
+	EncodedValue = FieldMarshaller:marshal(FieldId, Value),
 	encode(Tail, Msg, lists:reverse(EncodedValue) ++ Result, FieldMarshaller).
  
 extract_fields([], _Offset, _Index, {FieldIds, Fields}) ->
@@ -88,7 +88,7 @@ extract_fields([Head|Tail], Offset, Index, {FieldIds, Fields}) ->
 decode_fields([], _, Result, _FieldMarshaller) ->
 	Result;
 decode_fields([FieldId|Tail], Fields, Result, FieldMarshaller) ->
-	{Value, UpdatedFields} = FieldMarshaller:decode_field(FieldId, Fields),
+	{Value, UpdatedFields} = FieldMarshaller:unmarshal(FieldId, Fields),
 	UpdatedResult = iso8583_message:set(FieldId, Value, Result),
 	decode_fields(Tail, UpdatedFields, UpdatedResult, FieldMarshaller).
 	
