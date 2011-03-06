@@ -17,21 +17,21 @@
 		 unmarshal/2, 
 		 construct_bitmap/1, 
 		 extract_fields/1,
-		 encode_field/3,
+		 encode_field/2,
 		 encode_data_element/2,
-		 decode_field/3,
+		 %decode_field/2,
 		 decode_data_element/2]).
 
 %%
 %% API Functions
 %%
 marshal(Msg) ->
-	marshal(Msg, iso8583_fields).
+	marshal(Msg, ?MODULE).
 
-marshal(Msg, EncodingRules) ->
+marshal(Msg, FieldMarshaller) ->
 	Mti = iso8583_message:get(0, Msg),
 	[0|Fields] = iso8583_message:get_fields(Msg),
-	Mti ++ construct_bitmap(Fields) ++ encode(Fields, Msg, EncodingRules).
+	Mti ++ construct_bitmap(Fields) ++ encode(Fields, Msg, FieldMarshaller).
 	
 unmarshal(Msg) ->
 	unmarshal(Msg, iso8583_fields).
@@ -125,6 +125,11 @@ decode_data_element({b, Length}, Fields) ->
 	Value = convert:ascii_hex_to_binary(ValueStr),
 	{Value, Rest}.
 
+encode_field(FieldId, Msg) ->
+	Pattern = iso8583_fields:get_encoding(FieldId),
+	Value = iso8583_message:get(FieldId, Msg),
+	marshaller_ascii:encode_data_element(Pattern, Value).
+
 %%
 %% Local Functions
 %%
@@ -137,21 +142,19 @@ construct_bitmap([Field|Tail], Result) when Field > 0 ->
 	[ToUpdate | RightRest] = Right,
 	construct_bitmap(Tail, Left ++ ([ToUpdate + (1 bsl BitNum)]) ++ RightRest).
 
-encode(Fields, Msg, EncodingRules) ->
-	lists:reverse(encode(Fields, Msg, [], EncodingRules)).
+encode(Fields, Msg, FieldMarshaller) ->
+	lists:reverse(encode(Fields, Msg, [], FieldMarshaller)).
 
-encode([], _Msg, Result, _EncodingRules) ->
+encode([], _Msg, Result, _FieldMarshaller) ->
 	Result;
-encode([Field|Tail], Msg, Result, EncodingRules) ->
-	Encoding = EncodingRules:get_encoding(Field),
-	Value = iso8583_message:get(Field, Msg),
-	EncodedValue = encode_field(Field, Encoding, Value),
-	encode(Tail, Msg, lists:reverse(EncodedValue) ++ Result, EncodingRules).
-
-encode_field(Field, {custom, Marshaller}, Value) ->
-	Marshaller:marshal(Field, Value);
-encode_field(_Field, Pattern, Value) ->
-	encode_data_element(Pattern, Value).
+encode([FieldId|Tail], Msg, Result, FieldMarshaller) ->
+	EncodedValue = FieldMarshaller:encode_field(FieldId, Msg),
+	encode(Tail, Msg, lists:reverse(EncodedValue) ++ Result, FieldMarshaller).
+ 
+%encode_field(Field, {custom, Marshaller}, Value) ->
+%	Marshaller:marshal(Field, Value);
+%encode_field(_Field, Pattern, Value) ->
+%	encode_data_element(Pattern, Value).
 
 extract_fields([], _Offset, _Index, {FieldIds, Fields}) ->
 	Ids = lists:sort(FieldIds),
