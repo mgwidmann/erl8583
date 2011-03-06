@@ -55,11 +55,12 @@ encode_attributes([{Key, Value} | Tail], Result) ->
 unmarshal([], Iso8583Msg) ->
 	Iso8583Msg;
 unmarshal([Field|T], Iso8583Msg) when is_record(Field, xmlElement) ->
+	Attributes = Field#xmlElement.attributes,
+	AttributesList = attributes_to_list(Attributes, []),
+	Id = get_attribute_value("id", AttributesList),
+	FieldId = list_to_integer(Id),
 	case Field#xmlElement.name of
 		field ->
-			Attributes = Field#xmlElement.attributes,
-			AttributesList = attributes_to_list(Attributes, []),
-			Id = get_attribute_value("id", AttributesList),
 			ValueStr = get_attribute_value("value", AttributesList),
 			case is_attribute("type", AttributesList) of
 				false ->
@@ -69,14 +70,11 @@ unmarshal([Field|T], Iso8583Msg) when is_record(Field, xmlElement) ->
 					Value = convert:ascii_hex_to_binary(ValueStr)
 			end;
 		isomsg ->
-			Attrs = Field#xmlElement.attributes,
-			AttrList = attributes_to_list(Attrs, []),
-			Id = get_attribute_value("id", AttrList),
-			AttrsExceptId = AttrList -- [{"id", Id}],
+			AttrsExceptId = AttributesList -- [{"id", Id}],
 			ChildNodes = Field#xmlElement.content,
 			Value = unmarshal(ChildNodes, iso8583_message:new(AttrsExceptId))
 	end,	
-	UpdatedMsg = iso8583_message:set(list_to_integer(Id), Value, Iso8583Msg),
+	UpdatedMsg = iso8583_message:set(FieldId, Value, Iso8583Msg),
 	unmarshal(T, UpdatedMsg);
 unmarshal([_H|T], Iso8583Msg) ->
 	unmarshal(T, Iso8583Msg).
