@@ -16,7 +16,7 @@
 %%
 %% API Functions
 %%
-xml_unmarshall_test() ->
+xml_unmarshal_test() ->
 	XmlMessage = "<isomsg>" ++
 					 "<field id=\"0\" value=\"0800\"/>" ++
 					 "<field id=\"3\" value=\"333333\"/>" ++
@@ -26,7 +26,7 @@ xml_unmarshall_test() ->
 	?assertEqual("333333", iso8583_message:get(3, Message)),
 	?assertEqual([0, 3], iso8583_message:get_fields(Message)).
 	
-xml_unmarshall_with_text_test() ->
+xml_unmarshal_with_text_test() ->
 	XmlMessage = "<isomsg>Some text" ++
 					 "<field value=\"0800\" id=\"0\">more text</field>" ++
 					 "<field id=\"3\" value=\"333333\"/>" ++
@@ -36,7 +36,7 @@ xml_unmarshall_with_text_test() ->
 	?assertEqual("333333", iso8583_message:get(3, Message)),
 	?assertEqual([0, 3], iso8583_message:get_fields(Message)).
 	
-xml_unmarshall_complex_test() ->
+xml_unmarshal_complex_test() ->
 	XmlMessage = "<isomsg>" ++
       "<field id=\"0\" value=\"0810\"/>" ++
       "<field id=\"3\" value=\"333333\"/>" ++
@@ -54,16 +54,16 @@ xml_unmarshall_complex_test() ->
 	[1] = iso8583_message:get_fields(BitMap),
 	"hello" = iso8583_message:get(1, BitMap).
 
-xml_unmarshall_with_attributes_test() ->
+xml_unmarshal_with_attributes_test() ->
 	Message = marshaller_xml:unmarshal("<isomsg foo=\"bar\"""/>"),
 	[{"foo", "bar"}] = iso8583_message:get_attributes(Message).
 
-xml_unmarshall_with_attributes2_test() ->
+xml_unmarshal_with_attributes2_test() ->
 	Message = marshaller_xml:unmarshal("<isomsg><isomsg id=\"48\" foo=\"bar\"""/></isomsg>"),
 	Field = iso8583_message:get(48, Message),
 	[{"foo", "bar"}] = iso8583_message:get_attributes(Field).
 	
-xml_unmarshall_complex2_test() ->
+xml_unmarshal_complex2_test() ->
 	Message = marshaller_xml:unmarshal("<isomsg><isomsg id=\"48\"><isomsg id=\"105\" baz=\"hello\"""/></isomsg></isomsg>"),
 	[48] = iso8583_message:get_fields(Message),
 	Message2 = iso8583_message:get(48, Message),

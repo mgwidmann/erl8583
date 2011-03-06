@@ -61,21 +61,7 @@ unmarshal([Field|T], Iso8583Msg, FieldMarshaller) when is_record(Field, xmlEleme
 	AttributesList = attributes_to_list(Attributes, []),
 	Id = get_attribute_value("id", AttributesList),
 	FieldId = list_to_integer(Id),
-	case Field#xmlElement.name of
-		field ->
-			ValueStr = get_attribute_value("value", AttributesList),
-			case is_attribute("type", AttributesList) of
-				false ->
-					Value = ValueStr;
-				true ->
-					"binary" = get_attribute_value("type", AttributesList),
-					Value = convert:ascii_hex_to_binary(ValueStr)
-			end;
-		isomsg ->
-			AttrsExceptId = AttributesList -- [{"id", Id}],
-			ChildNodes = Field#xmlElement.content,
-			Value = unmarshal(ChildNodes, iso8583_message:new(AttrsExceptId), FieldMarshaller)
-	end,	
+	Value = FieldMarshaller:unmarshal(FieldId, Field),
 	UpdatedMsg = iso8583_message:set(FieldId, Value, Iso8583Msg),
 	unmarshal(T, UpdatedMsg, FieldMarshaller);
 unmarshal([_H|T], Iso8583Msg, FieldMarshaller) ->
@@ -87,13 +73,6 @@ attributes_to_list([H|T], Result) ->
 	Id = atom_to_list(H#xmlAttribute.name),
 	Value = H#xmlAttribute.value,
 	attributes_to_list(T, [{Id, Value} | Result]).
-
-is_attribute(_Id, []) ->
-	false;
-is_attribute(Id, [{Id, _}|_Tail]) ->
-	true;
-is_attribute(Id, [_Head|Tail]) ->
-	is_attribute(Id, Tail).
 
 get_attribute_value(Key, [{Key, Value} | _Tail]) ->
 	Value;

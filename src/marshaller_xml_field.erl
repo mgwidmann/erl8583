@@ -53,7 +53,7 @@ unmarshal(_FieldId, FieldElement) ->
 		isomsg ->
 			AttrsExceptId = AttributesList -- [{"id", Id}],
 			ChildNodes = FieldElement#xmlElement.content,
-			marshaller_xml:unmarshal(ChildNodes, iso8583_message:new(AttrsExceptId), ?MODULE)
+			unmarshal_complex(ChildNodes, iso8583_message:new(AttrsExceptId))
 	end.	
 
 
@@ -92,3 +92,16 @@ marshal_fields([], Result) ->
 marshal_fields([{FieldId, Value}|Tail], Result) ->
 	MarshalledValue = marshal(FieldId, Value),
 	marshal_fields(Tail, MarshalledValue ++ Result).
+
+unmarshal_complex([], Iso8583Msg) ->
+	Iso8583Msg;
+unmarshal_complex([Field|T], Iso8583Msg) when is_record(Field, xmlElement) ->
+	Attributes = Field#xmlElement.attributes,
+	AttributesList = attributes_to_list(Attributes, []),
+	Id = get_attribute_value("id", AttributesList),
+	FieldId = list_to_integer(Id),
+	Value = unmarshal(FieldId, Field),
+	UpdatedMsg = iso8583_message:set(FieldId, Value, Iso8583Msg),
+	unmarshal_complex(T, UpdatedMsg);
+unmarshal_complex([_H|T], Iso8583Msg) ->
+	unmarshal_complex(T, Iso8583Msg).
