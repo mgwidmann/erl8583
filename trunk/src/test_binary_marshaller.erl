@@ -12,14 +12,14 @@
 %%
 %% Exported Functions
 %%
--export([encode_field/2]).
+-export([marshal/2]).
 
 %%
 %% API Functions
 %%
-encode_field(3, 3) ->
+marshal(3, 3) ->
 	<<3>>;
-encode_field(4, 4) ->
+marshal(4, 4) ->
 	<<4>>.
 
 %%
