@@ -11,12 +11,7 @@
 %%
 %% Exported Functions
 %%
--export([marshal/1, 
-		 marshal/2, 
-		 unmarshal/1, 
-		 unmarshal/2, 
-		 construct_bitmap/1, 
-		 extract_fields/1]).
+-export([marshal/1, marshal/2, unmarshal/1, unmarshal/2, construct_bitmap/1, extract_fields/1]).
 
 %%
 %% API Functions
