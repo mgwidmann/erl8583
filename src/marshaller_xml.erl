@@ -11,18 +11,21 @@
 %%
 %% Exported Functions
 %%
--export([marshal/1, unmarshal/1]).
+-export([marshal/1, unmarshal/1, marshal_fields/3]).
 
 %%
 %% API Functions
 %%
 marshal(IsoMsg) ->
+	marshal(IsoMsg, marshaller_xml_field).
+
+marshal(IsoMsg, FieldMarshaller) ->
 	"<isomsg" ++ 
 		encode_attributes(iso8583_message:get_attributes(IsoMsg)) ++ 
 		">" ++ 
-		marshal_fields(iso8583_message:to_list(IsoMsg), []) ++ 
+		marshal_fields(iso8583_message:to_list(IsoMsg), [], FieldMarshaller) ++ 
 		"</isomsg>\n".
-
+	
 unmarshal(XmlMessage) ->
 	{Xml, []} = xmerl_scan:string(XmlMessage),
 	isomsg = Xml#xmlElement.name,
@@ -31,27 +34,15 @@ unmarshal(XmlMessage) ->
 	Attrs = Xml#xmlElement.attributes,
 	iso8583_message:set_attributes(attributes_to_list(Attrs, []), Msg).
 
+marshal_fields([], Result, _FieldMarshaller) ->
+	Result;
+marshal_fields([{FieldId, Value}|Tail], Result, FieldMarshaller) ->
+	MarshalledValue = FieldMarshaller:marshal(FieldId, Value),
+	marshal_fields(Tail, MarshalledValue ++ Result, FieldMarshaller).
+
 %%
 %% Local Functions
 %%
-marshal_fields([], Result) ->
-	Result;
-marshal_fields([{K, V}|Tail], Result) when is_list(V)  ->
-	Id = integer_to_list(K),
-	marshal_fields(Tail, "<field id=\"" ++ Id ++ "\" value=\"" ++ V ++ "\" />" ++ Result);
-marshal_fields([{K, V}|Tail], Result) when is_binary(V) ->
-	Id = integer_to_list(K),
-	marshal_fields(Tail, "<field id=\"" ++ Id ++ "\" value=\"" ++ 
-						convert:binary_to_ascii_hex(V) ++ 
-						"\" type=\"binary\" />" ++ Result);	
-marshal_fields([{K, V}|Tail], Result) ->
-	Id = integer_to_list(K),
-	marshal_fields(Tail, "<isomsg id=\"" ++ Id ++ "\"" ++
-						encode_attributes(iso8583_message:get_attributes(V)) ++ 
-						">" ++ 
-						marshal_fields(iso8583_message:to_list(V), "") ++ 
-						"</isomsg>" ++ 
-						Result).
 	
 encode_attributes(List) ->
 	encode_attributes(List, "").
