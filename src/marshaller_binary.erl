@@ -16,33 +16,35 @@
 		 unmarshal/2, 
 		 construct_bitmap/1, 
 		 extract_fields/1,
+		 encode_field/2,
 		 encode_data_element/2,
+		 decode_field/2,
 		 decode_data_element/2]).
 
 %%
 %% API Functions
 %%
 marshal(Msg) ->
-	marshal(Msg, iso8583_fields).
+	marshal(Msg, ?MODULE).
 
-marshal(Msg, EncodingRules) ->
+marshal(Msg, FieldMarshaller) ->
 	Mti = iso8583_message:get(0, Msg),
 	MtiBits = convert:ascii_hex_to_binary(Mti),
 	[0|Fields] = iso8583_message:get_fields(Msg),
 	BitMap = construct_bitmap(Fields),
-	EncodedFields = encode(Fields, Msg, EncodingRules),
+	EncodedFields = encode(Fields, Msg, FieldMarshaller),
 	<< MtiBits/binary, BitMap/binary, EncodedFields/binary>>.
 
 unmarshal(Msg) ->
-	unmarshal(Msg, iso8583_fields).
+	unmarshal(Msg, ?MODULE).
 
-unmarshal(Msg, EncodingRules) ->
+unmarshal(Msg, FieldMarshaller) ->
 	IsoMsg1 = iso8583_message:new(),
 	{MtiBin, Rest} = split_binary(Msg, 2),
 	Mti = convert:binary_to_ascii_hex(MtiBin),
 	IsoMsg2 = iso8583_message:set(0, Mti, IsoMsg1),
 	{FieldIds, Fields} = extract_fields(Rest),
-	decode_fields(FieldIds, Fields, IsoMsg2, EncodingRules).
+	decode_fields(FieldIds, Fields, IsoMsg2, FieldMarshaller).
 
 construct_bitmap([]) ->
 	<<>>;
@@ -161,6 +163,14 @@ decode_data_element({z, llvar, _MaxLength}, Fields) ->
 decode_data_element({b, Length}, Fields) ->
 	split_binary(Fields, Length).
 
+encode_field(FieldId, Value) ->
+	Pattern = iso8583_fields:get_encoding(FieldId),
+	encode_data_element(Pattern, Value).
+
+decode_field(FieldId, Fields) ->
+	Pattern = iso8583_fields:get_encoding(FieldId),
+	decode_data_element(Pattern, Fields).
+
 %%
 %% Local Functions
 %%
@@ -173,21 +183,15 @@ construct_bitmap([Field|Tail], Result) when Field > 0 ->
 	[ToUpdate | RightRest] = Right,
 	construct_bitmap(Tail, Left ++ ([ToUpdate + (1 bsl BitNum)]) ++ RightRest).
 
-encode(Fields, Msg, EncodingRules) ->
-	encode(Fields, Msg, <<>>, EncodingRules).
+encode(Fields, Msg, FieldMarshaller) ->
+	encode(Fields, Msg, <<>>, FieldMarshaller).
 
-encode([], _Msg, Result, _EncodingRules) ->
+encode([], _Msg, Result, _FieldMarshaller) ->
 	Result;
-encode([Field|Tail], Msg, Result, EncodingRules) ->
-	Encoding = EncodingRules:get_encoding(Field),
-	Value = iso8583_message:get(Field, Msg),
-	EncodedValue = encode_field(Field, Encoding, Value),
-	encode(Tail, Msg, convert:concat_binaries(Result, EncodedValue), EncodingRules).
-
-encode_field(FieldId, {custom, Marshaller}, Value) ->
-	Marshaller:marshal(FieldId, Value);
-encode_field(_FieldId, Pattern, Value) ->
-	marshaller_binary:encode_data_element(Pattern, Value).
+encode([FieldId|Tail], Msg, Result, FieldMarshaller) ->
+	Value = iso8583_message:get(FieldId, Msg),
+	EncodedValue = FieldMarshaller:encode_field(FieldId, Value),
+	encode(Tail, Msg, convert:concat_binaries(Result, EncodedValue), FieldMarshaller).
 
 get_bit_map_length(Message) ->
 	[Head|_Tail] = binary_to_list(Message),
@@ -214,13 +218,7 @@ extract_fields([Head|Tail], Offset, Index, {FieldIds, Fields}) ->
 
 decode_fields([], _, Result, _EncodingRules) ->
 	Result;
-decode_fields([Field|Tail], Fields, Result, EncodingRules) ->
-	Encoding = EncodingRules:get_encoding(Field),
-	{Value, UpdatedFields} = decode_field(Field, Encoding, Fields),
-	UpdatedResult = iso8583_message:set(Field, Value, Result),
-	decode_fields(Tail, UpdatedFields, UpdatedResult, EncodingRules).
-	
-decode_field(FieldId, {custom, Marshaller}, Value) ->
-	Marshaller:unmarshal(FieldId, Value);
-decode_field(_FieldId, Pattern, Value) ->
-	decode_data_element(Pattern, Value).
+decode_fields([FieldId|Tail], Fields, Result, FieldMarshaller) ->
+	{Value, UpdatedFields} = FieldMarshaller:decode_field(FieldId, Fields),
+	UpdatedResult = iso8583_message:set(FieldId, Value, Result),
+	decode_fields(Tail, UpdatedFields, UpdatedResult, FieldMarshaller).

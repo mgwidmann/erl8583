@@ -3,9 +3,6 @@
 %% Description: TODO: Add description to test_binary_unmarshaller
 -module(test_binary_unmarshaller).
 
--behaviour(encoding_rules).
--behaviour(custom_marshaller).
-
 %%
 %% Include files
 %%
@@ -15,23 +12,14 @@
 %%
 %% Exported Functions
 %%
--export([get_encoding/1, marshal/2, unmarshal/2]).
+-export([decode_field/2]).
 
 %%
 %% API Functions
 %%
-get_encoding(2) ->
-	{n, fixed, 4};
-get_encoding(3) ->
-	{custom, ?MODULE};
-get_encoding(4) ->
-	{custom, ?MODULE}.
-
-marshal(_Field, _Value) ->
-	erlang:error("Shouldn't have been invoked.").
-unmarshal(3, <<3, 0, 4, 0>>) ->
+decode_field(3, <<3, 0, 4, 0>>) ->
 	{"3", <<4, 0>>};
-unmarshal(4, <<4, 0>>) ->
+decode_field(4, <<4, 0>>) ->
 	{"4", <<>>}.
 
 
@@ -189,10 +177,6 @@ field_91_test() ->
 field_101_test() ->
 	Msg = marshaller_binary:unmarshal(<<2, 0, 192, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 22, 18, 52, 86, 120, 144, 18, 52, 86, 8, 70, 105, 108, 101, 78, 97, 109, 101>>),
 	"FileName" = iso8583_message:get(101, Msg).
-
-encoding_rules_test() ->
-	Msg = marshaller_binary:unmarshal(<<2, 16, 64, 0, 0, 0, 0, 0, 0, 0, 0, 1>>, ?MODULE),
-	"0001" = iso8583_message:get(2, Msg).
 
 custom_marshaller_test() ->
 	Msg = marshaller_binary:unmarshal(<<2, 0, 48, 0, 0, 0, 0, 0, 0, 0, 3, 0, 4, 0>>, ?MODULE),

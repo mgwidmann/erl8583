@@ -125,14 +125,13 @@ decode_data_element({b, Length}, Fields) ->
 	Value = convert:ascii_hex_to_binary(ValueStr),
 	{Value, Rest}.
 
-encode_field(FieldId, Msg) ->
+encode_field(FieldId, Value) ->
 	Pattern = iso8583_fields:get_encoding(FieldId),
-	Value = iso8583_message:get(FieldId, Msg),
-	marshaller_ascii:encode_data_element(Pattern, Value).
+	encode_data_element(Pattern, Value).
 
 decode_field(FieldId, Fields) ->
 	Pattern = iso8583_fields:get_encoding(FieldId),
-	marshaller_ascii:decode_data_element(Pattern, Fields).
+	decode_data_element(Pattern, Fields).
 
 %%
 %% Local Functions
@@ -152,7 +151,8 @@ encode(Fields, Msg, FieldMarshaller) ->
 encode([], _Msg, Result, _FieldMarshaller) ->
 	Result;
 encode([FieldId|Tail], Msg, Result, FieldMarshaller) ->
-	EncodedValue = FieldMarshaller:encode_field(FieldId, Msg),
+	Value = iso8583_message:get(FieldId, Msg),
+	EncodedValue = FieldMarshaller:encode_field(FieldId, Value),
 	encode(Tail, Msg, lists:reverse(EncodedValue) ++ Result, FieldMarshaller).
  
 extract_fields([], _Offset, _Index, {FieldIds, Fields}) ->
