@@ -11,7 +11,7 @@
 %%
 %% Exported Functions
 %%
--export([marshal/1, unmarshal/1, marshal_fields/3]).
+-export([marshal/1, marshal/2, unmarshal/1, unmarshal/2]).
 
 %%
 %% API Functions
@@ -27,22 +27,24 @@ marshal(IsoMsg, FieldMarshaller) ->
 		"</isomsg>\n".
 	
 unmarshal(XmlMessage) ->
+	unmarshal(XmlMessage, marshaller_xml_field).
+
+unmarshal(XmlMessage, FieldMarshaller) ->
 	{Xml, []} = xmerl_scan:string(XmlMessage),
 	isomsg = Xml#xmlElement.name,
 	ChildNodes = Xml#xmlElement.content,
-	Msg = unmarshal(ChildNodes, iso8583_message:new()),
+	Msg = unmarshal(ChildNodes, iso8583_message:new(), FieldMarshaller),
 	Attrs = Xml#xmlElement.attributes,
 	iso8583_message:set_attributes(attributes_to_list(Attrs, []), Msg).
 
+%%
+%% Local Functions
+%%
 marshal_fields([], Result, _FieldMarshaller) ->
 	Result;
 marshal_fields([{FieldId, Value}|Tail], Result, FieldMarshaller) ->
 	MarshalledValue = FieldMarshaller:marshal(FieldId, Value),
 	marshal_fields(Tail, MarshalledValue ++ Result, FieldMarshaller).
-
-%%
-%% Local Functions
-%%
 	
 encode_attributes(List) ->
 	encode_attributes(List, "").
@@ -52,9 +54,9 @@ encode_attributes([], Result) ->
 encode_attributes([{Key, Value} | Tail], Result) ->
 	encode_attributes(Tail, " " ++ Key ++ "=\"" ++ Value ++ "\"" ++  Result).
 
-unmarshal([], Iso8583Msg) ->
+unmarshal([], Iso8583Msg, _FieldMarshaller) ->
 	Iso8583Msg;
-unmarshal([Field|T], Iso8583Msg) when is_record(Field, xmlElement) ->
+unmarshal([Field|T], Iso8583Msg, FieldMarshaller) when is_record(Field, xmlElement) ->
 	Attributes = Field#xmlElement.attributes,
 	AttributesList = attributes_to_list(Attributes, []),
 	Id = get_attribute_value("id", AttributesList),
@@ -72,12 +74,12 @@ unmarshal([Field|T], Iso8583Msg) when is_record(Field, xmlElement) ->
 		isomsg ->
 			AttrsExceptId = AttributesList -- [{"id", Id}],
 			ChildNodes = Field#xmlElement.content,
-			Value = unmarshal(ChildNodes, iso8583_message:new(AttrsExceptId))
+			Value = unmarshal(ChildNodes, iso8583_message:new(AttrsExceptId), FieldMarshaller)
 	end,	
 	UpdatedMsg = iso8583_message:set(FieldId, Value, Iso8583Msg),
-	unmarshal(T, UpdatedMsg);
-unmarshal([_H|T], Iso8583Msg) ->
-	unmarshal(T, Iso8583Msg).
+	unmarshal(T, UpdatedMsg, FieldMarshaller);
+unmarshal([_H|T], Iso8583Msg, FieldMarshaller) ->
+	unmarshal(T, Iso8583Msg, FieldMarshaller).
 
 attributes_to_list([], Result) ->
 	Result;
