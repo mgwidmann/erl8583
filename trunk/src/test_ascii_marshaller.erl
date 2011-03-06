@@ -3,9 +3,6 @@
 %% Description: TODO: Add description to test_ascii_marshaller
 -module(test_ascii_marshaller).
 
--behaviour(encoding_rules).
--behaviour(custom_marshaller).
-
 %%
 %% Include files
 %%
@@ -15,26 +12,19 @@
 %%
 %% Exported Functions
 %%
--export([get_encoding/1, marshal/2, unmarshal/2]).
+-export([encode_field/2]).
 
 %%
 %% API Functions
 %%
 
 % Self-shunting for tests.
-get_encoding(2) ->
-	{n, fixed, 4};
-get_encoding(3) ->
-	{custom, ?MODULE};
-get_encoding(4) ->
-	{custom, ?MODULE}.
-
-marshal(3, _Value) ->
+encode_field(3, _Msg) ->
 	"Field 3";
-marshal(4, _Value) ->
-	"Field 4".
-unmarshal(_Field, _Value) ->
-	erlang:error("Shouldn't have been invoked.").
+encode_field(4, _Msg) ->
+	"Field 4";
+encode_field(FieldId, Msg) ->
+	marshaller_ascii:encode_field(FieldId, Msg).
 
 %% Test that a message with only an MTI can be exported.
 mti_only_test() ->
@@ -295,12 +285,6 @@ field_101_test() ->
 	Msg2 = iso8583_message:set(0, "0200", Msg1),
 	Msg3 = iso8583_message:set(?FILE_NAME, "A loong file name", Msg2),
 	"02008000000000000000000000000800000017A loong file name" = marshaller_ascii:marshal(Msg3).
-	
-encoding_rules_test() ->
-	Msg1 = iso8583_message:new(),
-	Msg2 = iso8583_message:set(0, "0200", Msg1),
-	Msg3 = iso8583_message:set(2, "1", Msg2),
-	"020040000000000000000001" = marshaller_ascii:marshal(Msg3, ?MODULE).
 	
 custom_marshaller_test() ->
 	Msg1 = iso8583_message:new(),
