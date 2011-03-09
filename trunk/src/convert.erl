@@ -11,8 +11,10 @@
 % the License.
 
 %% @author CA Meijer
-%% Created: 12 Feb 2011
-%% Description: TODO: Add description to string_utils
+%% @copyright 2011 CA Meijer
+%% @doc convert. This module provides a number of functions for converting
+%%      between representations of data.
+%% @end
 
 -module(convert).
 
@@ -42,12 +44,28 @@
 %%
 %% API Functions
 %%
+
+%% @doc Converts a string() of characters to a list containing
+%%      the ASCII hex equivalents.
+%%
+%% @spec string_to_ascii_hex(Str::string()) ->
+%%       string().
 string_to_ascii_hex(Str) ->
 	string_to_ascii_hex(Str, []).
 
+%% @doc Converts a string() containing ASCII hex characters
+%%      to an equivalent string().
+%%
+%% @spec ascii_hex_to_string(HexStr::string()) ->
+%%       string().
 ascii_hex_to_string(HexStr) ->
 	ascii_hex_to_string(HexStr, []).
 
+%% @doc Converts an integer to a string of fixed length with
+%%      leading zeroes if necessary.
+%% 
+%% @spec integer_to_string(Value::integer(), Length::integer()) ->
+%%       string().
 integer_to_string(Value, Length) ->
 	pad_with_zeroes(Length, integer_to_list(Value)).
 
