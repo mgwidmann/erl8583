@@ -47,33 +47,40 @@
 
 %% @doc Converts a string() of characters to a list containing
 %%      the ASCII hex equivalents.
-%%
-%% @spec string_to_ascii_hex(Str::string()) ->
-%%       string().
+-spec(string_to_ascii_hex(string()) -> string()).
+
 string_to_ascii_hex(Str) ->
 	string_to_ascii_hex(Str, []).
 
 %% @doc Converts a string() containing ASCII hex characters
 %%      to an equivalent string().
-%%
-%% @spec ascii_hex_to_string(HexStr::string()) ->
-%%       string().
+-spec(ascii_hex_to_string(string()) -> string()).
+
 ascii_hex_to_string(HexStr) ->
 	ascii_hex_to_string(HexStr, []).
 
 %% @doc Converts an integer to a string of fixed length with
 %%      leading zeroes if necessary.
-%% 
-%% @spec integer_to_string(Value::integer(), Length::integer()) ->
-%%       string().
+-spec(integer_to_string(integer(), integer()) -> string()).
+
 integer_to_string(Value, Length) ->
 	pad_with_zeroes(Length, integer_to_list(Value)).
+
+%% @doc Pads a string with a number of spaces so that the
+%%      resultant string has specified length.
+-spec(pad_with_trailing_spaces(string(), integer()) -> string()).
 
 pad_with_trailing_spaces(List, Length) ->
 	lists:reverse(pad_with_leading_spaces(lists:reverse(List), Length)).
 
+%% @doc Returns the ASCII hex encoding of a binary value.
+-spec(binary_to_ascii_hex(binary()) -> string()).
+
 binary_to_ascii_hex(Bin) ->
 	binary_to_ascii_hex(binary_to_list(Bin), []).
+
+%% @doc Returns the binary value corresponding to an ASCII hex string.
+-spec(ascii_hex_to_binary(string()) -> binary()).
 
 ascii_hex_to_binary(List) ->
 	Bytes = ascii_hex_to_bytes(List, []),
