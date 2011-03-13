@@ -86,20 +86,38 @@ ascii_hex_to_binary(List) ->
 	Bytes = ascii_hex_to_bytes(List, []),
 	list_to_binary(Bytes).
 	
+%% @doc Concatenates a list of binaries and returns the result.
+-spec(concat_binaries(list(binary())) -> binary()).
+
 concat_binaries(List) ->
 	lists:foldr({convert, concat_binaries}, <<>>, List).
+
+%% @doc Concatenates two binaries.
+-spec(concat_binaries(binary(), binary()) -> binary()).
 
 concat_binaries(X, Y) ->
 	<<X/binary, Y/binary>>.
 
+%% @doc Converts an integer to a list of specified length 
+%%      of BCD encoded bytes.
+-spec(integer_to_bcd(integer(), integer()) -> list(byte())).
+
 integer_to_bcd(Value, Length) ->
 	integer_to_bcd(Value, Length, []).
+
+%% @doc Converts an ASCII hex encoded string to a list of BCD
+%%      encoded bytes padded with a specified padding character
+%%      if the string has odd length.
+-spec(ascii_hex_to_bcd(string(), char()) -> list(byte())).
 
 ascii_hex_to_bcd(Value, PaddingChar) when length(Value) rem 2 =:= 1 ->
 	ascii_hex_to_bcd(Value ++ PaddingChar, PaddingChar);
 ascii_hex_to_bcd(Value, _PaddingChar) ->
 	ascii_hex_to_bcd2(Value, []).	
 	
+%% @doc Converts a list of BCD encoded bytes to an integer.
+-spec(bcd_to_integer(list(byte())) -> integer()).
+
 bcd_to_integer(Bcd) ->
 	BcdList = binary_to_list(Bcd),
 	F = fun(Value, Acc) ->
@@ -108,6 +126,10 @@ bcd_to_integer(Bcd) ->
 				100 * Acc + 10 * Dig1 + Dig2
 		end,
 	lists:foldl(F, 0, BcdList).
+
+%% @doc Converts a BCD encoding of a value of specified length possibly
+%%      padded with a padding character to an ASCII hex string.
+-spec(bcd_to_ascii_hex(list(binary()), integer(), char()) -> string()).
 
 bcd_to_ascii_hex(Bcd, Length, PaddingChar) when size(Bcd) =:= (Length + 1) div 2 ->
 	IntValue = bcd_to_integer(Bcd),
@@ -120,8 +142,16 @@ bcd_to_ascii_hex(Bcd, Length, PaddingChar) when size(Bcd) =:= (Length + 1) div 2
 			integer_to_string(StrippedValue div 10, Length)
 	end.
 
+%% @doc Converts a list of track 2 nibbles to a string containing
+%%      an ASCII encoding of the same data.
+-spec(track2_to_string(list(byte()), integer()) -> string()).
+
 track2_to_string(Data, Length) ->
 	lists:sublist(track2_to_string2(Data, []), 1, Length).
+
+%% @doc Converts a string of ASCII characters to a track 2
+%%      encoding.
+-spec(string_to_track2(string()) -> list(byte())).
 
 string_to_track2(Data) ->
 	string_to_track2(Data, <<>>, 0, true).
