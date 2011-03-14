@@ -29,13 +29,17 @@
 -export([get_encoding/1]).
 
 %%
+%% Type declarations
+%%
+-type(max_length() :: integer()).
+
+%%
 %% API Functions
 %%
 
 %% @doc Returns how a field is encoded as a triple providing an abbreviation (e.g. ans),
 %%      the type (e.g. LLVAR) and the maximum length.
 %%
--type(max_length() :: integer()).
 -spec(get_encoding(integer()) -> {n|b|an|ans|x_n|ns|z, fixed|llvar|llvar, max_length()}).
 
 get_encoding(?MTI) ->
