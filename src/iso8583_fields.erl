@@ -10,9 +10,12 @@
 % License for the specific language governing permissions and limitations under
 % the License.
 
-%% Author: carl
-%% Created: 12 Feb 2011
-%% Description: TODO: Add description to iso8583_fields
+%% @author CA Meijer
+%% @copyright 2011 CA Meijer
+%% @doc iso8583_fields. This module provides a function to get how a field is
+%%      encoded according to the 1987 version of the ISO 8583 specification. 
+%% @end
+
 -module(iso8583_fields).
 
 %%
@@ -28,6 +31,13 @@
 %%
 %% API Functions
 %%
+
+%% @doc Returns how a field is encoded as a triple providing an abbreviation (e.g. ans),
+%%      the type (e.g. LLVAR) and the maximum length.
+%%
+-type(max_length() :: integer()).
+-spec(get_encoding(integer()) -> {n|b|an|ans|x_n|ns|z, fixed|llvar|llvar, max_length()}).
+
 get_encoding(?MTI) ->
 	{n, fixed, 4};
 get_encoding(?PAN) ->
@@ -131,7 +141,7 @@ get_encoding(?CURRENCY_CODE_SETTLE) ->
 get_encoding(?CURRENCY_CODE_CARDHOLDER_BILLING) ->
 	{an, fixed, 3};
 get_encoding(?PERSONAL_ID_NUMBER_DATA) ->
-	{b, 8};
+	{b, fixed, 8};
 get_encoding(?SECURITY_RELATED_CONTROL_INFO) ->
 	{n, fixed, 16};
 get_encoding(?ADDITIONAL_AMOUNTS) ->
@@ -155,7 +165,7 @@ get_encoding(?RESERVED_PRIVATE3) ->
 get_encoding(?RESERVED_PRIVATE4) ->
 	{ans, lllvar, 999};
 get_encoding(?MESSAGE_AUTHENTICATION_CODE) ->
-	{b, 8};
+	{b, fixed, 8};
 get_encoding(?SETTLE_CODE) ->
 	{n, fixed, 1};
 get_encoding(?EXTENDED_PAYMENT_CODE) ->
@@ -217,7 +227,7 @@ get_encoding(?SERVICE_INDICATOR) ->
 get_encoding(?REPLACEMENT_AMOUNTS) ->
 	{an, fixed, 42};
 get_encoding(?MESSAGE_SECURITY_CODE) ->
-	{b, 8};
+	{b, fixed, 8};
 get_encoding(?AMOUNT_NET_SETTLE) ->
 	{x_n, fixed, 16};
 get_encoding(?PAYEE) ->
@@ -235,7 +245,7 @@ get_encoding(?ACCOUNT_ID2) ->
 get_encoding(?TRAN_DESCRIPTION) ->
 	{ans, lllvar, 100};
 get_encoding(?MESSAGE_AUTHENTICATION_CODE2) ->
-	{b, 8};
+	{b, fixed, 8};
 get_encoding(Id) when Id >= 105 andalso Id =< 127 ->
 	{ans, lllvar, 999}.
 
