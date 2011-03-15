@@ -22,16 +22,12 @@
 %% Include files
 %%
 -include("field_defines.hrl").
+-include("erl8583_types.hrl").
 
 %%
 %% Exported Functions
 %%
 -export([get_encoding/1]).
-
-%%
-%% Type declarations
-%%
--type(max_length() :: integer()).
 
 %%
 %% API Functions
@@ -40,7 +36,7 @@
 %% @doc Returns how a field is encoded as a triple providing an abbreviation (e.g. ans),
 %%      the type (e.g. LLVAR) and the maximum length.
 %%
--spec(get_encoding(integer()) -> {n|b|an|ans|x_n|ns|z, fixed|llvar|llvar, max_length()}).
+-spec(get_encoding(integer()) -> field_encoding()).
 
 get_encoding(?MTI) ->
 	{n, fixed, 4};
