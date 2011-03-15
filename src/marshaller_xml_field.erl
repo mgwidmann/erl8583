@@ -10,15 +10,18 @@
 % License for the specific language governing permissions and limitations under
 % the License.
 
-%% Author: carl
-%% Created: 06 Mar 2011
-%% Description: TODO: Add description to marshaller_xml_field
+%% @author CA Meijer
+%% @copyright 2011 CA Meijer
+%% @doc marshaller_ascii. This module marshalls an iso8583message 
+%%      field into an XML element.
+
 -module(marshaller_xml_field).
 
 %%
 %% Include files
 %%
 -include_lib("xmerl/include/xmerl.hrl").
+-include("erl8583_types.hrl").
 
 %%
 %% Exported Functions
@@ -28,6 +31,10 @@
 %%
 %% API Functions
 %%
+
+%% @doc Marshals a field into an XML element.
+-spec(marshal(integer(), iso8583field_value()) -> string()).
+
 marshal(FieldId, Value) when is_list(Value)->
 	Id = integer_to_list(FieldId),
 	"<field id=\"" ++ Id ++ "\" value=\"" ++ Value ++ "\" />";
@@ -37,7 +44,8 @@ marshal(FieldId, Value) when is_binary(Value) ->
 		Id ++ 
 		"\" value=\"" ++ 
 		convert:binary_to_ascii_hex(Value) ++
-		"\" type=\"binary\" />";	
+		"\" type=\"binary\" />";
+% if we drop through to here, Value is of type iso8583message().
 marshal(FieldId, Value) ->
 	Id = integer_to_list(FieldId),
 	"<isomsg id=\"" ++ 
@@ -47,6 +55,9 @@ marshal(FieldId, Value) ->
 		">" ++
 		marshal_fields(iso8583_message:to_list(Value), "") ++ 
 		"</isomsg>".
+
+%% @doc Unarshals an XML element into a field value.
+-spec(unmarshal(integer(), string()) -> iso8583field_value()).
 
 unmarshal(_FieldId, FieldElement) ->
 	Attributes = FieldElement#xmlElement.attributes,
