@@ -21,6 +21,7 @@
 %%
 %% Include files
 %%
+-include("erl8583_types.hrl").
 
 %%
 %% Exported Functions
@@ -36,12 +37,6 @@
 		 get_attributes/1]).
 
 %%
-%% Type declarations
-%%
--type(iso8583message() :: {iso8583_message, list(string()), any()}).
--type(iso8583field() :: string()|binary()|iso8583message()).
-
-%%
 %% API Functions
 %%
 
@@ -54,7 +49,7 @@ new() ->
 
 %% @doc Returns an empty ISO 8583 message with a set of attributes.
 %%
--spec(new(list({string(), string()})) -> iso8583message()).
+-spec(new(list(iso8583attribute())) -> iso8583message()).
 
 new(Attributes) ->
 	{iso8583_message, Attributes, dict:new()}.
@@ -97,7 +92,7 @@ to_list(Msg) ->
 %% @doc get_attributes. Returns a list of attributes of a 
 %%      message.
 %%
--spec(get_attributes(iso8583message()) -> list(string())).
+-spec(get_attributes(iso8583message()) -> list(iso8583attribute())).
 
 get_attributes(Msg) ->
 	{iso8583_message, Attrs, _Dict} = Msg,
@@ -113,7 +108,7 @@ from_list(List) ->
 
 %% @doc set_attributes. Sets the attributes for a message.
 %%
--spec(set_attributes(list({string(), string()}), iso8583message())-> iso8583message()).
+-spec(set_attributes(list(iso8583attribute()), iso8583message())-> iso8583message()).
 
 set_attributes(Attr, Msg) ->
 	{iso8583_message, [], Dict} = Msg,
