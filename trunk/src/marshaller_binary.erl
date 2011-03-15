@@ -10,14 +10,17 @@
 % License for the specific language governing permissions and limitations under
 % the License.
 
-%% Author: carl
-%% Created: 19 Feb 2011
-%% Description: TODO: Add description to bin_marshaller
+%% @author CA Meijer
+%% @copyright 2011 CA Meijer
+%% @doc marshaller_ascii. This module marshalls an iso8583message into 
+%%      an ASCII hex string.
+
 -module(marshaller_binary).
 
 %%
 %% Include files
 %%
+-include("erl8583_types.hrl").
 
 %%
 %% Exported Functions
@@ -27,8 +30,17 @@
 %%
 %% API Functions
 %%
+
+%% @doc Marshals an ISO 8583 message into a binary. This function uses
+%%      the marshaller_binary_field module to marshal the fields.
+-spec(marshal(iso8583message()) -> binary()).
+
 marshal(Msg) ->
 	marshal(Msg, marshaller_binary_field).
+
+%% @doc Marshals an ISO 8583 message into an ASCII string. This function
+%%      uses the specified field marshalling module.
+-spec(marshal(iso8583message(), module()) -> binary()).
 
 marshal(Msg, FieldMarshaller) ->
 	Mti = iso8583_message:get(0, Msg),
@@ -38,8 +50,16 @@ marshal(Msg, FieldMarshaller) ->
 	EncodedFields = encode(Fields, Msg, FieldMarshaller),
 	<< MtiBits/binary, BitMap/binary, EncodedFields/binary>>.
 
+%% @doc Unmarshals a binary into an ISO 8583 message. This function uses
+%%      the marshaller_binary_field module to unmarshal the fields.
+-spec(unmarshal(binary()) -> iso8583message()).
+
 unmarshal(Msg) ->
 	unmarshal(Msg, marshaller_binary_field).
+
+%% @doc Unmarshals a binary into an ISO 8583 message. This function uses
+%%      the specified field marshalling module.
+-spec(unmarshal(binary(), module()) -> iso8583message()).
 
 unmarshal(Msg, FieldMarshaller) ->
 	IsoMsg1 = iso8583_message:new(),
@@ -49,6 +69,10 @@ unmarshal(Msg, FieldMarshaller) ->
 	{FieldIds, Fields} = extract_fields(Rest),
 	decode_fields(FieldIds, Fields, IsoMsg2, FieldMarshaller).
 
+%% @doc Constructs a binary representation of the bitmap for a list of 
+%%      field IDs.
+-spec(construct_bitmap(list(integer())) -> binary()).
+
 construct_bitmap([]) ->
 	<<>>;
 construct_bitmap(Fields) ->
@@ -57,6 +81,8 @@ construct_bitmap(Fields) ->
 	BitMap = lists:duplicate(NumBitMaps * 8, 0),
 	construct_bitmap(lists:sort(ExtensionBits ++ Fields), BitMap).
 
+%% @doc Extracts a list of field IDs from a binary representation of 
+%%      the bitmap.
 extract_fields(<<>>) ->
 	{[], <<>>};
 extract_fields(Message) ->
