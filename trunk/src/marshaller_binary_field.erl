@@ -13,7 +13,7 @@
 %% @author CA Meijer
 %% @copyright 2011 CA Meijer
 %% @doc marshaller_binary_field. This module marshalls a field of an iso8583message 
-%%      into an ASCII hex string.
+%%      into a binary representation.
 
 -module(marshaller_binary_field).
 

@@ -12,8 +12,8 @@
 
 %% @author CA Meijer
 %% @copyright 2011 CA Meijer
-%% @doc marshaller_ascii. This module marshalls an iso8583message into 
-%%      an ASCII hex string.
+%% @doc marshaller_binary. This module marshalls an iso8583message into 
+%%      a binary.
 
 -module(marshaller_binary).
 
