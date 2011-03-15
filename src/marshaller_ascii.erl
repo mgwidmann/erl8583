@@ -10,15 +10,17 @@
 % License for the specific language governing permissions and limitations under
 % the License.
 
-%% Author: carl
-%% Created: 12 Feb 2011
-%% Description: TODO: Add description to ascii_marshaller
+%% @author CA Meijer
+%% @copyright 2011 CA Meijer
+%% @doc marshaller_ascii. This module marshalls an iso8583message into 
+%%      an ASCII hex string.
+
 -module(marshaller_ascii).
 
 %%
 %% Include files
 %%
-
+-include("erl8583_types.hrl").
 
 %%
 %% Exported Functions
@@ -28,16 +30,33 @@
 %%
 %% API Functions
 %%
+
+%% @doc Marshals an ISO 8583 message into an ASCII string. This function
+%%      uses the marshaller_ascii_field module to marshal the fields.
+-spec(marshal(iso8583message()) -> string()).
+
 marshal(Msg) ->
 	marshal(Msg, marshaller_ascii_field).
+
+%% @doc Marshals an ISO 8583 message into an ASCII string. This function
+%%      uses the specified field marshalling module.
+-spec(marshal(iso8583message(), module()) -> string()).
 
 marshal(Msg, FieldMarshaller) ->
 	Mti = iso8583_message:get(0, Msg),
 	[0|Fields] = iso8583_message:get_fields(Msg),
 	Mti ++ construct_bitmap(Fields) ++ encode(Fields, Msg, FieldMarshaller).
 	
+%% @doc Unmarshals an ASCII string into an ISO 8583 message. This function
+%%      uses the marshaller_ascii_field module to unmarshal the fields.
+-spec(unmarshal(string()) -> iso8583message()).
+
 unmarshal(Msg) ->
 	unmarshal(Msg, marshaller_ascii_field).
+
+%% @doc Unmarshals an ASCII string into an ISO 8583 message. This function
+%%      uses the specified field marshalling module.
+-spec(unmarshal(string(), module()) -> iso8583message()).
 
 unmarshal(Msg, FieldMarshaller) ->
 	IsoMsg1 = iso8583_message:new(),
@@ -46,6 +65,10 @@ unmarshal(Msg, FieldMarshaller) ->
 	{FieldIds, Fields} = extract_fields(Rest),
 	decode_fields(FieldIds, Fields, IsoMsg2, FieldMarshaller).
 
+%% @doc Constructs an ASCII hex string representation of the
+%%      bitmap for a list of field IDs.
+-spec(construct_bitmap(list(integer())) -> string()).
+
 construct_bitmap([]) ->
 	[];
 construct_bitmap(Fields) ->
@@ -53,6 +76,10 @@ construct_bitmap(Fields) ->
 	ExtensionBits = [Bit * 64 - 127 || Bit <- lists:seq(2, NumBitMaps)],
 	BitMap = lists:duplicate(NumBitMaps * 8, 0),
 	convert:string_to_ascii_hex(construct_bitmap(lists:sort(ExtensionBits ++ Fields), BitMap)).
+
+%% @doc Extracts a list of field IDs from an ASCII hex string 
+%%      representation of the bitmap.
+-spec(extract_fields(string()) -> list(integer())).
 
 extract_fields([]) ->
 	{[], []};
