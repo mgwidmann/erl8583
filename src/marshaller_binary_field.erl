@@ -10,14 +10,17 @@
 % License for the specific language governing permissions and limitations under
 % the License.
 
-%% Author: carl
-%% Created: 06 Mar 2011
-%% Description: TODO: Add description to marshaller_binary_field
+%% @author CA Meijer
+%% @copyright 2011 CA Meijer
+%% @doc marshaller_binary_field. This module marshalls a field of an iso8583message 
+%%      into an ASCII hex string.
+
 -module(marshaller_binary_field).
 
 %%
 %% Include files
 %%
+-include("erl8583_types.hrl").
 
 %%
 %% Exported Functions
@@ -27,6 +30,11 @@
 %%
 %% API Functions
 %%
+
+%% @doc Marshals a data element into a binary given the field encoding
+%%      and the value of the data element.
+-spec(marshal_data_element(field_encoding(), iso8583field_value()) -> string()).
+
 marshal_data_element({n, llvar, Length}, Value) when length(Value) =< Length ->
 	LField = convert:integer_to_bcd(length(Value), 2),
 	VField = convert:ascii_hex_to_bcd(Value, "0"),
@@ -64,6 +72,11 @@ marshal_data_element({x_n, fixed, Length}, [Head | Value]) when Head =:= $C orel
 	convert:concat_binaries(<<Head>>,  convert:integer_to_bcd(IntValue, Length));
 marshal_data_element({b, Length}, Value) when size(Value) =:= Length ->
 	Value.
+
+%% @doc Extracts a field value from the start of a binary given how the field
+%%      is encoded.  The field value and the rest of the unmarshalled binary
+%%      is returned as a tuple.
+-spec(unmarshal_data_element(field_encoding(), binary()) -> {iso8583field_value(), binary()}).
 
 unmarshal_data_element({n, llvar, _MaxLength}, Fields) ->
 	{NBin, RestBin} = split_binary(Fields, 1),
@@ -128,14 +141,20 @@ unmarshal_data_element({z, llvar, _MaxLength}, Fields) ->
 unmarshal_data_element({b, Length}, Fields) ->
 	split_binary(Fields, Length).
 
+%% @doc Marshals a field value into an ASCII string.
+-spec(marshal(integer(), iso8583field_value()) -> binary()).
+
 marshal(FieldId, Value) ->
 	Pattern = iso8583_fields:get_encoding(FieldId),
 	marshal_data_element(Pattern, Value).
 
+%% @doc Extracts a field value from the start of a string.  The field value 
+%%      and the rest of the unmarshalled string is returned as a tuple.
+-spec(unmarshal(integer(), binary()) -> {iso8583field_value(), binary()}).
+
 unmarshal(FieldId, Fields) ->
 	Pattern = iso8583_fields:get_encoding(FieldId),
 	unmarshal_data_element(Pattern, Fields).
-
 
 
 %%

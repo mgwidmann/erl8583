@@ -109,7 +109,6 @@ unmarshal_data_element({b, Length}, Fields) ->
 	{Value, Rest}.
 
 %% @doc Marshals a field value into an ASCII string.
-%%
 -spec(marshal(integer(), iso8583field_value()) -> string()).
 
 marshal(FieldId, Value) ->
@@ -118,7 +117,6 @@ marshal(FieldId, Value) ->
 
 %% @doc Extracts a field value from the start of a string.  The field value 
 %%      and the rest of the unmarshalled string is returned as a tuple.
-%%
 -spec(unmarshal(integer(), string()) -> {iso8583field_value(), string()}).
 
 unmarshal(FieldId, Fields) ->
