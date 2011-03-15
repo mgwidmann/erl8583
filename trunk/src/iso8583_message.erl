@@ -57,7 +57,7 @@ new(Attributes) ->
 %% @doc Sets the value of a field in a message and returns an updated
 %%      message.
 %%
--spec(set(integer(), iso8583field(), iso8583message()) -> iso8583message()).
+-spec(set(integer(), iso8583field_value(), iso8583message()) -> iso8583message()).
 
 set(Index, Value, Msg) when is_integer(Index) andalso Index >= 0 ->
 	{iso8583_message, Attrs, Dict} = Msg,
@@ -66,7 +66,7 @@ set(Index, Value, Msg) when is_integer(Index) andalso Index >= 0 ->
 	
 %% @doc Gets the value of a field from a message.
 %%
--spec(get(integer(), iso8583message()) -> iso8583field()).
+-spec(get(integer(), iso8583message()) -> iso8583field_value()).
 
 get(Index, Msg) ->
 	{iso8583_message, _Attrs, Dict} = Msg,
@@ -83,7 +83,7 @@ get_fields(Msg) ->
 %% @doc to_list. Returns an encoding of a message as a list of
 %%      {Field, Value} pairs.
 %%
--spec(to_list(iso8583message()) -> list({integer(), iso8583field()})).
+-spec(to_list(iso8583message()) -> list({integer(), iso8583field_value()})).
 
 to_list(Msg) ->
 	{iso8583_message, _Attrs, Dict} = Msg,
@@ -101,7 +101,7 @@ get_attributes(Msg) ->
 %% @doc from_list. Constructs an ISO 8583 message from a list
 %%      of {Id, Value} pairs.
 %%
--spec(from_list({integer(), iso8583field()})-> iso8583message()).
+-spec(from_list({integer(), iso8583field_value()})-> iso8583message()).
 
 from_list(List) ->
 	from_list(List, new()).
