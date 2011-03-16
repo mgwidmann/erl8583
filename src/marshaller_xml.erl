@@ -10,15 +10,19 @@
 % License for the specific language governing permissions and limitations under
 % the License.
 
-%% Author: carl
-%% Created: 06 Feb 2011
-%% Description: TODO: Add description to marshaller_xml
+%% @author CA Meijer
+%% @copyright 2011 CA Meijer
+%% @doc marshaller_xml. This module marshalls an iso8583message 
+%%      into an XML element. The XML elements created by this
+%%      module should be compatible with jPOS.
+
 -module(marshaller_xml).
 
 %%
 %% Include files
 %%
 -include_lib("xmerl/include/xmerl.hrl").
+-include("erl8583_types.hrl").
 
 %%
 %% Exported Functions
@@ -28,8 +32,19 @@
 %%
 %% API Functions
 %%
+
+%% @doc. Marshals an ISO8583 message into an XML element with
+%%       root tag <iso8583message>. The individual fields
+%%       are marshalled using the marshaller_xml_field module.
+-spec(marshal(iso8583message()) -> string()).
+
 marshal(IsoMsg) ->
 	marshal(IsoMsg, marshaller_xml_field).
+
+%% @doc. Marshals an ISO8583 message into an XML element with
+%%       root tag <iso8583message>. The individual fields
+%%       are marshalled using the specified marshaller.
+-spec(marshal(iso8583message(), module()) -> string()).
 
 marshal(IsoMsg, FieldMarshaller) ->
 	"<isomsg" ++ 
@@ -38,8 +53,18 @@ marshal(IsoMsg, FieldMarshaller) ->
 		marshal_fields(iso8583_message:to_list(IsoMsg), [], FieldMarshaller) ++ 
 		"</isomsg>\n".
 	
+%% @doc. Unmarshals an XML element with root tag <iso8583message>
+%%       into an ISO 8583 message. The individual fields
+%%       are unmarshalled using the marshaller_xml_field module.
+-spec(unmarshal(string()) -> iso8583message()).
+
 unmarshal(XmlMessage) ->
 	unmarshal(XmlMessage, marshaller_xml_field).
+
+%% @doc. Unmarshals an XML element with root tag <iso8583message>
+%%       into an ISO 8583 message. The individual fields
+%%       are unmarshalled using the specified marshaller.
+-spec(unmarshal(string(), module()) -> iso8583message()).
 
 unmarshal(XmlMessage, FieldMarshaller) ->
 	{Xml, []} = xmerl_scan:string(XmlMessage),
