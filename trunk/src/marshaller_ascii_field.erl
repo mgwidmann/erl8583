@@ -62,7 +62,7 @@ marshal_data_element({x_n, fixed, Length}, [Head | Value]) when Head =:= $C orel
 	[Head] ++ convert:integer_to_string(IntValue, Length);
 marshal_data_element({z, llvar, Length}, Value) when length(Value) =< Length ->
 	convert:integer_to_string(length(Value), 2) ++ Value;
-marshal_data_element({b, Length}, Value) when size(Value) =:= Length ->
+marshal_data_element({b, fixed, Length}, Value) when size(Value) =:= Length ->
 	convert:binary_to_ascii_hex(Value).
 
 %% @doc Extracts a field value from the start of a string given how the field
@@ -103,7 +103,7 @@ unmarshal_data_element({x_n, fixed, Length}, [Head|Tail]) when Head =:= $C orels
 unmarshal_data_element({z, llvar, _MaxLength}, Fields) ->
 	{N, Rest} = lists:split(2, Fields),
 	lists:split(list_to_integer(N), Rest);
-unmarshal_data_element({b, Length}, Fields) ->
+unmarshal_data_element({b, fixed, Length}, Fields) ->
 	{ValueStr, Rest} = lists:split(2 * Length, Fields),
 	Value = convert:ascii_hex_to_binary(ValueStr),
 	{Value, Rest}.
