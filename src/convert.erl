@@ -21,7 +21,6 @@
 %%
 %% Include files
 %%
--include_lib("eunit/include/eunit.hrl").
 
 %%
 %% Exported Functions
@@ -39,7 +38,9 @@
 		 bcd_to_integer/1,
 		 bcd_to_ascii_hex/3,
 		 track2_to_string/2,
-		 string_to_track2/1]).
+		 string_to_track2/1,
+		 ascii_hex_to_digit/1,
+		 digit_to_ascii_hex/1]).
 
 %%
 %% API Functions
@@ -156,13 +157,9 @@ track2_to_string(Data, Length) ->
 string_to_track2(Data) ->
 	string_to_track2(Data, <<>>, 0, true).
 
-%%
-%% Local Functions
-%%
-digit_to_ascii_hex(D) when D >= 0 andalso D =< 9 ->
-	[48+D];
-digit_to_ascii_hex(D) when D >= 10 andalso D =< 15 ->
-	[55+D].
+%% @doc Converts a string containing 1 ASCII hex character
+%%      to its value.
+-spec(ascii_hex_to_digit(string()) -> integer()).
 
 ascii_hex_to_digit([A]) when A >= $0 andalso A =< $9 ->
 	A - $0;
@@ -171,6 +168,19 @@ ascii_hex_to_digit([A]) when A >= $A andalso A =< $F ->
 ascii_hex_to_digit([A]) when A >= $a andalso A =< $f ->
 	A - 87.
 
+%% @doc Converts a value in the range 0-15 to a 1 character
+%%      string containing the equivalent hexadecimal digit.
+-spec(digit_to_ascii_hex(integer()) -> string()).
+
+digit_to_ascii_hex(D) when D >= 0 andalso D =< 9 ->
+	[48+D];
+digit_to_ascii_hex(D) when D >= 10 andalso D =< 15 ->
+	[55+D].
+
+
+%%
+%% Local Functions
+%%
 string_to_ascii_hex([], Result) ->
 	lists:reverse(Result);
 string_to_ascii_hex([Char|Tail], Result) ->
@@ -249,77 +259,3 @@ string_to_track2([H|T], Result, 0, true) ->
 string_to_track2([H|T], Result, X, false) ->
 	Xupdated = X*16 + H - $0,
 	string_to_track2(T, concat_binaries(Result, <<Xupdated>>), 0, true).
-
-	
-%%
-%% Tests
-%%
-digit_to_ascii_hex_test() ->
-	"0" = digit_to_ascii_hex(0),
-	"9" = digit_to_ascii_hex(9),
-	"A" = digit_to_ascii_hex(10),
-	"F" = digit_to_ascii_hex(15),
-	?assertError(_, digit_to_ascii_hex(16)).
-
-ascii_hex_to_digit_test() ->
-	0 = ascii_hex_to_digit("0"),
-	9 = ascii_hex_to_digit("9"),
-	10 = ascii_hex_to_digit("A"),
-	15 = ascii_hex_to_digit("F"),
-	10 = ascii_hex_to_digit("a"),
-	15 = ascii_hex_to_digit("f"),
-	?assertError(_, ascii_hex_to_digit("G")).
-
-string_to_ascii_hex_test() ->
-	"" = string_to_ascii_hex(""),
-	"30" = string_to_ascii_hex("0"),
-	"48656C6C6F" = string_to_ascii_hex("Hello").
-
-ascii_hex_to_string_test() ->
-	"" = ascii_hex_to_string(""),
-	"Hello" = ascii_hex_to_string("48656C6c6F").
-
-binary_to_ascii_hex_test() ->
-	"00FFA5" = binary_to_ascii_hex(<<0, 255, 165>>).
-
-ascii_hex_to_binary_test() ->
-	<<0, 255, 165>> = ascii_hex_to_binary("00FFa5").
-
-concat_binaries_test() ->
-	<<1, 2, 3, 4>> = concat_binaries([<<1>>, <<2, 3>>, <<4>>]).
-
-integer_to_bcd_test() ->
-	<<1>> = integer_to_bcd(1, 1),
-	<<1>> = integer_to_bcd(1, 2),
-	<<0, 1>> = integer_to_bcd(1, 3),
-	<<16>> = integer_to_bcd(10, 2),
-	<<0, 16>> = integer_to_bcd(10, 3),
-	<<9, 153>> = integer_to_bcd(999, 3),
-	<<0,18,52,86,120>> = integer_to_bcd(12345678, 10),
-	<<1,35,69,103,137>> = integer_to_bcd(123456789, 9),
-	?assertError(_, integer_to_bcd(1000, 3)).
-
-ascii_hex_to_bcd_test() ->
-	<<48, 31>> = ascii_hex_to_bcd("301", "F"),
-	<<64, 31>> = ascii_hex_to_bcd("401", "F"),
-	<<48, 16>> = ascii_hex_to_bcd("301", "0"),
-	<<18, 52>> = ascii_hex_to_bcd("1234", "0").
-
-bcd_to_integer_test() ->
-	17 = bcd_to_integer(<<23>>),
-	1 = bcd_to_integer(<<1>>),
-	1 = bcd_to_integer(<<0, 1>>),
-	123 = bcd_to_integer(<<1, 35>>),
-	123456 = bcd_to_integer(<<18, 52, 86>>).
-
-bcd_to_ascii_hex_test() ->
-	"1234" = bcd_to_ascii_hex(<<18, 52>>, 4, "F"),
-	"123" = bcd_to_ascii_hex(<<18, 63>>, 3, "F"),
-	"123" = bcd_to_ascii_hex(<<18, 48>>, 3, "0"),
-	"401" = bcd_to_ascii_hex(<<64, 31>>, 3, "F").
-
-track2_to_string_test() ->
-	";1234123412341234=0305101193010877?" = track2_to_string(<<177, 35, 65, 35, 65, 35, 65, 35, 77, 3, 5, 16, 17, 147, 1, 8, 119, 240>>,  35).
-
-string_to_track2_test() ->
-	<<177, 35, 65, 35, 65, 35, 65, 35, 77, 3, 5, 16, 17, 147, 1, 8, 119, 240>> = convert:string_to_track2(";1234123412341234=0305101193010877?").
