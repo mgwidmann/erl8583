@@ -20,10 +20,10 @@ test() ->
 	BeamPred = fun(F) -> is_beam_file(F) end,
 	BeamFiles = lists:filter(BeamPred, Files),
 	TestPred = fun(F) -> is_test_file(F) end,
-	TestFiles = lists:filter(TestPred, BeamFiles),
+	TestFiles = lists:sort(lists:filter(TestPred, BeamFiles)),
 	TestModules = [erlang:list_to_atom(lists:sublist(F, 1, length(F)-5)) || F <- TestFiles],
 	TestModules2 = [Mod || Mod <- TestModules, Mod =/= test_all],
-	[Module:test() || Module <- TestModules2].
+	[run_tests(Module) || Module <- TestModules2].
 
 %%
 %% Local Functions
@@ -39,3 +39,6 @@ is_test_file(FileName) when length(FileName) >= 5 ->
 is_test_file(_FileName) ->
 	false.
 
+run_tests(Module) ->
+	io:format("Running ~p:~n", [Module]),
+	Module:test().
