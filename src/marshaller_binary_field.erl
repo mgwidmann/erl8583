@@ -70,7 +70,7 @@ marshal_data_element({ans, lllvar, Length}, Value) when length(Value) =< Length 
 marshal_data_element({x_n, fixed, Length}, [Head | Value]) when Head =:= $C orelse Head =:= $D ->
 	IntValue = list_to_integer(Value),
 	convert:concat_binaries(<<Head>>,  convert:integer_to_bcd(IntValue, Length));
-marshal_data_element({b, Length}, Value) when size(Value) =:= Length ->
+marshal_data_element({b, fixed, Length}, Value) when size(Value) =:= Length ->
 	Value.
 
 %% @doc Extracts a field value from the start of a binary given how the field
@@ -138,7 +138,7 @@ unmarshal_data_element({z, llvar, _MaxLength}, Fields) ->
 	N = convert:bcd_to_integer(NBin),
 	{ValueBin, Rest} = split_binary(RestBin, (N+1) div 2), 
 	{convert:track2_to_string(ValueBin, N), Rest};
-unmarshal_data_element({b, Length}, Fields) ->
+unmarshal_data_element({b, fixed, Length}, Fields) ->
 	split_binary(Fields, Length).
 
 %% @doc Marshals a field value into an ASCII string.
