@@ -21,6 +21,7 @@
 %%
 %% Include files
 %%
+%% @headerfile "../include/erl8583_types.hrl"
 -include("field_defines.hrl").
 -include("erl8583_types.hrl").
 
@@ -36,6 +37,7 @@
 %% @doc Returns how a field is encoded as a triple providing an abbreviation (e.g. ans),
 %%      the type (e.g. LLVAR) and the maximum length.
 %%
+%% @spec get_encoding(integer()) -> field_encoding()
 -spec(get_encoding(integer()) -> field_encoding()).
 
 get_encoding(?MTI) ->
@@ -248,8 +250,6 @@ get_encoding(?MESSAGE_AUTHENTICATION_CODE2) ->
 	{b, fixed, 8};
 get_encoding(Id) when Id >= 105 andalso Id =< 127 ->
 	{ans, lllvar, 999}.
-
-
 
 
 %%
