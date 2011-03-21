@@ -20,6 +20,7 @@
 %%
 %% Include files
 %%
+%% @headerfile "../include/erl8583_types.hrl"
 -include("erl8583_types.hrl").
 
 %%
@@ -34,6 +35,7 @@
 %% @doc Marshals a data element into a string given the field encoding
 %%      and the value of the data element.
 %%
+%% @spec marshal_data_element(field_encoding(), iso8583field_value()) -> string()
 -spec(marshal_data_element(field_encoding(), iso8583field_value()) -> string()).
 
 marshal_data_element({n, llvar, Length}, Value) when length(Value) =< Length ->
@@ -69,6 +71,7 @@ marshal_data_element({b, fixed, Length}, Value) when size(Value) =:= Length ->
 %%      is encoded.  The field value and the rest of the unmarshalled string
 %%      is returned as a tuple.
 %%
+%% @spec unmarshal_data_element(field_encoding(), string()) -> {iso8583field_value(), string()}
 -spec(unmarshal_data_element(field_encoding(), string()) -> {iso8583field_value(), string()}).
 
 unmarshal_data_element({n, llvar, _MaxLength}, Fields) ->
@@ -109,6 +112,8 @@ unmarshal_data_element({b, fixed, Length}, Fields) ->
 	{Value, Rest}.
 
 %% @doc Marshals a field value into an ASCII string.
+%%
+%% @spec marshal(integer(), iso8583field_value()) -> string()
 -spec(marshal(integer(), iso8583field_value()) -> string()).
 
 marshal(FieldId, Value) ->
@@ -117,6 +122,8 @@ marshal(FieldId, Value) ->
 
 %% @doc Extracts a field value from the start of a string.  The field value 
 %%      and the rest of the unmarshalled string is returned as a tuple.
+%%
+%% @spec unmarshal(integer(), string()) -> {iso8583field_value(), string()}
 -spec(unmarshal(integer(), string()) -> {iso8583field_value(), string()}).
 
 unmarshal(FieldId, Fields) ->

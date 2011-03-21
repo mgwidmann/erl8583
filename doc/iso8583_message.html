@@ -1,0 +1,124 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>Module iso8583_message</title>
+<link rel="stylesheet" type="text/css" href="stylesheet.css" title="EDoc">
+</head>
+<body bgcolor="white">
+<div class="navbar"><a name="#navbar_top"></a><table width="100%" border="0" cellspacing="0" cellpadding="2" summary="navigation bar"><tr><td><a href="overview-summary.html" target="overviewFrame">Overview</a></td><td><a href="http://www.erlang.org/"><img src="erlang.png" align="right" border="0" alt="erlang logo"></a></td></tr></table></div>
+<hr>
+
+<h1>Module iso8583_message</h1>
+<ul class="index"><li><a href="#description">Description</a></li><li><a href="#types">Data Types</a></li><li><a href="#index">Function Index</a></li><li><a href="#functions">Function Details</a></li></ul>iso8583_message.
+<p>Copyright © 2011 CA Meijer</p>
+
+<p><b>Authors:</b> CA Meijer.</p>
+
+<h2><a name="description">Description</a></h2>iso8583_message. Provided methods for creating, updating and
+       interrogating an ISO 8583 message.
+<h2><a name="types">Data Types</a></h2>
+
+<h3 class="typedecl"><a name="type-field_encoding">field_encoding()</a></h3>
+<p><tt>field_encoding() = {n | b | an | ans | x_n | ns | z, fixed | llvar | lllvar, <a href="#type-max_length">max_length()</a>}</tt></p>
+<p>How a field is encoded.</p>
+
+<h3 class="typedecl"><a name="type-iso8583attribute">iso8583attribute()</a></h3>
+<p><tt>iso8583attribute() = {string(), string()}</tt></p>
+<p>An attribute expressed as
+  a {Key, Value} pair.</p>
+
+<h3 class="typedecl"><a name="type-iso8583field_value">iso8583field_value()</a></h3>
+<p><tt>iso8583field_value() = string() | binary() | <a href="#type-iso8583message">iso8583message()</a></tt></p>
+<p>Valid
+  types for an ISO 8583 field.</p>
+
+<h3 class="typedecl"><a name="type-iso8583message">iso8583message()</a></h3>
+<p><tt>iso8583message() = {iso8583_message, <a href="#type-iso8583attribute">iso8583attribute()</a>, any()}</tt></p>
+<p>An
+  encapsulation of an ISO 8583 message.</p>
+
+<h3 class="typedecl"><a name="type-max_length">max_length()</a></h3>
+<p><tt>max_length() = integer()</tt></p>
+<p>The maximum length of a field in bytes.</p>
+
+<h2><a name="index">Function Index</a></h2>
+<table width="100%" border="1" cellspacing="0" cellpadding="2" summary="function index"><tr><td valign="top"><a href="#from_list-1">from_list/1</a></td><td>Constructs an ISO 8583 message from a list
+       of {Id, Value} pairs.</td></tr>
+<tr><td valign="top"><a href="#get-2">get/2</a></td><td>Gets the value of a field from a message.</td></tr>
+<tr><td valign="top"><a href="#get_attributes-1">get_attributes/1</a></td><td>Returns a list of attributes of a
+       message.</td></tr>
+<tr><td valign="top"><a href="#get_fields-1">get_fields/1</a></td><td>Gets the fields from a message.</td></tr>
+<tr><td valign="top"><a href="#new-0">new/0</a></td><td>Returns an empty ISO 8583 message.</td></tr>
+<tr><td valign="top"><a href="#new-1">new/1</a></td><td>Returns an empty ISO 8583 message with a set of attributes.</td></tr>
+<tr><td valign="top"><a href="#set-3">set/3</a></td><td>Sets the value of a field in a message and returns an updated
+       message.</td></tr>
+<tr><td valign="top"><a href="#set_attributes-2">set_attributes/2</a></td><td>Sets the attributes for a message.</td></tr>
+<tr><td valign="top"><a href="#to_list-1">to_list/1</a></td><td>Returns an encoding of a message as a list of
+       {Field, Value} pairs.</td></tr>
+</table>
+
+<h2><a name="functions">Function Details</a></h2>
+
+<h3 class="function"><a name="from_list-1">from_list/1</a></h3>
+<div class="spec">
+<p><tt>from_list(List::{integer(), <a href="#type-iso8583field_value">iso8583field_value()</a>}) -&gt; <a href="#type-iso8583message">iso8583message()</a></tt></p>
+</div><p>Constructs an ISO 8583 message from a list
+       of {Id, Value} pairs.
+ </p>
+
+<h3 class="function"><a name="get-2">get/2</a></h3>
+<div class="spec">
+<p><tt>get(Index::integer(), Msg::<a href="#type-iso8583message">iso8583message()</a>) -&gt; <a href="#type-iso8583field_value">iso8583field_value()</a></tt></p>
+</div><p>Gets the value of a field from a message.
+ </p>
+
+<h3 class="function"><a name="get_attributes-1">get_attributes/1</a></h3>
+<div class="spec">
+<p><tt>get_attributes(Msg::<a href="#type-iso8583message">iso8583message()</a>) -&gt; list(<a href="#type-iso8583attribute">iso8583attribute()</a>)</tt></p>
+</div><p>Returns a list of attributes of a
+       message.
+ </p>
+
+<h3 class="function"><a name="get_fields-1">get_fields/1</a></h3>
+<div class="spec">
+<p><tt>get_fields(Msg::<a href="#type-iso8583message">iso8583message()</a>) -&gt; list(integer())</tt></p>
+</div><p>Gets the fields from a message.
+ </p>
+
+<h3 class="function"><a name="new-0">new/0</a></h3>
+<div class="spec">
+<p><tt>new() -&gt; <a href="#type-iso8583message">iso8583message()</a></tt></p>
+</div><p>Returns an empty ISO 8583 message.
+ </p>
+
+<h3 class="function"><a name="new-1">new/1</a></h3>
+<div class="spec">
+<p><tt>new(Attributes::list(<a href="#type-iso8583attribute">iso8583attribute()</a>)) -&gt; <a href="#type-iso8583message">iso8583message()</a></tt></p>
+</div><p>Returns an empty ISO 8583 message with a set of attributes.
+ </p>
+
+<h3 class="function"><a name="set-3">set/3</a></h3>
+<div class="spec">
+<p><tt>set(Index::integer(), Value::<a href="#type-iso8583field_value">iso8583field_value()</a>, Msg::<a href="#type-iso8583message">iso8583message()</a>) -&gt; <a href="#type-iso8583message">iso8583message()</a></tt></p>
+</div><p>Sets the value of a field in a message and returns an updated
+       message.
+ </p>
+
+<h3 class="function"><a name="set_attributes-2">set_attributes/2</a></h3>
+<div class="spec">
+<p><tt>set_attributes(Attr::list(<a href="#type-iso8583attribute">iso8583attribute()</a>), Msg::<a href="#type-iso8583message">iso8583message()</a>) -&gt; <a href="#type-iso8583message">iso8583message()</a></tt></p>
+</div><p>Sets the attributes for a message.
+ </p>
+
+<h3 class="function"><a name="to_list-1">to_list/1</a></h3>
+<div class="spec">
+<p><tt>to_list(Msg::<a href="#type-iso8583message">iso8583message()</a>) -&gt; list({integer(), <a href="#type-iso8583field_value">iso8583field_value()</a>})</tt></p>
+</div><p>Returns an encoding of a message as a list of
+       {Field, Value} pairs.
+ </p>
+<hr>
+
+<div class="navbar"><a name="#navbar_bottom"></a><table width="100%" border="0" cellspacing="0" cellpadding="2" summary="navigation bar"><tr><td><a href="overview-summary.html" target="overviewFrame">Overview</a></td><td><a href="http://www.erlang.org/"><img src="erlang.png" align="right" border="0" alt="erlang logo"></a></td></tr></table></div>
+<p><i>Generated by EDoc, Mar 21 2011, 11:27:16.</i></p>
+</body>
+</html>
