@@ -35,7 +35,8 @@
 		 to_list/1, 
 		 from_list/1, 
 		 set_attributes/2, 
-		 get_attributes/1]).
+		 get_attributes/1,
+		 update/3]).
 
 %%
 %% API Functions
@@ -58,7 +59,8 @@ new(Attributes) ->
 	{iso8583_message, Attributes, dict:new()}.
 	
 %% @doc Sets the value of a field in a message and returns an updated
-%%      message.
+%%      message. If the value for the field is already set, an exception
+%%      is thrown.
 %%
 %% @spec set(integer(), iso8583field_value(), iso8583message()) -> iso8583message()
 -spec(set(integer(), iso8583field_value(), iso8583message()) -> iso8583message()).
@@ -123,6 +125,16 @@ from_list(List) ->
 set_attributes(Attr, Msg) ->
 	{iso8583_message, [], Dict} = Msg,
 	{iso8583_message, Attr, Dict}.
+
+%% @doc Sets or updates the value of a field in a message and returns an updated
+%%      message. The value for the field need not have been set previously.
+%%
+%% @spec update(integer(), iso8583field_value(), iso8583message()) -> iso8583message()
+-spec(update(integer(), iso8583field_value(), iso8583message()) -> iso8583message()).
+
+update(Index, Value, Msg) when is_integer(Index) andalso Index >= 0 ->
+	{iso8583_message, Attrs, Dict} = Msg,
+	{iso8583_message, Attrs, dict:store(Index, Value, Dict)}.
 
 %%
 %% Local Functions
