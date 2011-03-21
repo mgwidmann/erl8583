@@ -20,6 +20,7 @@
 %%
 %% Include files
 %%
+%% @headerfile "../include/erl8583_types.hrl"
 -include("erl8583_types.hrl").
 
 %%
@@ -33,6 +34,8 @@
 
 %% @doc Marshals an ISO 8583 message into an ASCII string. This function
 %%      uses the marshaller_ascii_field module to marshal the fields.
+%%
+%% @spec marshal(iso8583message()) -> string()
 -spec(marshal(iso8583message()) -> string()).
 
 marshal(Msg) ->
@@ -40,6 +43,8 @@ marshal(Msg) ->
 
 %% @doc Marshals an ISO 8583 message into an ASCII string. This function
 %%      uses the specified field marshalling module.
+%%
+%% @spec marshal(iso8583message(), module()) -> string()
 -spec(marshal(iso8583message(), module()) -> string()).
 
 marshal(Msg, FieldMarshaller) ->
@@ -49,6 +54,8 @@ marshal(Msg, FieldMarshaller) ->
 	
 %% @doc Unmarshals an ASCII string into an ISO 8583 message. This function
 %%      uses the marshaller_ascii_field module to unmarshal the fields.
+%%
+%% @spec unmarshal(string()) -> iso8583message()
 -spec(unmarshal(string()) -> iso8583message()).
 
 unmarshal(Msg) ->
@@ -56,6 +63,8 @@ unmarshal(Msg) ->
 
 %% @doc Unmarshals an ASCII string into an ISO 8583 message. This function
 %%      uses the specified field marshalling module.
+%%
+%% @spec unmarshal(string(), module()) -> iso8583message()
 -spec(unmarshal(string(), module()) -> iso8583message()).
 
 unmarshal(Msg, FieldMarshaller) ->
@@ -67,6 +76,8 @@ unmarshal(Msg, FieldMarshaller) ->
 
 %% @doc Constructs an ASCII hex string representation of the
 %%      bitmap for a list of field IDs.
+%%
+%% @spec construct_bitmap(list(integer())) -> string()
 -spec(construct_bitmap(list(integer())) -> string()).
 
 construct_bitmap([]) ->
@@ -79,6 +90,8 @@ construct_bitmap(Fields) ->
 
 %% @doc Extracts a list of field IDs from an ASCII hex string 
 %%      representation of the bitmap.
+%%
+%% @spec extract_fields(string()) -> list(integer())
 -spec(extract_fields(string()) -> list(integer())).
 
 extract_fields([]) ->
