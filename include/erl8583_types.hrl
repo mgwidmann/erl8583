@@ -12,18 +12,22 @@
 
 %% Defines types used by other modules.
 
-%% The maximum length of a field in bytes.
+%% @type max_length() = integer(). The maximum length of a field in bytes.
 -type(max_length() :: integer()).
 
+%% @type field_encoding() = {n|b|an|ans|x_n|ns|z, fixed|llvar|lllvar, max_length()}. 
 %% How a field is encoded.
 -type(field_encoding() :: {n|b|an|ans|x_n|ns|z, fixed|llvar|lllvar, max_length()}).
 
 %% An attribute of an ISO 8583 message is a {Key, Value} pair.
+%%
 -type(iso8583attribute() :: {string(), string()}).
 
 %% An encapsulation of an ISO 8583 message.
+%%
 -type(iso8583message() :: {iso8583_message, iso8583attribute(), any()}).
 
 %% Valid types for the field of an ISO 8583 message.
+%%
 -type(iso8583field_value() :: string()|binary()|iso8583message()).
 
