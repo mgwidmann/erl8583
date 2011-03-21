@@ -21,6 +21,7 @@
 %%
 %% Include files
 %%
+%% @headerfile "../include/erl8583_types.hrl"
 -include("erl8583_types.hrl").
 
 %%
@@ -42,6 +43,7 @@
 
 %% @doc Returns an empty ISO 8583 message.
 %%
+%% @spec new() -> iso8583message()
 -spec(new() -> iso8583message()).
 
 new() ->
@@ -49,6 +51,7 @@ new() ->
 
 %% @doc Returns an empty ISO 8583 message with a set of attributes.
 %%
+%% @spec new(list(iso8583attribute())) -> iso8583message()
 -spec(new(list(iso8583attribute())) -> iso8583message()).
 
 new(Attributes) ->
@@ -57,6 +60,7 @@ new(Attributes) ->
 %% @doc Sets the value of a field in a message and returns an updated
 %%      message.
 %%
+%% @spec set(integer(), iso8583field_value(), iso8583message()) -> iso8583message()
 -spec(set(integer(), iso8583field_value(), iso8583message()) -> iso8583message()).
 
 set(Index, Value, Msg) when is_integer(Index) andalso Index >= 0 ->
@@ -66,6 +70,7 @@ set(Index, Value, Msg) when is_integer(Index) andalso Index >= 0 ->
 	
 %% @doc Gets the value of a field from a message.
 %%
+%% @spec get(integer(), iso8583message()) -> iso8583field_value()
 -spec(get(integer(), iso8583message()) -> iso8583field_value()).
 
 get(Index, Msg) ->
@@ -74,40 +79,45 @@ get(Index, Msg) ->
 
 %% @doc Gets the fields from a message.
 %%
+%% @spec get_fields(iso8583message()) -> list(integer())
 -spec(get_fields(iso8583message()) -> list(integer())).
 
 get_fields(Msg) ->
 	{iso8583_message, _Attrs, Dict} = Msg,
 	lists:sort(dict:fetch_keys(Dict)).
 
-%% @doc to_list. Returns an encoding of a message as a list of
+%% @doc Returns an encoding of a message as a list of
 %%      {Field, Value} pairs.
 %%
+%% @spec to_list(iso8583message()) -> list({integer(), iso8583field_value()})
 -spec(to_list(iso8583message()) -> list({integer(), iso8583field_value()})).
 
 to_list(Msg) ->
 	{iso8583_message, _Attrs, Dict} = Msg,
 	dict:to_list(Dict).
 
-%% @doc get_attributes. Returns a list of attributes of a 
+%% @doc Returns a list of attributes of a 
 %%      message.
 %%
+%% @spec get_attributes(iso8583message()) -> list(iso8583attribute())
 -spec(get_attributes(iso8583message()) -> list(iso8583attribute())).
 
 get_attributes(Msg) ->
 	{iso8583_message, Attrs, _Dict} = Msg,
 	Attrs.
 									
-%% @doc from_list. Constructs an ISO 8583 message from a list
+%% @doc Constructs an ISO 8583 message from a list
 %%      of {Id, Value} pairs.
 %%
+%% @spec from_list({integer(), iso8583field_value()})-> iso8583message()
 -spec(from_list({integer(), iso8583field_value()})-> iso8583message()).
 
 from_list(List) ->
 	from_list(List, new()).
 
-%% @doc set_attributes. Sets the attributes for a message.
+%% @doc Sets the attributes for a message.
 %%
+%% @spec set_attributes(list(iso8583attribute()), iso8583message())-> iso8583message()
 -spec(set_attributes(list(iso8583attribute()), iso8583message())-> iso8583message()).
 
 set_attributes(Attr, Msg) ->
