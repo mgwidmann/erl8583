@@ -27,9 +27,9 @@
 
 %% An encapsulation of an ISO 8583 message.
 %%
-%% @type iso8583message() = {iso8583_message, iso8583attribute(), any()}. An 
+%% @type iso8583message() = {iso8583_message, list(iso8583attribute()), any()}. An 
 %% encapsulation of an ISO 8583 message.
--type(iso8583message() :: {iso8583_message, iso8583attribute(), any()}).
+-type(iso8583message() :: {iso8583_message, list(iso8583attribute()), any()}).
 
 %% Valid types for the field of an ISO 8583 message.
 %%
