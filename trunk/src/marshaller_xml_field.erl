@@ -20,6 +20,7 @@
 %%
 %% Include files
 %%
+%% @headerfile "../include/erl8583_types.hrl"
 -include_lib("xmerl/include/xmerl.hrl").
 -include("erl8583_types.hrl").
 
@@ -33,6 +34,8 @@
 %%
 
 %% @doc Marshals a field into an XML element.
+%%
+%% @spec marshal(integer(), iso8583field_value()) -> string()
 -spec(marshal(integer(), iso8583field_value()) -> string()).
 
 marshal(FieldId, Value) when is_list(Value)->
@@ -57,6 +60,8 @@ marshal(FieldId, Value) ->
 		"</isomsg>".
 
 %% @doc Unarshals an XML element into a field value.
+%%
+%% @spec unmarshal(integer(), string()) -> iso8583field_value()
 -spec(unmarshal(integer(), string()) -> iso8583field_value()).
 
 unmarshal(_FieldId, FieldElement) ->

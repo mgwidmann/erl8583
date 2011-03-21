@@ -21,6 +21,7 @@
 %%
 %% Include files
 %%
+%% @headerfile "../include/erl8583_types.hrl"
 -include_lib("xmerl/include/xmerl.hrl").
 -include("erl8583_types.hrl").
 
@@ -33,17 +34,21 @@
 %% API Functions
 %%
 
-%% @doc. Marshals an ISO8583 message into an XML element with
-%%       root tag <iso8583message>. The individual fields
-%%       are marshalled using the marshaller_xml_field module.
+%% @doc Marshals an ISO8583 message into an XML element with
+%%      root tag &lt;iso8583message&gt;. The individual fields
+%%      are marshalled using the marshaller_xml_field module.
+%%
+%% @spec marshal(iso8583message()) -> string()
 -spec(marshal(iso8583message()) -> string()).
 
 marshal(IsoMsg) ->
 	marshal(IsoMsg, marshaller_xml_field).
 
-%% @doc. Marshals an ISO8583 message into an XML element with
-%%       root tag <iso8583message>. The individual fields
-%%       are marshalled using the specified marshaller.
+%% @doc Marshals an ISO8583 message into an XML element with
+%%      root tag &lt;iso8583message&gt;. The individual fields
+%%      are marshalled using the specified marshaller.
+%%
+%% @spec marshal(iso8583message(), module()) -> string()
 -spec(marshal(iso8583message(), module()) -> string()).
 
 marshal(IsoMsg, FieldMarshaller) ->
@@ -53,17 +58,21 @@ marshal(IsoMsg, FieldMarshaller) ->
 		marshal_fields(iso8583_message:to_list(IsoMsg), [], FieldMarshaller) ++ 
 		"</isomsg>\n".
 	
-%% @doc. Unmarshals an XML element with root tag <iso8583message>
-%%       into an ISO 8583 message. The individual fields
-%%       are unmarshalled using the marshaller_xml_field module.
+%% @doc Unmarshals an XML element with root tag &lt;iso8583message&gt;
+%%      into an ISO 8583 message. The individual fields
+%%      are unmarshalled using the marshaller_xml_field module.
+%%
+%% @spec unmarshal(string()) -> iso8583message()
 -spec(unmarshal(string()) -> iso8583message()).
 
 unmarshal(XmlMessage) ->
 	unmarshal(XmlMessage, marshaller_xml_field).
 
-%% @doc. Unmarshals an XML element with root tag <iso8583message>
-%%       into an ISO 8583 message. The individual fields
-%%       are unmarshalled using the specified marshaller.
+%% @doc Unmarshals an XML element with root tag &lt;iso8583message&gt;
+%%      into an ISO 8583 message. The individual fields
+%%      are unmarshalled using the specified marshaller.
+%%
+%% @spec unmarshal(string(), module()) -> iso8583message()
 -spec(unmarshal(string(), module()) -> iso8583message()).
 
 unmarshal(XmlMessage, FieldMarshaller) ->
