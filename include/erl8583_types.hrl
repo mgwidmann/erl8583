@@ -21,13 +21,19 @@
 
 %% An attribute of an ISO 8583 message is a {Key, Value} pair.
 %%
+%% @type iso8583attribute() = {string(), string()}. An attribute expressed as
+%% a {Key, Value} pair.
 -type(iso8583attribute() :: {string(), string()}).
 
 %% An encapsulation of an ISO 8583 message.
 %%
+%% @type iso8583message() = {iso8583_message, iso8583attribute(), any()}. An 
+%% encapsulation of an ISO 8583 message.
 -type(iso8583message() :: {iso8583_message, iso8583attribute(), any()}).
 
 %% Valid types for the field of an ISO 8583 message.
 %%
+%% @type iso8583field_value() = string()|binary()|iso8583message(). Valid
+%% types for an ISO 8583 field. 
 -type(iso8583field_value() :: string()|binary()|iso8583message()).
 
