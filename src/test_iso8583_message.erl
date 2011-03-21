@@ -88,4 +88,12 @@ set_attributes_test() ->
 	Msg = iso8583_message:new(),
 	UpdatedMsg = iso8583_message:set_attributes([{"foo", "bar"}, {"hello", "world"}], Msg),
 	[{"foo", "bar"}, {"hello", "world"}] = iso8583_message:get_attributes(UpdatedMsg).
+
+update_test() ->
+	Msg = iso8583_message:new(),
+	UpdatedMsg = iso8583_message:update(3, "foo", Msg),
+	"foo" = iso8583_message:get(3, UpdatedMsg),
+	ChangedMsg = iso8583_message:update(3, "bar", UpdatedMsg),
+	"bar" = iso8583_message:get(3, ChangedMsg).
+
 	
