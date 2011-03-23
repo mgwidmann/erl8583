@@ -48,8 +48,8 @@ marshal(Msg) ->
 -spec(marshal(iso8583message(), module()) -> string()).
 
 marshal(Msg, FieldMarshaller) ->
-	Mti = iso8583_message:get(0, Msg),
-	[0|Fields] = iso8583_message:get_fields(Msg),
+	Mti = erl8583_message:get(0, Msg),
+	[0|Fields] = erl8583_message:get_fields(Msg),
 	Mti ++ construct_bitmap(Fields) ++ encode(Fields, Msg, FieldMarshaller).
 	
 %% @doc Unmarshals an ASCII string into an ISO 8583 message. This function
@@ -68,9 +68,9 @@ unmarshal(Msg) ->
 -spec(unmarshal(string(), module()) -> iso8583message()).
 
 unmarshal(Msg, FieldMarshaller) ->
-	IsoMsg1 = iso8583_message:new(),
+	IsoMsg1 = erl8583_message:new(),
 	{Mti, Rest} = lists:split(4, Msg),
-	IsoMsg2 = iso8583_message:set(0, Mti, IsoMsg1),
+	IsoMsg2 = erl8583_message:set(0, Mti, IsoMsg1),
 	{FieldIds, Fields} = extract_fields(Rest),
 	decode_fields(FieldIds, Fields, IsoMsg2, FieldMarshaller).
 
@@ -120,7 +120,7 @@ encode(Fields, Msg, FieldMarshaller) ->
 encode([], _Msg, Result, _FieldMarshaller) ->
 	Result;
 encode([FieldId|Tail], Msg, Result, FieldMarshaller) ->
-	Value = iso8583_message:get(FieldId, Msg),
+	Value = erl8583_message:get(FieldId, Msg),
 	EncodedValue = FieldMarshaller:marshal(FieldId, Value),
 	encode(Tail, Msg, lists:reverse(EncodedValue) ++ Result, FieldMarshaller).
  
@@ -141,7 +141,7 @@ decode_fields([], _, Result, _FieldMarshaller) ->
 	Result;
 decode_fields([FieldId|Tail], Fields, Result, FieldMarshaller) ->
 	{Value, UpdatedFields} = FieldMarshaller:unmarshal(FieldId, Fields),
-	UpdatedResult = iso8583_message:set(FieldId, Value, Result),
+	UpdatedResult = erl8583_message:set(FieldId, Value, Result),
 	decode_fields(Tail, UpdatedFields, UpdatedResult, FieldMarshaller).
 	
 get_bit_map_length(Msg) ->

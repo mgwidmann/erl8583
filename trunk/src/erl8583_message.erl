@@ -16,7 +16,7 @@
 %%      interrogating an ISO 8583 message. 
 %% @end
 
--module(iso8583_message).
+-module(erl8583_message).
 
 %%
 %% Include files

@@ -53,9 +53,9 @@ marshal(IsoMsg) ->
 
 marshal(IsoMsg, FieldMarshaller) ->
 	"<isomsg" ++ 
-		encode_attributes(iso8583_message:get_attributes(IsoMsg)) ++ 
+		encode_attributes(erl8583_message:get_attributes(IsoMsg)) ++ 
 		">" ++ 
-		marshal_fields(iso8583_message:to_list(IsoMsg), [], FieldMarshaller) ++ 
+		marshal_fields(erl8583_message:to_list(IsoMsg), [], FieldMarshaller) ++ 
 		"</isomsg>\n".
 	
 %% @doc Unmarshals an XML element with root tag &lt;iso8583message&gt;
@@ -79,9 +79,9 @@ unmarshal(XmlMessage, FieldMarshaller) ->
 	{Xml, []} = xmerl_scan:string(XmlMessage),
 	isomsg = Xml#xmlElement.name,
 	ChildNodes = Xml#xmlElement.content,
-	Msg = unmarshal(ChildNodes, iso8583_message:new(), FieldMarshaller),
+	Msg = unmarshal(ChildNodes, erl8583_message:new(), FieldMarshaller),
 	Attrs = Xml#xmlElement.attributes,
-	iso8583_message:set_attributes(attributes_to_list(Attrs, []), Msg).
+	erl8583_message:set_attributes(attributes_to_list(Attrs, []), Msg).
 
 %%
 %% Local Functions
@@ -108,7 +108,7 @@ unmarshal([Field|T], Iso8583Msg, FieldMarshaller) when is_record(Field, xmlEleme
 	Id = get_attribute_value("id", AttributesList),
 	FieldId = list_to_integer(Id),
 	Value = FieldMarshaller:unmarshal(FieldId, Field),
-	UpdatedMsg = iso8583_message:set(FieldId, Value, Iso8583Msg),
+	UpdatedMsg = erl8583_message:set(FieldId, Value, Iso8583Msg),
 	unmarshal(T, UpdatedMsg, FieldMarshaller);
 unmarshal([_H|T], Iso8583Msg, FieldMarshaller) ->
 	unmarshal(T, Iso8583Msg, FieldMarshaller).

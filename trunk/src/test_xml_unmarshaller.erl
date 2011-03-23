@@ -22,9 +22,9 @@ xml_unmarshal_test() ->
 					 "<field id=\"3\" value=\"333333\"/>" ++
 					 "</isomsg>",
 	Message = marshaller_xml:unmarshal(XmlMessage),
-	?assertEqual("0800", iso8583_message:get(0, Message)),
-	?assertEqual("333333", iso8583_message:get(3, Message)),
-	?assertEqual([0, 3], iso8583_message:get_fields(Message)).
+	?assertEqual("0800", erl8583_message:get(0, Message)),
+	?assertEqual("333333", erl8583_message:get(3, Message)),
+	?assertEqual([0, 3], erl8583_message:get_fields(Message)).
 	
 xml_unmarshal_with_text_test() ->
 	XmlMessage = "<isomsg>Some text" ++
@@ -32,9 +32,9 @@ xml_unmarshal_with_text_test() ->
 					 "<field id=\"3\" value=\"333333\"/>" ++
 					 "</isomsg>",
 	Message = marshaller_xml:unmarshal(XmlMessage),
-	?assertEqual("0800", iso8583_message:get(0, Message)),
-	?assertEqual("333333", iso8583_message:get(3, Message)),
-	?assertEqual([0, 3], iso8583_message:get_fields(Message)).
+	?assertEqual("0800", erl8583_message:get(0, Message)),
+	?assertEqual("333333", erl8583_message:get(3, Message)),
+	?assertEqual([0, 3], erl8583_message:get_fields(Message)).
 	
 xml_unmarshal_complex_test() ->
 	XmlMessage = "<isomsg>" ++
@@ -46,46 +46,46 @@ xml_unmarshal_complex_test() ->
       "</isomsg>" ++
     "</isomsg>",
 	Message = marshaller_xml:unmarshal(XmlMessage),
-	?assertEqual("0810", iso8583_message:get(0, Message)),
-	?assertEqual("333333", iso8583_message:get(3, Message)),
-	?assertEqual("00", iso8583_message:get(39, Message)),
-	?assertEqual([0, 3, 39, 48], iso8583_message:get_fields(Message)),
-	BitMap = iso8583_message:get(48, Message),
-	[1] = iso8583_message:get_fields(BitMap),
-	"hello" = iso8583_message:get(1, BitMap).
+	?assertEqual("0810", erl8583_message:get(0, Message)),
+	?assertEqual("333333", erl8583_message:get(3, Message)),
+	?assertEqual("00", erl8583_message:get(39, Message)),
+	?assertEqual([0, 3, 39, 48], erl8583_message:get_fields(Message)),
+	BitMap = erl8583_message:get(48, Message),
+	[1] = erl8583_message:get_fields(BitMap),
+	"hello" = erl8583_message:get(1, BitMap).
 
 xml_unmarshal_with_attributes_test() ->
 	Message = marshaller_xml:unmarshal("<isomsg foo=\"bar\"""/>"),
-	[{"foo", "bar"}] = iso8583_message:get_attributes(Message).
+	[{"foo", "bar"}] = erl8583_message:get_attributes(Message).
 
 xml_unmarshal_with_attributes2_test() ->
 	Message = marshaller_xml:unmarshal("<isomsg><isomsg id=\"48\" foo=\"bar\"""/></isomsg>"),
-	Field = iso8583_message:get(48, Message),
-	[{"foo", "bar"}] = iso8583_message:get_attributes(Field).
+	Field = erl8583_message:get(48, Message),
+	[{"foo", "bar"}] = erl8583_message:get_attributes(Field).
 	
 xml_unmarshal_complex2_test() ->
 	Message = marshaller_xml:unmarshal("<isomsg><isomsg id=\"48\"><isomsg id=\"105\" baz=\"hello\"""/></isomsg></isomsg>"),
-	[48] = iso8583_message:get_fields(Message),
-	Message2 = iso8583_message:get(48, Message),
-	[105] = iso8583_message:get_fields(Message2),
-	Message3 = iso8583_message:get(105, Message2),
-	[] = iso8583_message:get_fields(Message3),
-	[{"baz", "hello"}] = iso8583_message:get_attributes(Message3).
+	[48] = erl8583_message:get_fields(Message),
+	Message2 = erl8583_message:get(48, Message),
+	[105] = erl8583_message:get_fields(Message2),
+	Message3 = erl8583_message:get(105, Message2),
+	[] = erl8583_message:get_fields(Message3),
+	[{"baz", "hello"}] = erl8583_message:get_attributes(Message3).
 	
 foo() ->
 	{ok, Sock} = gen_tcp:connect("localhost", 8000, [list, {packet, 0}, {active, true}]),
-	IsoMsg1 = iso8583_message:new(),
-	IsoMsg2 = iso8583_message:set(0, "0800", IsoMsg1),
-	IsoMsg3 = iso8583_message:set(3, "333333", IsoMsg2),
-	Field = iso8583_message:new(),
-	Field2 = iso8583_message:set(1, "help", Field),
-	IsoMsg4 = iso8583_message:set(40, Field2, IsoMsg3),
+	IsoMsg1 = erl8583_message:new(),
+	IsoMsg2 = erl8583_message:set(0, "0800", IsoMsg1),
+	IsoMsg3 = erl8583_message:set(3, "333333", IsoMsg2),
+	Field = erl8583_message:new(),
+	Field2 = erl8583_message:set(1, "help", Field),
+	IsoMsg4 = erl8583_message:set(40, Field2, IsoMsg3),
 	Marshalled = marshaller_xml:marshal(IsoMsg4),
 	ok = gen_tcp:send(Sock, Marshalled),
 	ok = gen_tcp:send(Sock, "\n").
 	%receive {tcp, _, IsoResp} -> IsoResp end,
 	%IsoResp1 = marshaller_xml:unmarshal(IsoResp),
-	%iso8583_message:get(39, IsoResp1).	
+	%erl8583_message:get(39, IsoResp1).	
 
 %%
 %% Local Functions
