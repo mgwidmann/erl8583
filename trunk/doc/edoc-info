@@ -1,4 +1,5 @@
 {packages,[]}.
-{modules,[convert,iso8583_fields,iso8583_message,marshaller_ascii,
-          marshaller_ascii_field,marshaller_binary,marshaller_binary_field,
-          marshaller_xml,marshaller_xml_field]}.
+{modules,[erl8583_convert,erl8583_fields,erl8583_marshaller_ascii,
+          erl8583_marshaller_ascii_field,erl8583_marshaller_binary,
+          erl8583_marshaller_binary_field,erl8583_marshaller_xml,
+          erl8583_marshaller_xml_field,erl8583_message]}.

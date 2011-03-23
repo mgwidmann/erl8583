@@ -1,21 +1,46 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
-<title>Module marshaller_binary_field</title>
+<title>Module erl8583_marshaller_binary_field</title>
 <link rel="stylesheet" type="text/css" href="stylesheet.css" title="EDoc">
 </head>
 <body bgcolor="white">
 <div class="navbar"><a name="#navbar_top"></a><table width="100%" border="0" cellspacing="0" cellpadding="2" summary="navigation bar"><tr><td><a href="overview-summary.html" target="overviewFrame">Overview</a></td><td><a href="http://www.erlang.org/"><img src="erlang.png" align="right" border="0" alt="erlang logo"></a></td></tr></table></div>
 <hr>
 
-<h1>Module marshaller_binary_field</h1>
-<ul class="index"><li><a href="#description">Description</a></li><li><a href="#index">Function Index</a></li><li><a href="#functions">Function Details</a></li></ul>marshaller_binary_field.
+<h1>Module erl8583_marshaller_binary_field</h1>
+<ul class="index"><li><a href="#description">Description</a></li><li><a href="#types">Data Types</a></li><li><a href="#index">Function Index</a></li><li><a href="#functions">Function Details</a></li></ul>erl8583_marshaller_binary_field.
 <p>Copyright © 2011 CA Meijer</p>
 
 <p><b>Authors:</b> CA Meijer.</p>
 
-<h2><a name="description">Description</a></h2>marshaller_binary_field. This module marshalls a field of an iso8583message
+<h2><a name="description">Description</a></h2>erl8583_marshaller_binary_field. This module marshalls a field of an iso8583message
        into a binary representation.
+<h2><a name="types">Data Types</a></h2>
+
+<h3 class="typedecl"><a name="type-field_encoding">field_encoding()</a></h3>
+<p><tt>field_encoding() = {n | b | an | ans | x_n | ns | z, fixed | llvar | lllvar, <a href="#type-max_length">max_length()</a>}</tt></p>
+<p>How a field is encoded.</p>
+
+<h3 class="typedecl"><a name="type-iso8583attribute">iso8583attribute()</a></h3>
+<p><tt>iso8583attribute() = {string(), string()}</tt></p>
+<p>An attribute expressed as
+  a {Key, Value} pair.</p>
+
+<h3 class="typedecl"><a name="type-iso8583field_value">iso8583field_value()</a></h3>
+<p><tt>iso8583field_value() = string() | binary() | <a href="#type-iso8583message">iso8583message()</a></tt></p>
+<p>Valid
+  types for an ISO 8583 field.</p>
+
+<h3 class="typedecl"><a name="type-iso8583message">iso8583message()</a></h3>
+<p><tt>iso8583message() = {iso8583_message, list(<a href="#type-iso8583attribute">iso8583attribute()</a>), any()}</tt></p>
+<p>An
+  encapsulation of an ISO 8583 message.</p>
+
+<h3 class="typedecl"><a name="type-max_length">max_length()</a></h3>
+<p><tt>max_length() = integer()</tt></p>
+<p>The maximum length of a field in bytes.</p>
+
 <h2><a name="index">Function Index</a></h2>
 <table width="100%" border="1" cellspacing="0" cellpadding="2" summary="function index"><tr><td valign="top"><a href="#marshal-2">marshal/2</a></td><td>Marshals a field value into an ASCII string.</td></tr>
 <tr><td valign="top"><a href="#marshal_data_element-2">marshal_data_element/2</a></td><td>Marshals a data element into a binary given the field encoding
@@ -29,30 +54,34 @@
 
 <h3 class="function"><a name="marshal-2">marshal/2</a></h3>
 <div class="spec">
-<p><tt>marshal(FieldId, Value) -&gt; any()</tt></p>
-</div><p>Marshals a field value into an ASCII string.</p>
+<p><tt>marshal(FieldId::integer(), Value::<a href="#type-iso8583field_value">iso8583field_value()</a>) -&gt; binary()</tt></p>
+</div><p>Marshals a field value into an ASCII string.
+ </p>
 
 <h3 class="function"><a name="marshal_data_element-2">marshal_data_element/2</a></h3>
 <div class="spec">
-<p><tt>marshal_data_element(X1, Value) -&gt; any()</tt></p>
+<p><tt>marshal_data_element(X1::<a href="#type-field_encoding">field_encoding()</a>, Value::<a href="#type-iso8583field_value">iso8583field_value()</a>) -&gt; string()</tt></p>
 </div><p>Marshals a data element into a binary given the field encoding
-       and the value of the data element.</p>
+       and the value of the data element.
+ </p>
 
 <h3 class="function"><a name="unmarshal-2">unmarshal/2</a></h3>
 <div class="spec">
-<p><tt>unmarshal(FieldId, Fields) -&gt; any()</tt></p>
+<p><tt>unmarshal(FieldId::integer(), Fields::binary()) -&gt; {<a href="#type-iso8583field_value">iso8583field_value()</a>, binary()}</tt></p>
 </div><p>Extracts a field value from the start of a string.  The field value
-       and the rest of the unmarshalled string is returned as a tuple.</p>
+       and the rest of the unmarshalled string is returned as a tuple.
+ </p>
 
 <h3 class="function"><a name="unmarshal_data_element-2">unmarshal_data_element/2</a></h3>
 <div class="spec">
-<p><tt>unmarshal_data_element(X1, Fields) -&gt; any()</tt></p>
+<p><tt>unmarshal_data_element(X1::<a href="#type-field_encoding">field_encoding()</a>, Fields::binary()) -&gt; {<a href="#type-iso8583field_value">iso8583field_value()</a>, binary()}</tt></p>
 </div><p>Extracts a field value from the start of a binary given how the field
        is encoded.  The field value and the rest of the unmarshalled binary
-       is returned as a tuple.</p>
+       is returned as a tuple.
+ </p>
 <hr>
 
 <div class="navbar"><a name="#navbar_bottom"></a><table width="100%" border="0" cellspacing="0" cellpadding="2" summary="navigation bar"><tr><td><a href="overview-summary.html" target="overviewFrame">Overview</a></td><td><a href="http://www.erlang.org/"><img src="erlang.png" align="right" border="0" alt="erlang logo"></a></td></tr></table></div>
-<p><i>Generated by EDoc, Mar 21 2011, 17:35:36.</i></p>
+<p><i>Generated by EDoc, Mar 23 2011, 19:50:58.</i></p>
 </body>
 </html>
