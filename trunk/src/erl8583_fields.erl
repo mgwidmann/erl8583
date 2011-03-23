@@ -16,7 +16,7 @@
 %%      encoded according to the 1987 version of the ISO 8583 specification. 
 %% @end
 
--module(iso8583_fields).
+-module(erl8583_fields).
 
 %%
 %% Include files

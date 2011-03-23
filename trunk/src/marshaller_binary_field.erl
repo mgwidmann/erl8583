@@ -152,7 +152,7 @@ unmarshal_data_element({b, fixed, Length}, Fields) ->
 -spec(marshal(integer(), iso8583field_value()) -> binary()).
 
 marshal(FieldId, Value) ->
-	Pattern = iso8583_fields:get_encoding(FieldId),
+	Pattern = erl8583_fields:get_encoding(FieldId),
 	marshal_data_element(Pattern, Value).
 
 %% @doc Extracts a field value from the start of a string.  The field value 
@@ -162,7 +162,7 @@ marshal(FieldId, Value) ->
 -spec(unmarshal(integer(), binary()) -> {iso8583field_value(), binary()}).
 
 unmarshal(FieldId, Fields) ->
-	Pattern = iso8583_fields:get_encoding(FieldId),
+	Pattern = erl8583_fields:get_encoding(FieldId),
 	unmarshal_data_element(Pattern, Fields).
 
 
