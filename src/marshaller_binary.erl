@@ -33,13 +33,13 @@
 %%
 
 %% @doc Marshals an ISO 8583 message into a binary. This function uses
-%%      the marshaller_binary_field module to marshal the fields.
+%%      the erl8583_marshaller_binary_field module to marshal the fields.
 %%
 %% @spec marshal(iso8583message()) -> binary()
 -spec(marshal(iso8583message()) -> binary()).
 
 marshal(Msg) ->
-	marshal(Msg, marshaller_binary_field).
+	marshal(Msg, erl8583_marshaller_binary_field).
 
 %% @doc Marshals an ISO 8583 message into an ASCII string. This function
 %%      uses the specified field marshalling module.
@@ -56,13 +56,13 @@ marshal(Msg, FieldMarshaller) ->
 	<< MtiBits/binary, BitMap/binary, EncodedFields/binary>>.
 
 %% @doc Unmarshals a binary into an ISO 8583 message. This function uses
-%%      the marshaller_binary_field module to unmarshal the fields.
+%%      the erl8583_marshaller_binary_field module to unmarshal the fields.
 %%
 %% @spec unmarshal(binary()) -> iso8583message()
 -spec(unmarshal(binary()) -> iso8583message()).
 
 unmarshal(Msg) ->
-	unmarshal(Msg, marshaller_binary_field).
+	unmarshal(Msg, erl8583_marshaller_binary_field).
 
 %% @doc Unmarshals a binary into an ISO 8583 message. This function uses
 %%      the specified field marshalling module.
