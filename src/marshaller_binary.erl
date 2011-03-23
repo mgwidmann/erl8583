@@ -48,9 +48,9 @@ marshal(Msg) ->
 -spec(marshal(iso8583message(), module()) -> binary()).
 
 marshal(Msg, FieldMarshaller) ->
-	Mti = iso8583_message:get(0, Msg),
+	Mti = erl8583_message:get(0, Msg),
 	MtiBits = erl8583_convert:ascii_hex_to_binary(Mti),
-	[0|Fields] = iso8583_message:get_fields(Msg),
+	[0|Fields] = erl8583_message:get_fields(Msg),
 	BitMap = construct_bitmap(Fields),
 	EncodedFields = encode(Fields, Msg, FieldMarshaller),
 	<< MtiBits/binary, BitMap/binary, EncodedFields/binary>>.
@@ -71,10 +71,10 @@ unmarshal(Msg) ->
 -spec(unmarshal(binary(), module()) -> iso8583message()).
 
 unmarshal(Msg, FieldMarshaller) ->
-	IsoMsg1 = iso8583_message:new(),
+	IsoMsg1 = erl8583_message:new(),
 	{MtiBin, Rest} = split_binary(Msg, 2),
 	Mti = erl8583_convert:binary_to_ascii_hex(MtiBin),
-	IsoMsg2 = iso8583_message:set(0, Mti, IsoMsg1),
+	IsoMsg2 = erl8583_message:set(0, Mti, IsoMsg1),
 	{FieldIds, Fields} = extract_fields(Rest),
 	decode_fields(FieldIds, Fields, IsoMsg2, FieldMarshaller).
 
@@ -124,7 +124,7 @@ encode(Fields, Msg, FieldMarshaller) ->
 encode([], _Msg, Result, _FieldMarshaller) ->
 	Result;
 encode([FieldId|Tail], Msg, Result, FieldMarshaller) ->
-	Value = iso8583_message:get(FieldId, Msg),
+	Value = erl8583_message:get(FieldId, Msg),
 	EncodedValue = FieldMarshaller:marshal(FieldId, Value),
 	encode(Tail, Msg, erl8583_convert:concat_binaries(Result, EncodedValue), FieldMarshaller).
 
@@ -155,5 +155,5 @@ decode_fields([], _, Result, _EncodingRules) ->
 	Result;
 decode_fields([FieldId|Tail], Fields, Result, FieldMarshaller) ->
 	{Value, UpdatedFields} = FieldMarshaller:unmarshal(FieldId, Fields),
-	UpdatedResult = iso8583_message:set(FieldId, Value, Result),
+	UpdatedResult = erl8583_message:set(FieldId, Value, Result),
 	decode_fields(Tail, UpdatedFields, UpdatedResult, FieldMarshaller).

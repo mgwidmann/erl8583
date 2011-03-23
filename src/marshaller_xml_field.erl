@@ -54,9 +54,9 @@ marshal(FieldId, Value) ->
 	"<isomsg id=\"" ++ 
 		Id ++ 
 		"\"" ++
-		encode_attributes(iso8583_message:get_attributes(Value)) ++
+		encode_attributes(erl8583_message:get_attributes(Value)) ++
 		">" ++
-		marshal_fields(iso8583_message:to_list(Value), "") ++ 
+		marshal_fields(erl8583_message:to_list(Value), "") ++ 
 		"</isomsg>".
 
 %% @doc Unarshals an XML element into a field value.
@@ -81,7 +81,7 @@ unmarshal(_FieldId, FieldElement) ->
 		isomsg ->
 			AttrsExceptId = AttributesList -- [{"id", Id}],
 			ChildNodes = FieldElement#xmlElement.content,
-			unmarshal_complex(ChildNodes, iso8583_message:new(AttrsExceptId))
+			unmarshal_complex(ChildNodes, erl8583_message:new(AttrsExceptId))
 	end.	
 
 
@@ -129,7 +129,7 @@ unmarshal_complex([Field|T], Iso8583Msg) when is_record(Field, xmlElement) ->
 	Id = get_attribute_value("id", AttributesList),
 	FieldId = list_to_integer(Id),
 	Value = unmarshal(FieldId, Field),
-	UpdatedMsg = iso8583_message:set(FieldId, Value, Iso8583Msg),
+	UpdatedMsg = erl8583_message:set(FieldId, Value, Iso8583Msg),
 	unmarshal_complex(T, UpdatedMsg);
 unmarshal_complex([_H|T], Iso8583Msg) ->
 	unmarshal_complex(T, Iso8583Msg).
