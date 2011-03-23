@@ -12,10 +12,10 @@
 
 %% @author CA Meijer
 %% @copyright 2011 CA Meijer
-%% @doc marshaller_xml_field. This module marshalls an iso8583message 
+%% @doc erl8583_marshaller_xml_field. This module marshalls an iso8583message 
 %%      field into an XML element.
 
--module(marshaller_xml_field).
+-module(erl8583_marshaller_xml_field).
 
 %%
 %% Include files
