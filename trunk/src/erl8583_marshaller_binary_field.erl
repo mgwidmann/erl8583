@@ -15,7 +15,7 @@
 %% @doc marshaller_binary_field. This module marshalls a field of an iso8583message 
 %%      into a binary representation.
 
--module(marshaller_binary_field).
+-module(erl8583_marshaller_binary_field).
 
 %%
 %% Include files

@@ -33,13 +33,13 @@
 %%
 
 %% @doc Marshals an ISO 8583 message into an ASCII string. This function
-%%      uses the marshaller_ascii_field module to marshal the fields.
+%%      uses the erl8583_marshaller_ascii_field module to marshal the fields.
 %%
 %% @spec marshal(iso8583message()) -> string()
 -spec(marshal(iso8583message()) -> string()).
 
 marshal(Msg) ->
-	marshal(Msg, marshaller_ascii_field).
+	marshal(Msg, erl8583_marshaller_ascii_field).
 
 %% @doc Marshals an ISO 8583 message into an ASCII string. This function
 %%      uses the specified field marshalling module.
@@ -53,13 +53,13 @@ marshal(Msg, FieldMarshaller) ->
 	Mti ++ construct_bitmap(Fields) ++ encode(Fields, Msg, FieldMarshaller).
 	
 %% @doc Unmarshals an ASCII string into an ISO 8583 message. This function
-%%      uses the marshaller_ascii_field module to unmarshal the fields.
+%%      uses the erl8583_marshaller_ascii_field module to unmarshal the fields.
 %%
 %% @spec unmarshal(string()) -> iso8583message()
 -spec(unmarshal(string()) -> iso8583message()).
 
 unmarshal(Msg) ->
-	unmarshal(Msg, marshaller_ascii_field).
+	unmarshal(Msg, erl8583_marshaller_ascii_field).
 
 %% @doc Unmarshals an ASCII string into an ISO 8583 message. This function
 %%      uses the specified field marshalling module.

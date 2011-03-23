@@ -15,7 +15,7 @@
 %% @doc marshaller_ascii_field. This module marshalls a iso8583message field into 
 %%      an ASCII hex string.
 
--module(marshaller_ascii_field).
+-module(erl8583_marshaller_ascii_field).
 
 %%
 %% Include files
