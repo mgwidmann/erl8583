@@ -36,13 +36,13 @@
 
 %% @doc Marshals an ISO8583 message into an XML element with
 %%      root tag &lt;iso8583message&gt;. The individual fields
-%%      are marshalled using the marshaller_xml_field module.
+%%      are marshalled using the erl8583_marshaller_xml_field module.
 %%
 %% @spec marshal(iso8583message()) -> string()
 -spec(marshal(iso8583message()) -> string()).
 
 marshal(IsoMsg) ->
-	marshal(IsoMsg, marshaller_xml_field).
+	marshal(IsoMsg, erl8583_marshaller_xml_field).
 
 %% @doc Marshals an ISO8583 message into an XML element with
 %%      root tag &lt;iso8583message&gt;. The individual fields
@@ -60,13 +60,13 @@ marshal(IsoMsg, FieldMarshaller) ->
 	
 %% @doc Unmarshals an XML element with root tag &lt;iso8583message&gt;
 %%      into an ISO 8583 message. The individual fields
-%%      are unmarshalled using the marshaller_xml_field module.
+%%      are unmarshalled using the erl8583_marshaller_xml_field module.
 %%
 %% @spec unmarshal(string()) -> iso8583message()
 -spec(unmarshal(string()) -> iso8583message()).
 
 unmarshal(XmlMessage) ->
-	unmarshal(XmlMessage, marshaller_xml_field).
+	unmarshal(XmlMessage, erl8583_marshaller_xml_field).
 
 %% @doc Unmarshals an XML element with root tag &lt;iso8583message&gt;
 %%      into an ISO 8583 message. The individual fields

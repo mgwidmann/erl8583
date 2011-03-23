@@ -12,7 +12,7 @@
 
 %% @author CA Meijer
 %% @copyright 2011 CA Meijer
-%% @doc marshaller_binary_field. This module marshalls a field of an iso8583message 
+%% @doc erl8583_marshaller_binary_field. This module marshalls a field of an iso8583message 
 %%      into a binary representation.
 
 -module(erl8583_marshaller_binary_field).
