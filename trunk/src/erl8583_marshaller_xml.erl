@@ -12,11 +12,11 @@
 
 %% @author CA Meijer
 %% @copyright 2011 CA Meijer
-%% @doc marshaller_xml. This module marshalls an iso8583message 
+%% @doc erl8583_marshaller_xml. This module marshalls an iso8583message 
 %%      into an XML element. The XML elements created by this
 %%      module should be compatible with jPOS.
 
--module(marshaller_xml).
+-module(erl8583_marshaller_xml).
 
 %%
 %% Include files
