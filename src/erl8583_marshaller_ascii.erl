@@ -12,10 +12,10 @@
 
 %% @author CA Meijer
 %% @copyright 2011 CA Meijer
-%% @doc marshaller_ascii. This module marshalls an iso8583message into 
+%% @doc erl8583_marshaller_ascii. This module marshalls an iso8583message into 
 %%      an ASCII hex string.
 
--module(marshaller_ascii).
+-module(erl8583_marshaller_ascii).
 
 %%
 %% Include files
