@@ -46,7 +46,7 @@ marshal(FieldId, Value) when is_binary(Value) ->
 	"<field id=\"" ++ 
 		Id ++ 
 		"\" value=\"" ++ 
-		convert:binary_to_ascii_hex(Value) ++
+		erl8583_convert:binary_to_ascii_hex(Value) ++
 		"\" type=\"binary\" />";
 % if we drop through to here, Value is of type iso8583message().
 marshal(FieldId, Value) ->
@@ -76,7 +76,7 @@ unmarshal(_FieldId, FieldElement) ->
 					ValueStr;
 				true ->
 					"binary" = get_attribute_value("type", AttributesList),
-					convert:ascii_hex_to_binary(ValueStr)
+					erl8583_convert:ascii_hex_to_binary(ValueStr)
 			end;
 		isomsg ->
 			AttrsExceptId = AttributesList -- [{"id", Id}],

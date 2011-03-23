@@ -86,7 +86,7 @@ construct_bitmap(Fields) ->
 	NumBitMaps = (lists:max(Fields) + 63) div 64,
 	ExtensionBits = [Bit * 64 - 127 || Bit <- lists:seq(2, NumBitMaps)],
 	BitMap = lists:duplicate(NumBitMaps * 8, 0),
-	convert:string_to_ascii_hex(construct_bitmap(lists:sort(ExtensionBits ++ Fields), BitMap)).
+	erl8583_convert:string_to_ascii_hex(construct_bitmap(lists:sort(ExtensionBits ++ Fields), BitMap)).
 
 %% @doc Extracts a list of field IDs from an ASCII hex string 
 %%      representation of the bitmap.
@@ -99,7 +99,7 @@ extract_fields([]) ->
 extract_fields(Message) ->
 	BitMapLength = get_bit_map_length(Message),
 	{AsciiBitMap, Fields} = lists:split(BitMapLength, Message),
-	BitMap = convert:ascii_hex_to_string(AsciiBitMap),
+	BitMap = erl8583_convert:ascii_hex_to_string(AsciiBitMap),
 	extract_fields(BitMap, 0, 8, {[], Fields}).
 
 %%
@@ -149,7 +149,7 @@ get_bit_map_length(Msg) ->
 
 get_bit_map_length(Msg, Length) ->
 	[HexDig1, HexDig2|_Tail] = Msg,
-	<<Byte>> = convert:ascii_hex_to_binary([HexDig1, HexDig2]),
+	<<Byte>> = erl8583_convert:ascii_hex_to_binary([HexDig1, HexDig2]),
 	case (Byte band 128) of
 		0 ->
 			Length;

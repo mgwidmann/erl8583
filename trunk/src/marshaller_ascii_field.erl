@@ -39,33 +39,33 @@
 -spec(marshal_data_element(field_encoding(), iso8583field_value()) -> string()).
 
 marshal_data_element({n, llvar, Length}, Value) when length(Value) =< Length ->
-	convert:integer_to_string(length(Value), 2) ++ Value;
+	erl8583_convert:integer_to_string(length(Value), 2) ++ Value;
 marshal_data_element({n, lllvar, Length}, Value) when length(Value) =< Length ->
-	convert:integer_to_string(length(Value), 3) ++ Value;
+	erl8583_convert:integer_to_string(length(Value), 3) ++ Value;
 marshal_data_element({ns, llvar, Length}, Value) when length(Value) =< Length ->
-	convert:integer_to_string(length(Value), 2) ++ Value;
+	erl8583_convert:integer_to_string(length(Value), 2) ++ Value;
 marshal_data_element({an, llvar, Length}, Value) when length(Value) =< Length ->
-	convert:integer_to_string(length(Value), 2) ++ Value;
+	erl8583_convert:integer_to_string(length(Value), 2) ++ Value;
 marshal_data_element({an, lllvar, Length}, Value) when length(Value) =< Length ->
-	convert:integer_to_string(length(Value), 3) ++ Value;
+	erl8583_convert:integer_to_string(length(Value), 3) ++ Value;
 marshal_data_element({ans, llvar, Length}, Value) when length(Value) =< Length ->
-	convert:integer_to_string(length(Value), 2) ++ Value;
+	erl8583_convert:integer_to_string(length(Value), 2) ++ Value;
 marshal_data_element({ans, lllvar, Length}, Value) when length(Value) =< Length ->
-	convert:integer_to_string(length(Value), 3) ++ Value;
+	erl8583_convert:integer_to_string(length(Value), 3) ++ Value;
 marshal_data_element({n, fixed, Length}, Value) when length(Value) =< Length ->
 	IntValue = list_to_integer(Value),
-	convert:integer_to_string(IntValue, Length);
+	erl8583_convert:integer_to_string(IntValue, Length);
 marshal_data_element({an, fixed, Length}, Value) when length(Value) =< Length ->
-	convert:pad_with_trailing_spaces(Value, Length);
+	erl8583_convert:pad_with_trailing_spaces(Value, Length);
 marshal_data_element({ans, fixed, Length}, Value) when length(Value) =< Length ->
-	convert:pad_with_trailing_spaces(Value, Length);
+	erl8583_convert:pad_with_trailing_spaces(Value, Length);
 marshal_data_element({x_n, fixed, Length}, [Head | Value]) when Head =:= $C orelse Head =:= $D ->
 	IntValue = list_to_integer(Value),
-	[Head] ++ convert:integer_to_string(IntValue, Length);
+	[Head] ++ erl8583_convert:integer_to_string(IntValue, Length);
 marshal_data_element({z, llvar, Length}, Value) when length(Value) =< Length ->
-	convert:integer_to_string(length(Value), 2) ++ Value;
+	erl8583_convert:integer_to_string(length(Value), 2) ++ Value;
 marshal_data_element({b, fixed, Length}, Value) when size(Value) =:= Length ->
-	convert:binary_to_ascii_hex(Value).
+	erl8583_convert:binary_to_ascii_hex(Value).
 
 %% @doc Extracts a field value from the start of a string given how the field
 %%      is encoded.  The field value and the rest of the unmarshalled string
@@ -108,7 +108,7 @@ unmarshal_data_element({z, llvar, _MaxLength}, Fields) ->
 	lists:split(list_to_integer(N), Rest);
 unmarshal_data_element({b, fixed, Length}, Fields) ->
 	{ValueStr, Rest} = lists:split(2 * Length, Fields),
-	Value = convert:ascii_hex_to_binary(ValueStr),
+	Value = erl8583_convert:ascii_hex_to_binary(ValueStr),
 	{Value, Rest}.
 
 %% @doc Marshals a field value into an ASCII string.

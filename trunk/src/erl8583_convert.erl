@@ -16,7 +16,7 @@
 %%      between representations of data.
 %% @end
 
--module(convert).
+-module(erl8583_convert).
 
 %%
 %% Include files
@@ -105,7 +105,7 @@ ascii_hex_to_binary(List) ->
 -spec(concat_binaries(list(binary())) -> binary()).
 
 concat_binaries(List) ->
-	lists:foldr({convert, concat_binaries}, <<>>, List).
+	lists:foldr({erl8583_convert, concat_binaries}, <<>>, List).
 
 %% @doc Concatenates two binaries.
 %%
