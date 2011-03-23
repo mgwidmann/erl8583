@@ -12,10 +12,10 @@
 
 %% @author CA Meijer
 %% @copyright 2011 CA Meijer
-%% @doc marshaller_binary. This module marshalls an iso8583message into 
+%% @doc erl8583_marshaller_binary. This module marshalls an iso8583message into 
 %%      a binary.
 
--module(marshaller_binary).
+-module(erl8583_marshaller_binary).
 
 %%
 %% Include files
