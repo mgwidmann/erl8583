@@ -12,7 +12,7 @@
 
 %% @author CA Meijer
 %% @copyright 2011 CA Meijer
-%% @doc iso8583_fields. This module provides a function to get how a field is
+%% @doc erl8583_fields. This module provides a function to get how a field is
 %%      encoded according to the 1987 version of the ISO 8583 specification. 
 %% @end
 

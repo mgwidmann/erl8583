@@ -12,7 +12,7 @@
 
 %% @author CA Meijer
 %% @copyright 2011 CA Meijer
-%% @doc iso8583_message. Provided methods for creating, updating and
+%% @doc erl8583_message. Provides methods for creating, updating and
 %%      interrogating an ISO 8583 message. 
 %% @end
 
