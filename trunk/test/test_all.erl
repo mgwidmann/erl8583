@@ -1,6 +1,6 @@
 %% Author: carl
 %% Created: 20 Mar 2011
-%% Description: TODO: Runs all tests in the test directory
+%% Description: Runs all tests in the test directory
 -module(test_all).
 
 %%
