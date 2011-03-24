@@ -92,3 +92,11 @@ track2_to_string_test() ->
 string_to_track2_test() ->
 	<<177, 35, 65, 35, 65, 35, 65, 35, 77, 3, 5, 16, 17, 147, 1, 8, 119, 240>> = erl8583_convert:string_to_track2(";1234123412341234=0305101193010877?").
 
+strip_leading_spaces_test() ->
+	"hello" = erl8583_convert:strip_trailing_spaces("hello"),
+	"hello" =  erl8583_convert:strip_trailing_spaces("hello   "),
+	"    hello" =  erl8583_convert:strip_trailing_spaces("    hello  ").
+
+strip_leading_zeroes_test() ->
+	"1234" = erl8583_convert:strip_leading_zeroes("1234"),
+	"2345" = erl8583_convert:strip_leading_zeroes("0000000002345").

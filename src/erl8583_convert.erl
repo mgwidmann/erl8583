@@ -12,9 +12,8 @@
 
 %% @author CA Meijer
 %% @copyright 2011 CA Meijer
-%% @doc convert. This module provides a number of functions for converting
+%% @doc This module provides a number of functions for converting
 %%      between representations of data.
-%% @end
 
 -module(erl8583_convert).
 
@@ -40,7 +39,9 @@
 		 track2_to_string/2,
 		 string_to_track2/1,
 		 ascii_hex_to_digit/1,
-		 digit_to_ascii_hex/1]).
+		 digit_to_ascii_hex/1,
+		 strip_trailing_spaces/1,
+		 strip_leading_zeroes/1]).
 
 %%
 %% API Functions
@@ -209,6 +210,24 @@ digit_to_ascii_hex(D) when D >= 0 andalso D =< 9 ->
 digit_to_ascii_hex(D) when D >= 10 andalso D =< 15 ->
 	[55+D].
 
+%% @doc Strips trailing spaces from a string.
+%%
+%% @spec strip_trailing_spaces(string()) -> string()
+-spec(strip_trailing_spaces(string()) -> string()).
+
+strip_trailing_spaces(Str) ->
+	lists:reverse(strip_leading_spaces(lists:reverse(Str))).
+
+%% @doc Strips leading zeroes from a string.
+%%
+%% @spec strip_leading_zeroes(string()) -> string()
+-spec(strip_leading_zeroes(string()) -> string()).
+
+strip_leading_zeroes([$0|Tail]) ->
+	strip_leading_zeroes(Tail);
+strip_leading_zeroes(Str) ->
+	Str.
+
 
 %%
 %% Local Functions
@@ -291,3 +310,8 @@ string_to_track2([H|T], Result, 0, true) ->
 string_to_track2([H|T], Result, X, false) ->
 	Xupdated = X*16 + H - $0,
 	string_to_track2(T, concat_binaries(Result, <<Xupdated>>), 0, true).
+
+strip_leading_spaces([$ |Tail]) ->
+	strip_leading_spaces(Tail);
+strip_leading_spaces(Str) ->
+	Str.
