@@ -38,8 +38,8 @@
 		 update/3,
 		 repeat/1,
 		 clone_fields/2,
-		 respond/1,
-		 respond/2,
+		 response/1,
+		 response/2,
 		 remove_fields/2]).
 
 %%
@@ -74,7 +74,7 @@ set(Index, Value, Msg) when is_integer(Index) andalso Index >= 0 ->
 	false = dict:is_key(Index, Dict),
 	{iso8583_message, Attrs, dict:store(Index, Value, Dict)}.
 	
-%% @doc Gets the value of a field from a message.
+%% @doc Gets the value of a field from a message given the field ID.
 %%
 %% @spec get(integer(), iso8583message()) -> iso8583field_value()
 -spec(get(integer(), iso8583message()) -> iso8583field_value()).
@@ -83,7 +83,7 @@ get(Index, Msg) ->
 	{iso8583_message, _Attrs, Dict} = Msg,
 	dict:fetch(Index, Dict).
 
-%% @doc Gets the fields from a message.
+%% @doc Gets the field IDs from a message.
 %%
 %% @spec get_fields(iso8583message()) -> list(integer())
 -spec(get_fields(iso8583message()) -> list(integer())).
@@ -169,21 +169,21 @@ clone_fields(FieldIds, Msg) ->
 %%      the same field values as the original message. The MTI is changed 
 %%      to indicate that the message is a response.
 %%
-%% @spec respond(iso8583message()) -> iso8583message()
--spec(respond(iso8583message()) -> iso8583message()).
+%% @spec response(iso8583message()) -> iso8583message()
+-spec(response(iso8583message()) -> iso8583message()).
 
-respond(Msg) ->
-	respond(get_fields(Msg), Msg).
+response(Msg) ->
+	response(get_fields(Msg), Msg).
 
 %% @doc Creates a response message for a message where the response has
 %%      the same field values as the original message for a list of
 %%      specified field IDs. The MTI is changed to indicate that
 %%      the message is a response.
 %%
-%% @spec respond(list(integer()), iso8583message()) -> iso8583message()
--spec(respond(list(integer()), iso8583message()) -> iso8583message()).
+%% @spec response(list(integer()), iso8583message()) -> iso8583message()
+-spec(response(list(integer()), iso8583message()) -> iso8583message()).
 
-respond(FieldIds, Msg) ->
+response(FieldIds, Msg) ->
 	Clone = clone_fields(FieldIds, Msg),
 	[M1, M2, M3, M4] = get(?MTI, Msg),
 	if

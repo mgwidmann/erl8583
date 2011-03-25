@@ -129,26 +129,26 @@ clone_fields_test() ->
 	"hello" = erl8583_message:get(10, Clone2),
 	"0200" = erl8583_message:get(0, Clone2).
 
-respond_1_test() ->
+response_1_test() ->
 	Message = erl8583_message:new([{mapper, ?MODULE}]),
 	Message2 = erl8583_message:set(10, "hello", Message),
 	Message3 = erl8583_message:set(0, "0200", Message2),
 	Message4 = erl8583_message:set(2, "hello2", Message3),
-	Response1 = erl8583_message:respond([0, 10], Message4),
+	Response1 = erl8583_message:response([0, 10], Message4),
 	[0, 10] = erl8583_message:get_fields(Response1),
 	"hello" = erl8583_message:get(10, Response1),
 	"0210" = erl8583_message:get(0, Response1),
-	Response2 = erl8583_message:respond([2, 10], Message4),
+	Response2 = erl8583_message:response([2, 10], Message4),
 	[0, 2, 10] = erl8583_message:get_fields(Response2),
 	"hello2" = erl8583_message:get(2, Response2),
 	"0210" = erl8583_message:get(0, Response2).
 	
-respond_2_test() ->
+response_2_test() ->
 	Message = erl8583_message:new([{mapper, ?MODULE}]),
 	Message2 = erl8583_message:set(10, "hello", Message),
 	Message3 = erl8583_message:set(0, "0220", Message2),
 	Message4 = erl8583_message:set(2, "hello2", Message3),
-	Response = erl8583_message:respond(Message4),
+	Response = erl8583_message:response(Message4),
 	[0, 2, 10] = erl8583_message:get_fields(Response),
 	"hello2" = erl8583_message:get(2, Response),
 	"0230" = erl8583_message:get(0, Response).
