@@ -9,13 +9,12 @@
 <hr>
 
 <h1>Module erl8583_message</h1>
-<ul class="index"><li><a href="#description">Description</a></li><li><a href="#types">Data Types</a></li><li><a href="#index">Function Index</a></li><li><a href="#functions">Function Details</a></li></ul>erl8583_message.
+<ul class="index"><li><a href="#description">Description</a></li><li><a href="#types">Data Types</a></li><li><a href="#index">Function Index</a></li><li><a href="#functions">Function Details</a></li></ul>Functions for constructing and reading ISO 8583 messages.
 <p>Copyright © 2011 CA Meijer</p>
 
 <p><b>Authors:</b> CA Meijer.</p>
 
-<h2><a name="description">Description</a></h2>erl8583_message. Provides methods for creating, updating and
-       interrogating an ISO 8583 message.
+<h2><a name="description">Description</a></h2>Functions for constructing and reading ISO 8583 messages.
 <h2><a name="types">Data Types</a></h2>
 
 <h3 class="typedecl"><a name="type-field_encoding">field_encoding()</a></h3>
@@ -42,7 +41,10 @@
 <p>The maximum length of a field in bytes.</p>
 
 <h2><a name="index">Function Index</a></h2>
-<table width="100%" border="1" cellspacing="0" cellpadding="2" summary="function index"><tr><td valign="top"><a href="#from_list-1">from_list/1</a></td><td>Constructs an ISO 8583 message from a list
+<table width="100%" border="1" cellspacing="0" cellpadding="2" summary="function index"><tr><td valign="top"><a href="#clone_fields-2">clone_fields/2</a></td><td>Creates a new message from an old one where the new message has
+       the same field values as the original message for a list of
+       specified field IDs.</td></tr>
+<tr><td valign="top"><a href="#from_list-1">from_list/1</a></td><td>Constructs an ISO 8583 message from a list
        of {Id, Value} pairs.</td></tr>
 <tr><td valign="top"><a href="#get-2">get/2</a></td><td>Gets the value of a field from a message.</td></tr>
 <tr><td valign="top"><a href="#get_attributes-1">get_attributes/1</a></td><td>Returns a list of attributes of a
@@ -50,6 +52,15 @@
 <tr><td valign="top"><a href="#get_fields-1">get_fields/1</a></td><td>Gets the fields from a message.</td></tr>
 <tr><td valign="top"><a href="#new-0">new/0</a></td><td>Returns an empty ISO 8583 message.</td></tr>
 <tr><td valign="top"><a href="#new-1">new/1</a></td><td>Returns an empty ISO 8583 message with a set of attributes.</td></tr>
+<tr><td valign="top"><a href="#remove_fields-2">remove_fields/2</a></td><td>Creates a new message from an old message where the new message
+       has the same field values as the original except for a
+       specified list of IDs that are omitted.</td></tr>
+<tr><td valign="top"><a href="#repeat-1">repeat/1</a></td><td>Updates the message type of a message to indicate that it's a repeat.</td></tr>
+<tr><td valign="top"><a href="#respond-1">respond/1</a></td><td>Creates a response message for a message where the response has
+       the same field values as the original message.</td></tr>
+<tr><td valign="top"><a href="#respond-2">respond/2</a></td><td>Creates a response message for a message where the response has
+       the same field values as the original message for a list of
+       specified field IDs.</td></tr>
 <tr><td valign="top"><a href="#set-3">set/3</a></td><td>Sets the value of a field in a message and returns an updated
        message.</td></tr>
 <tr><td valign="top"><a href="#set_attributes-2">set_attributes/2</a></td><td>Sets the attributes for a message.</td></tr>
@@ -60,6 +71,14 @@
 </table>
 
 <h2><a name="functions">Function Details</a></h2>
+
+<h3 class="function"><a name="clone_fields-2">clone_fields/2</a></h3>
+<div class="spec">
+<p><tt>clone_fields(FieldIds::list(integer()), Msg::<a href="#type-iso8583message">iso8583message()</a>) -&gt; <a href="#type-iso8583message">iso8583message()</a></tt></p>
+</div><p>Creates a new message from an old one where the new message has
+       the same field values as the original message for a list of
+       specified field IDs.
+ </p>
 
 <h3 class="function"><a name="from_list-1">from_list/1</a></h3>
 <div class="spec">
@@ -99,6 +118,37 @@
 </div><p>Returns an empty ISO 8583 message with a set of attributes.
  </p>
 
+<h3 class="function"><a name="remove_fields-2">remove_fields/2</a></h3>
+<div class="spec">
+<p><tt>remove_fields(FieldIds::list(integer()), Msg::<a href="#type-iso8583message">iso8583message()</a>) -&gt; <a href="#type-iso8583message">iso8583message()</a></tt></p>
+</div><p>Creates a new message from an old message where the new message
+       has the same field values as the original except for a
+       specified list of IDs that are omitted.
+ </p>
+
+<h3 class="function"><a name="repeat-1">repeat/1</a></h3>
+<div class="spec">
+<p><tt>repeat(Msg::<a href="#type-iso8583message">iso8583message()</a>) -&gt; <a href="#type-iso8583message">iso8583message()</a></tt></p>
+</div><p>Updates the message type of a message to indicate that it's a repeat.
+ </p>
+
+<h3 class="function"><a name="respond-1">respond/1</a></h3>
+<div class="spec">
+<p><tt>respond(Msg::<a href="#type-iso8583message">iso8583message()</a>) -&gt; <a href="#type-iso8583message">iso8583message()</a></tt></p>
+</div><p>Creates a response message for a message where the response has
+       the same field values as the original message. The MTI is changed
+       to indicate that the message is a response.
+ </p>
+
+<h3 class="function"><a name="respond-2">respond/2</a></h3>
+<div class="spec">
+<p><tt>respond(FieldIds::list(integer()), Msg::<a href="#type-iso8583message">iso8583message()</a>) -&gt; <a href="#type-iso8583message">iso8583message()</a></tt></p>
+</div><p>Creates a response message for a message where the response has
+       the same field values as the original message for a list of
+       specified field IDs. The MTI is changed to indicate that
+       the message is a response.
+ </p>
+
 <h3 class="function"><a name="set-3">set/3</a></h3>
 <div class="spec">
 <p><tt>set(Index::integer(), Value::<a href="#type-iso8583field_value">iso8583field_value()</a>, Msg::<a href="#type-iso8583message">iso8583message()</a>) -&gt; <a href="#type-iso8583message">iso8583message()</a></tt></p>
@@ -129,6 +179,6 @@
 <hr>
 
 <div class="navbar"><a name="#navbar_bottom"></a><table width="100%" border="0" cellspacing="0" cellpadding="2" summary="navigation bar"><tr><td><a href="overview-summary.html" target="overviewFrame">Overview</a></td><td><a href="http://www.erlang.org/"><img src="erlang.png" align="right" border="0" alt="erlang logo"></a></td></tr></table></div>
-<p><i>Generated by EDoc, Mar 23 2011, 19:50:58.</i></p>
+<p><i>Generated by EDoc, Mar 25 2011, 19:09:26.</i></p>
 </body>
 </html>
