@@ -1,7 +1,7 @@
 mkdir tbin
 rm ebin/*.beam
 rm tbin/*.beam
-rm doc/*
+rm doc/*.html
 echo "Compiling source"
 erlc -I include -o ebin src/*.erl
 echo "Compiling tests"
