@@ -12,8 +12,8 @@
 
 %% @author CA Meijer
 %% @copyright 2011 CA Meijer
-%% @doc erl8583_marshaller_ascii_field. This module marshalls a iso8583message field into 
-%%      an ASCII hex string.
+%% @doc This module marshalls a iso8583message field into 
+%%      an ASCII string.
 
 -module(erl8583_marshaller_ascii_field).
 

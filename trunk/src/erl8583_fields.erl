@@ -12,7 +12,7 @@
 
 %% @author CA Meijer
 %% @copyright 2011 CA Meijer
-%% @doc erl8583_fields. This module provides a function to get how a field is
+%% @doc This module provides a function to get how a field is
 %%      encoded according to the 1987 version of the ISO 8583 specification. 
 %% @end
 
@@ -34,8 +34,8 @@
 %% API Functions
 %%
 
-%% @doc Returns how a field is encoded as a triple providing an abbreviation (e.g. ans),
-%%      the type (e.g. LLVAR) and the maximum length.
+%% @doc Returns how a field is encoded as a triple consisting of the content (e.g. ans, b, z, etc),
+%%      the type (e.g. llvar, lllvar or fixed) and the maximum length.
 %%
 %% @spec get_encoding(integer()) -> field_encoding()
 -spec(get_encoding(integer()) -> field_encoding()).
