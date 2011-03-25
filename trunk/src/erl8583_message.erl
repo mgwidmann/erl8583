@@ -36,7 +36,10 @@
 		 set_attributes/2, 
 		 get_attributes/1,
 		 update/3,
-		 repeat/1]).
+		 repeat/1,
+		 clone_fields/2,
+		 respond/1,
+		 respond/2]).
 
 %%
 %% API Functions
@@ -151,6 +154,41 @@ repeat(Msg) ->
 	end,
 	update(?MTI, [M1, M2, M3, M4Updated], Msg).
 
+%% @doc Creates a new message from an old one where the new message has
+%%      the same field values as the original message for a list of
+%%      specified field IDs.
+%%
+%% @spec clone_fields(list(integer()), iso8583message()) -> iso8583message()
+-spec(clone_fields(list(integer()), iso8583message()) -> iso8583message()).
+
+clone_fields(FieldIds, Msg) ->
+	clone_fields(FieldIds, Msg, new()).
+
+%% @doc Creates a response message for a message where the response has
+%%      the same field values as the original message. The MTI is changed 
+%%      to indicate that the message is a response.
+%%
+%% @spec respond(iso8583message()) -> iso8583message()
+-spec(respond(iso8583message()) -> iso8583message()).
+
+respond(Msg) ->
+	respond(get_fields(Msg), Msg).
+
+%% @doc Creates a response message for a message where the response has
+%%      the same field values as the original message for a list of
+%%      specified field IDs. The MTI is changed to indicate that
+%%      the message is a response.
+%%
+%% @spec respond(list(integer()), iso8583message()) -> iso8583message()
+-spec(respond(list(integer()), iso8583message()) -> iso8583message()).
+
+respond(FieldIds, Msg) ->
+	Clone = clone_fields(FieldIds, Msg),
+	[M1, M2, M3, M4] = get(?MTI, Msg),
+	if
+		M3 =:= $0 orelse M3 =:= $2 orelse M3 =:= $4 ->
+			update(?MTI, [M1, M2, M3 + 1, M4], Clone)
+	end.
 
 %%
 %% Local Functions
@@ -159,3 +197,9 @@ from_list([], Result) ->
 	Result;
 from_list([{Key, Value}|Tail], Result) ->
 	from_list(Tail, set(Key, Value, Result)).
+
+clone_fields([], _Msg, Result) ->
+	Result;
+clone_fields([FieldId|Tail], Msg, Result) ->
+	clone_fields(Tail, Msg, update(FieldId, get(FieldId, Msg), Result)).
+	
