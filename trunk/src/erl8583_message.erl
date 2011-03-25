@@ -23,6 +23,7 @@
 %%
 %% @headerfile "../include/erl8583_types.hrl"
 -include("erl8583_types.hrl").
+-include("field_defines.hrl").
 
 %%
 %% Exported Functions
@@ -36,7 +37,8 @@
 		 from_list/1, 
 		 set_attributes/2, 
 		 get_attributes/1,
-		 update/3]).
+		 update/3,
+		 repeat/1]).
 
 %%
 %% API Functions
@@ -135,6 +137,32 @@ set_attributes(Attr, Msg) ->
 update(Index, Value, Msg) when is_integer(Index) andalso Index >= 0 ->
 	{iso8583_message, Attrs, Dict} = Msg,
 	{iso8583_message, Attrs, dict:store(Index, Value, Dict)}.
+
+%% @doc Updates the message type of a message to indicate that it's a repeat.
+%%
+%% @spec repeat(iso8583message()) -> iso8583message()
+-spec(repeat(iso8583message()) -> iso8583message()).
+
+repeat(Msg) ->
+	MtiRev = lists:reverse(get(?MTI, Msg)),
+	case MtiRev of
+		[$1|_Tail] ->
+			UpdatedMtiRev = MtiRev;
+		[$3|_Tail] ->
+			UpdatedMtiRev = MtiRev;
+		[$5|_Tail] ->
+			UpdatedMtiRev = MtiRev;
+		[$0|Tail] ->
+			UpdatedMtiRev = [$1|Tail];
+		[$2|Tail] ->
+			UpdatedMtiRev = [$3|Tail];
+		[$4|Tail] ->
+			UpdatedMtiRev = [$5|Tail]
+	end,
+	update(?MTI, lists:reverse(UpdatedMtiRev), Msg).
+
+
+			
 
 %%
 %% Local Functions
