@@ -12,9 +12,7 @@
 
 %% @author CA Meijer
 %% @copyright 2011 CA Meijer
-%% @doc erl8583_message. Provides methods for creating, updating and
-%%      interrogating an ISO 8583 message. 
-%% @end
+%% @doc Functions for constructing and reading ISO 8583 messages. 
 
 -module(erl8583_message).
 
@@ -144,25 +142,15 @@ update(Index, Value, Msg) when is_integer(Index) andalso Index >= 0 ->
 -spec(repeat(iso8583message()) -> iso8583message()).
 
 repeat(Msg) ->
-	MtiRev = lists:reverse(get(?MTI, Msg)),
-	case MtiRev of
-		[$1|_Tail] ->
-			UpdatedMtiRev = MtiRev;
-		[$3|_Tail] ->
-			UpdatedMtiRev = MtiRev;
-		[$5|_Tail] ->
-			UpdatedMtiRev = MtiRev;
-		[$0|Tail] ->
-			UpdatedMtiRev = [$1|Tail];
-		[$2|Tail] ->
-			UpdatedMtiRev = [$3|Tail];
-		[$4|Tail] ->
-			UpdatedMtiRev = [$5|Tail]
+	[M1, M2, M3, M4] = get(?MTI, Msg),
+	if 
+		M4 =:= $0 orelse M4 =:= $2 orelse M4 =:= $4 ->
+			M4Updated = M4 + 1;
+		M4 =:= $1 orelse M4 =:= $3 orelse M4 =:= $5 ->
+			M4Updated = M4
 	end,
-	update(?MTI, lists:reverse(UpdatedMtiRev), Msg).
+	update(?MTI, [M1, M2, M3, M4Updated], Msg).
 
-
-			
 
 %%
 %% Local Functions
