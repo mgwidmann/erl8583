@@ -39,7 +39,8 @@
 		 repeat/1,
 		 clone_fields/2,
 		 respond/1,
-		 respond/2]).
+		 respond/2,
+		 remove_fields/2]).
 
 %%
 %% API Functions
@@ -190,6 +191,18 @@ respond(FieldIds, Msg) ->
 			update(?MTI, [M1, M2, M3 + 1, M4], Clone)
 	end.
 
+%% @doc Creates a new message from an old message where the new message
+%%      has the same field values as the original except for a
+%%      specified list of IDs that are omitted.
+%%
+%% @spec remove_fields(list(integer()), iso8583message()) -> iso8583message()
+-spec(remove_fields(list(integer()), iso8583message()) -> iso8583message()).
+
+remove_fields(FieldIds, Msg) ->
+	{iso8583_message, Attributes, Dict} = Msg,
+	UpdatedDict = remove_fields_from_dict(FieldIds, Dict),
+	{iso8583_message, Attributes, UpdatedDict}.
+	
 %%
 %% Local Functions
 %%
@@ -203,3 +216,7 @@ clone_fields([], _Msg, Result) ->
 clone_fields([FieldId|Tail], Msg, Result) ->
 	clone_fields(Tail, Msg, update(FieldId, get(FieldId, Msg), Result)).
 	
+remove_fields_from_dict([], Dict) ->
+	Dict;
+remove_fields_from_dict([FieldId|Tail], Dict) ->
+	remove_fields_from_dict(Tail, dict:erase(FieldId, Dict)).
