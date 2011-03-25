@@ -153,3 +153,16 @@ respond_2_test() ->
 	"hello2" = erl8583_message:get(2, Response),
 	"0230" = erl8583_message:get(0, Response).
 	
+remove_fields_test() ->
+	Message = erl8583_message:new([{mapper, ?MODULE}]),
+	Message2 = erl8583_message:set(10, "hello", Message),
+	Message3 = erl8583_message:set(0, "0220", Message2),
+	Message4 = erl8583_message:set(2, "hello2", Message3),
+	Message5 = erl8583_message:set(3, "hello3", Message4),
+	UpdatedMessage = erl8583_message:remove_fields([2, 3], Message5),
+	[0, 10] = erl8583_message:get_fields(UpdatedMessage),
+	"hello" = erl8583_message:get(10, UpdatedMessage),
+	"0220" = erl8583_message:get(0, UpdatedMessage).
+
+
+	
