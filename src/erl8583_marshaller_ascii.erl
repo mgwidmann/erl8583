@@ -13,7 +13,8 @@
 %% @author CA Meijer
 %% @copyright 2011 CA Meijer
 %% @doc This module marshals an iso8583message() into 
-%%      an ASCII string.
+%%      an ASCII string or unmarshals an ASCII string into an
+%%      iso8583message().
 
 -module(erl8583_marshaller_ascii).
 
@@ -58,8 +59,8 @@ marshal(Message, FieldMarshaller) ->
 %% @spec unmarshal(string()) -> iso8583message()
 -spec(unmarshal(string()) -> iso8583message()).
 
-unmarshal(Message) ->
-	unmarshal(Message, erl8583_marshaller_ascii_field).
+unmarshal(AsciiMessage) ->
+	unmarshal(AsciiMessage, erl8583_marshaller_ascii_field).
 
 %% @doc Unmarshals an ASCII string into an ISO 8583 message. This function
 %%      uses the specified field marshalling module.
@@ -67,14 +68,14 @@ unmarshal(Message) ->
 %% @spec unmarshal(string(), module()) -> iso8583message()
 -spec(unmarshal(string(), module()) -> iso8583message()).
 
-unmarshal(Message, FieldMarshaller) ->
+unmarshal(AsciiMessage, FieldMarshaller) ->
 	IsoMsg1 = erl8583_message:new(),
-	{Mti, Rest} = lists:split(4, Message),
+	{Mti, Rest} = lists:split(4, AsciiMessage),
 	IsoMsg2 = erl8583_message:set(0, Mti, IsoMsg1),
 	{FieldIds, Fields} = extract_fields(Rest),
 	decode_fields(FieldIds, Fields, IsoMsg2, FieldMarshaller).
 
-%% @doc Constructs an ASCII hex string representation of the
+%% @doc Constructs an ASCII string representation of the
 %%      bitmap for a list of field IDs.
 %%
 %% @spec construct_bitmap(list(integer())) -> string()
@@ -88,17 +89,19 @@ construct_bitmap(FieldIds) ->
 	BitMap = lists:duplicate(NumBitMaps * 8, 0),
 	erl8583_convert:string_to_ascii_hex(construct_bitmap(lists:sort(ExtensionBits ++ FieldIds), BitMap)).
 
-%% @doc Extracts a list of field IDs from an ASCII hex string 
-%%      representation of the bitmap.
+%% @doc Extracts a list of field IDs from an ASCII string 
+%%      representation of an ISO 8583 message. The result is returned
+%%      as a 2-tuple of the field IDs and the remainder of the 
+%%      the message (encoding the field values but not the bit map).
 %%
 %% @spec extract_fields(string()) -> list(integer())
 -spec(extract_fields(string()) -> list(integer())).
 
 extract_fields([]) ->
 	{[], []};
-extract_fields(Message) ->
-	BitMapLength = get_bit_map_length(Message),
-	{AsciiBitMap, Fields} = lists:split(BitMapLength, Message),
+extract_fields(AsciiMessage) ->
+	BitMapLength = get_bit_map_length(AsciiMessage),
+	{AsciiBitMap, Fields} = lists:split(BitMapLength, AsciiMessage),
 	BitMap = erl8583_convert:ascii_hex_to_string(AsciiBitMap),
 	extract_fields(BitMap, 0, 8, {[], Fields}).
 

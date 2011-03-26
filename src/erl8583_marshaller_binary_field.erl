@@ -12,8 +12,9 @@
 
 %% @author CA Meijer
 %% @copyright 2011 CA Meijer
-%% @doc erl8583_marshaller_binary_field. This module marshalls a field of an iso8583message 
-%%      into a binary representation.
+%% @doc This module marshals a field of an iso8583message() 
+%%      into a binary representation or unmarshals a binary
+%%      value into a field of an iso8583message().
 
 -module(erl8583_marshaller_binary_field).
 
@@ -35,86 +36,86 @@
 %% @doc Marshals a data element into a binary given the field encoding
 %%      and the value of the data element.
 %%
-%% @spec marshal_data_element(field_encoding(), iso8583field_value()) -> string()
+%% @spec marshal_data_element(Encoding::field_encoding(), iso8583field_value()) -> string()
 -spec(marshal_data_element(field_encoding(), iso8583field_value()) -> string()).
 
-marshal_data_element({n, llvar, Length}, Value) when length(Value) =< Length ->
-	LField = erl8583_convert:integer_to_bcd(length(Value), 2),
-	VField = erl8583_convert:ascii_hex_to_bcd(Value, "0"),
+marshal_data_element({n, llvar, Length}, FieldValue) when length(FieldValue) =< Length ->
+	LField = erl8583_convert:integer_to_bcd(length(FieldValue), 2),
+	VField = erl8583_convert:ascii_hex_to_bcd(FieldValue, "0"),
 	erl8583_convert:concat_binaries(LField, VField);
-marshal_data_element({z, llvar, Length}, Value) when length(Value) =< Length ->
-	LField = erl8583_convert:integer_to_bcd(length(Value), 2),
-	VField = erl8583_convert:string_to_track2(Value),
+marshal_data_element({z, llvar, Length}, FieldValue) when length(FieldValue) =< Length ->
+	LField = erl8583_convert:integer_to_bcd(length(FieldValue), 2),
+	VField = erl8583_convert:string_to_track2(FieldValue),
 	erl8583_convert:concat_binaries(LField, VField);
-marshal_data_element({n, fixed, Length}, Value) ->
+marshal_data_element({n, fixed, Length}, FieldValue) ->
 	case Length rem 2 of
 		0 ->
-			PaddedValue = erl8583_convert:integer_to_string(list_to_integer(Value), Length);
+			PaddedValue = erl8583_convert:integer_to_string(list_to_integer(FieldValue), Length);
 		1 ->
-			PaddedValue = erl8583_convert:integer_to_string(list_to_integer(Value), Length+1)
+			PaddedValue = erl8583_convert:integer_to_string(list_to_integer(FieldValue), Length+1)
 	end,
 	erl8583_convert:ascii_hex_to_bcd(PaddedValue, "0");
-marshal_data_element({an, fixed, Length}, Value) ->
-	list_to_binary(erl8583_convert:pad_with_trailing_spaces(Value, Length));
-marshal_data_element({ans, fixed, Length}, Value) ->
-	list_to_binary(erl8583_convert:pad_with_trailing_spaces(Value, Length));
-marshal_data_element({an, llvar, Length}, Value) when length(Value) =< Length ->
-	LField = erl8583_convert:integer_to_bcd(length(Value), 2),
-	erl8583_convert:concat_binaries(LField, list_to_binary(Value));
-marshal_data_element({ns, llvar, Length}, Value) when length(Value) =< Length ->
-	LField = erl8583_convert:integer_to_bcd(length(Value), 2),
-	erl8583_convert:concat_binaries(LField, list_to_binary(Value));
-marshal_data_element({ans, llvar, Length}, Value) when length(Value) =< Length ->
-	LField = erl8583_convert:integer_to_bcd(length(Value), 2),
-	erl8583_convert:concat_binaries(LField, list_to_binary(Value));
-marshal_data_element({ans, lllvar, Length}, Value) when length(Value) =< Length ->
-	LField = erl8583_convert:integer_to_bcd(length(Value), 3),
-	erl8583_convert:concat_binaries(LField, list_to_binary(Value));
-marshal_data_element({x_n, fixed, Length}, [Head | Value]) when Head =:= $C orelse Head =:= $D ->
-	IntValue = list_to_integer(Value),
+marshal_data_element({an, fixed, Length}, FieldValue) ->
+	list_to_binary(erl8583_convert:pad_with_trailing_spaces(FieldValue, Length));
+marshal_data_element({ans, fixed, Length}, FieldValue) ->
+	list_to_binary(erl8583_convert:pad_with_trailing_spaces(FieldValue, Length));
+marshal_data_element({an, llvar, Length}, FieldValue) when length(FieldValue) =< Length ->
+	LField = erl8583_convert:integer_to_bcd(length(FieldValue), 2),
+	erl8583_convert:concat_binaries(LField, list_to_binary(FieldValue));
+marshal_data_element({ns, llvar, Length}, FieldValue) when length(FieldValue) =< Length ->
+	LField = erl8583_convert:integer_to_bcd(length(FieldValue), 2),
+	erl8583_convert:concat_binaries(LField, list_to_binary(FieldValue));
+marshal_data_element({ans, llvar, Length}, FieldValue) when length(FieldValue) =< Length ->
+	LField = erl8583_convert:integer_to_bcd(length(FieldValue), 2),
+	erl8583_convert:concat_binaries(LField, list_to_binary(FieldValue));
+marshal_data_element({ans, lllvar, Length}, FieldValue) when length(FieldValue) =< Length ->
+	LField = erl8583_convert:integer_to_bcd(length(FieldValue), 3),
+	erl8583_convert:concat_binaries(LField, list_to_binary(FieldValue));
+marshal_data_element({x_n, fixed, Length}, [Head | FieldValue]) when Head =:= $C orelse Head =:= $D ->
+	IntValue = list_to_integer(FieldValue),
 	erl8583_convert:concat_binaries(<<Head>>,  erl8583_convert:integer_to_bcd(IntValue, Length));
-marshal_data_element({b, fixed, Length}, Value) when size(Value) =:= Length ->
-	Value.
+marshal_data_element({b, fixed, Length}, FieldValue) when size(FieldValue) =:= Length ->
+	FieldValue.
 
 %% @doc Extracts a field value from the start of a binary given how the field
 %%      is encoded.  The field value and the rest of the unmarshalled binary
-%%      is returned as a tuple.
+%%      is returned as a 2-tuple.
 %%
-%% @spec unmarshal_data_element(field_encoding(), binary()) -> {iso8583field_value(), binary()}
+%% @spec unmarshal_data_element(Encoding::field_encoding(), binary()) -> {iso8583field_value(), binary()}
 -spec(unmarshal_data_element(field_encoding(), binary()) -> {iso8583field_value(), binary()}).
 
-unmarshal_data_element({n, llvar, _MaxLength}, Fields) ->
-	{NBin, RestBin} = split_binary(Fields, 1),
+unmarshal_data_element({n, llvar, _MaxLength}, BinaryFields) ->
+	{NBin, RestBin} = split_binary(BinaryFields, 1),
 	N = erl8583_convert:bcd_to_integer(NBin),
 	{ValueBin, Rest} = split_binary(RestBin, (N+1) div 2), 
 	{erl8583_convert:bcd_to_ascii_hex(ValueBin, N, "0"), Rest};
-unmarshal_data_element({n, lllvar, _MaxLength}, Fields) ->
-	{NBin, RestBin} = split_binary(Fields, 2),
+unmarshal_data_element({n, lllvar, _MaxLength}, BinaryFields) ->
+	{NBin, RestBin} = split_binary(BinaryFields, 2),
 	N = erl8583_convert:bcd_to_integer(NBin),
 	{ValueBin, Rest} = split_binary(RestBin, (N+1) div 2), 
 	{erl8583_convert:bcd_to_ascii_hex(ValueBin, N, "0"), Rest};
-unmarshal_data_element({an, llvar, _MaxLength}, Fields) ->
-	{NBin, RestBin} = split_binary(Fields, 1),
+unmarshal_data_element({an, llvar, _MaxLength}, BinaryFields) ->
+	{NBin, RestBin} = split_binary(BinaryFields, 1),
 	N = erl8583_convert:bcd_to_integer(NBin),
 	{ValueBin, Rest} = split_binary(RestBin, N), 
 	{binary_to_list(ValueBin), Rest};
-unmarshal_data_element({ns, llvar, _MaxLength}, Fields) ->
-	{NBin, RestBin} = split_binary(Fields, 1),
+unmarshal_data_element({ns, llvar, _MaxLength}, BinaryFields) ->
+	{NBin, RestBin} = split_binary(BinaryFields, 1),
 	N = erl8583_convert:bcd_to_integer(NBin),
 	{ValueBin, Rest} = split_binary(RestBin, N), 
 	{binary_to_list(ValueBin), Rest};
-unmarshal_data_element({ans, llvar, _MaxLength}, Fields) ->
-	{NBin, RestBin} = split_binary(Fields, 1),
+unmarshal_data_element({ans, llvar, _MaxLength}, BinaryFields) ->
+	{NBin, RestBin} = split_binary(BinaryFields, 1),
 	N = erl8583_convert:bcd_to_integer(NBin),
 	{ValueBin, Rest} = split_binary(RestBin, N), 
 	{binary_to_list(ValueBin), Rest};
-unmarshal_data_element({ans, lllvar, _MaxLength}, Fields) ->
-	{NBin, RestBin} = split_binary(Fields, 2),
+unmarshal_data_element({ans, lllvar, _MaxLength}, BinaryFields) ->
+	{NBin, RestBin} = split_binary(BinaryFields, 2),
 	N = erl8583_convert:bcd_to_integer(NBin),
 	{ValueBin, Rest} = split_binary(RestBin, N), 
 	{binary_to_list(ValueBin), Rest};
-unmarshal_data_element({n, fixed, Length}, Fields) ->
-	{NBin, RestBin} = split_binary(Fields, (Length + 1) div 2),
+unmarshal_data_element({n, fixed, Length}, BinaryFields) ->
+	{NBin, RestBin} = split_binary(BinaryFields, (Length + 1) div 2),
 	case Length rem 2 of
 		0 ->
 			{erl8583_convert:bcd_to_ascii_hex(NBin, Length, "0"), RestBin};
@@ -122,48 +123,48 @@ unmarshal_data_element({n, fixed, Length}, Fields) ->
 			[$0|AsciiHex] = erl8583_convert:bcd_to_ascii_hex(NBin, Length+1, "0"),
 			{AsciiHex, RestBin}
 	end;
-unmarshal_data_element({an, fixed, Length}, Fields) ->
-	{FieldBin, RestBin} = split_binary(Fields, Length),
+unmarshal_data_element({an, fixed, Length}, BinaryFields) ->
+	{FieldBin, RestBin} = split_binary(BinaryFields, Length),
 	FieldStr = binary_to_list(FieldBin),
 	{erl8583_convert:pad_with_trailing_spaces(FieldStr, Length), RestBin};
-unmarshal_data_element({ans, fixed, Length}, Fields) ->
-	{FieldBin, RestBin} = split_binary(Fields, Length),
+unmarshal_data_element({ans, fixed, Length}, BinaryFields) ->
+	{FieldBin, RestBin} = split_binary(BinaryFields, Length),
 	FieldStr = binary_to_list(FieldBin),
 	{erl8583_convert:pad_with_trailing_spaces(FieldStr, Length), RestBin};
-unmarshal_data_element({x_n, fixed, Length}, Fields) ->
-	{FieldBin, RestBin} = split_binary(Fields, Length div 2 + 1),
+unmarshal_data_element({x_n, fixed, Length}, BinaryFields) ->
+	{FieldBin, RestBin} = split_binary(BinaryFields, Length div 2 + 1),
 	{<<X>>, Value} = split_binary(FieldBin, 1),
 	ValueStr = erl8583_convert:bcd_to_ascii_hex(Value, Length, "0"),
 	case X =:= $C orelse X =:= $D of
 		true ->
 			{[X] ++ ValueStr, RestBin}
 	end;
-unmarshal_data_element({z, llvar, _MaxLength}, Fields) ->
-	{NBin, RestBin} = split_binary(Fields, 1),
+unmarshal_data_element({z, llvar, _MaxLength}, BinaryFields) ->
+	{NBin, RestBin} = split_binary(BinaryFields, 1),
 	N = erl8583_convert:bcd_to_integer(NBin),
 	{ValueBin, Rest} = split_binary(RestBin, (N+1) div 2), 
 	{erl8583_convert:track2_to_string(ValueBin, N), Rest};
-unmarshal_data_element({b, fixed, Length}, Fields) ->
-	split_binary(Fields, Length).
+unmarshal_data_element({b, fixed, Length}, BinaryFields) ->
+	split_binary(BinaryFields, Length).
 
 %% @doc Marshals a field value into an ASCII string.
 %%
 %% @spec marshal(integer(), iso8583field_value()) -> binary()
 -spec(marshal(integer(), iso8583field_value()) -> binary()).
 
-marshal(FieldId, Value) ->
+marshal(FieldId, FieldValue) ->
 	Pattern = erl8583_fields:get_encoding(FieldId),
-	marshal_data_element(Pattern, Value).
+	marshal_data_element(Pattern, FieldValue).
 
 %% @doc Extracts a field value from the start of a string.  The field value 
-%%      and the rest of the unmarshalled string is returned as a tuple.
+%%      and the rest of the unmarshalled string are returned as a 2-tuple.
 %%
 %% @spec unmarshal(integer(), binary()) -> {iso8583field_value(), binary()}
 -spec(unmarshal(integer(), binary()) -> {iso8583field_value(), binary()}).
 
-unmarshal(FieldId, Fields) ->
+unmarshal(FieldId, BinaryFields) ->
 	Pattern = erl8583_fields:get_encoding(FieldId),
-	unmarshal_data_element(Pattern, Fields).
+	unmarshal_data_element(Pattern, BinaryFields).
 
 
 %%
