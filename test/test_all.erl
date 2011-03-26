@@ -16,7 +16,7 @@
 %% API Functions
 %%
 test() ->
-	{ok, Files} = file:list_dir("./tbin"),
+	{ok, Files} = file:list_dir("./erl8583/tbin"),
 	BeamPred = fun(F) -> is_beam_file(F) end,
 	BeamFiles = lists:sort(lists:filter(BeamPred, Files)),
 	TestModules = [erlang:list_to_atom(lists:sublist(F, 1, length(F)-5)) || F <- BeamFiles],
