@@ -9,12 +9,13 @@
 <hr>
 
 <h1>Module erl8583_marshaller_binary</h1>
-<ul class="index"><li><a href="#description">Description</a></li><li><a href="#types">Data Types</a></li><li><a href="#index">Function Index</a></li><li><a href="#functions">Function Details</a></li></ul>erl8583_marshaller_binary.
+<ul class="index"><li><a href="#description">Description</a></li><li><a href="#types">Data Types</a></li><li><a href="#index">Function Index</a></li><li><a href="#functions">Function Details</a></li></ul>This module marshalls an iso8583message() into
+       a binary.
 <p>Copyright © 2011 CA Meijer</p>
 
 <p><b>Authors:</b> CA Meijer.</p>
 
-<h2><a name="description">Description</a></h2>erl8583_marshaller_binary. This module marshalls an iso8583message into
+<h2><a name="description">Description</a></h2>This module marshalls an iso8583message() into
        a binary.
 <h2><a name="types">Data Types</a></h2>
 
@@ -33,7 +34,7 @@
   types for an ISO 8583 field.</p>
 
 <h3 class="typedecl"><a name="type-iso8583message">iso8583message()</a></h3>
-<p><tt>iso8583message() = {iso8583_message, list(<a href="#type-iso8583attribute">iso8583attribute()</a>), any()}</tt></p>
+<p><tt>iso8583message() = {iso8583_message, list(<a href="#type-iso8583attribute">iso8583attribute()</a>), <a href="#type-dict">dict()</a>}</tt></p>
 <p>An
   encapsulation of an ISO 8583 message.</p>
 
@@ -45,7 +46,7 @@
 <table width="100%" border="1" cellspacing="0" cellpadding="2" summary="function index"><tr><td valign="top"><a href="#construct_bitmap-1">construct_bitmap/1</a></td><td>Constructs a binary representation of the bitmap for a list of
        field IDs.</td></tr>
 <tr><td valign="top"><a href="#extract_fields-1">extract_fields/1</a></td><td>Extracts a list of field IDs from a binary representation of
-       the bitmap.</td></tr>
+       an ISO 8583 message.</td></tr>
 <tr><td valign="top"><a href="#marshal-1">marshal/1</a></td><td>Marshals an ISO 8583 message into a binary.</td></tr>
 <tr><td valign="top"><a href="#marshal-2">marshal/2</a></td><td>Marshals an ISO 8583 message into an ASCII string.</td></tr>
 <tr><td valign="top"><a href="#unmarshal-1">unmarshal/1</a></td><td>Unmarshals a binary into an ISO 8583 message.</td></tr>
@@ -56,48 +57,49 @@
 
 <h3 class="function"><a name="construct_bitmap-1">construct_bitmap/1</a></h3>
 <div class="spec">
-<p><tt>construct_bitmap(Fields::list(integer())) -&gt; binary()</tt></p>
+<p><tt>construct_bitmap(FieldIds::list(integer())) -&gt; binary()</tt></p>
 </div><p>Constructs a binary representation of the bitmap for a list of
        field IDs.
  </p>
 
 <h3 class="function"><a name="extract_fields-1">extract_fields/1</a></h3>
 <div class="spec">
-<p><tt>extract_fields(Message::binary()) -&gt; list(integer())</tt></p>
+<p><tt>extract_fields(BinaryMessage::binary()) -&gt; list(integer())</tt></p>
 </div><p>Extracts a list of field IDs from a binary representation of
-       the bitmap.
+       an ISO 8583 message.  The result is returned as a 2-tuple: a list
+       of field IDs and the remainder of the message excluding the bit map.
  </p>
 
 <h3 class="function"><a name="marshal-1">marshal/1</a></h3>
 <div class="spec">
-<p><tt>marshal(Msg::<a href="#type-iso8583message">iso8583message()</a>) -&gt; binary()</tt></p>
+<p><tt>marshal(Message::<a href="#type-iso8583message">iso8583message()</a>) -&gt; binary()</tt></p>
 </div><p>Marshals an ISO 8583 message into a binary. This function uses
        the erl8583_marshaller_binary_field module to marshal the fields.
  </p>
 
 <h3 class="function"><a name="marshal-2">marshal/2</a></h3>
 <div class="spec">
-<p><tt>marshal(Msg::<a href="#type-iso8583message">iso8583message()</a>, FieldMarshaller::<a href="#type-module">module()</a>) -&gt; binary()</tt></p>
+<p><tt>marshal(Message::<a href="#type-iso8583message">iso8583message()</a>, FieldMarshaller::<a href="#type-module">module()</a>) -&gt; binary()</tt></p>
 </div><p>Marshals an ISO 8583 message into an ASCII string. This function
        uses the specified field marshalling module.
  </p>
 
 <h3 class="function"><a name="unmarshal-1">unmarshal/1</a></h3>
 <div class="spec">
-<p><tt>unmarshal(Msg::binary()) -&gt; <a href="#type-iso8583message">iso8583message()</a></tt></p>
+<p><tt>unmarshal(BinaryMessage::binary()) -&gt; <a href="#type-iso8583message">iso8583message()</a></tt></p>
 </div><p>Unmarshals a binary into an ISO 8583 message. This function uses
        the erl8583_marshaller_binary_field module to unmarshal the fields.
  </p>
 
 <h3 class="function"><a name="unmarshal-2">unmarshal/2</a></h3>
 <div class="spec">
-<p><tt>unmarshal(Msg::binary(), FieldMarshaller::<a href="#type-module">module()</a>) -&gt; <a href="#type-iso8583message">iso8583message()</a></tt></p>
+<p><tt>unmarshal(BinaryMessage::binary(), FieldMarshaller::<a href="#type-module">module()</a>) -&gt; <a href="#type-iso8583message">iso8583message()</a></tt></p>
 </div><p>Unmarshals a binary into an ISO 8583 message. This function uses
        the specified field marshalling module.
  </p>
 <hr>
 
 <div class="navbar"><a name="#navbar_bottom"></a><table width="100%" border="0" cellspacing="0" cellpadding="2" summary="navigation bar"><tr><td><a href="overview-summary.html" target="overviewFrame">Overview</a></td><td><a href="http://www.erlang.org/"><img src="erlang.png" align="right" border="0" alt="erlang logo"></a></td></tr></table></div>
-<p><i>Generated by EDoc, Mar 25 2011, 19:09:26.</i></p>
+<p><i>Generated by EDoc, Mar 26 2011, 09:24:33.</i></p>
 </body>
 </html>
