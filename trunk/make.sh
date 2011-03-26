@@ -18,7 +18,9 @@ rsync -p -r --exclude=".*" include $ERL8583_BUILD
 cp make.sh $ERL8583_BUILD
 cp gen_doc.sh $ERL8583_BUILD
 cp overview.edoc $ERL8583_BUILD
-rm $ERL8583_BUILD.zip
+if [ -f $ERL8583_BUILD.zip ]; then
+    rm $ERL8583_BUILD.zip
+fi
 zip -q $ERL8583_BUILD.zip -r $ERL8583_BUILD
 rm -r $ERL8583_BUILD
 
