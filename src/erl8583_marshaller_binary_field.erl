@@ -147,7 +147,9 @@ unmarshal_data_element({z, llvar, _MaxLength}, BinaryFields) ->
 unmarshal_data_element({b, fixed, Length}, BinaryFields) ->
 	split_binary(BinaryFields, Length).
 
-%% @doc Marshals a field value into an ASCII string.
+%% @doc Marshals a field value into an ASCII string. The 1987 version
+%%      of the ISO 8583 specification is used to determine how to
+%%      encode the field value.
 %%
 %% @spec marshal(integer(), iso8583field_value()) -> binary()
 -spec(marshal(integer(), iso8583field_value()) -> binary()).
@@ -158,6 +160,8 @@ marshal(FieldId, FieldValue) ->
 
 %% @doc Extracts a field value from the start of a string.  The field value 
 %%      and the rest of the unmarshalled string are returned as a 2-tuple.
+%%      The 1987 version of the ISO 8583 specification is used to determine how to
+%%      decode the field value.
 %%
 %% @spec unmarshal(integer(), binary()) -> {iso8583field_value(), binary()}
 -spec(unmarshal(integer(), binary()) -> {iso8583field_value(), binary()}).
