@@ -12,9 +12,9 @@
 
 %% @author CA Meijer
 %% @copyright 2011 CA Meijer
-%% @doc erl8583_marshaller_xml. This module marshalls an iso8583message 
-%%      into an XML element. The XML elements created by this
-%%      module should be compatible with jPOS.
+%% @doc This module marshals an iso8583message() 
+%%      into an XML element and can unmarshal an XML element into
+%%      an iso8583message().
 
 -module(erl8583_marshaller_xml).
 
@@ -41,8 +41,8 @@
 %% @spec marshal(iso8583message()) -> string()
 -spec(marshal(iso8583message()) -> string()).
 
-marshal(IsoMsg) ->
-	marshal(IsoMsg, erl8583_marshaller_xml_field).
+marshal(Message) ->
+	marshal(Message, erl8583_marshaller_xml_field).
 
 %% @doc Marshals an ISO8583 message into an XML element with
 %%      root tag &lt;iso8583message&gt;. The individual fields
@@ -51,11 +51,11 @@ marshal(IsoMsg) ->
 %% @spec marshal(iso8583message(), module()) -> string()
 -spec(marshal(iso8583message(), module()) -> string()).
 
-marshal(IsoMsg, FieldMarshaller) ->
+marshal(Message, FieldMarshaller) ->
 	"<isomsg" ++ 
-		encode_attributes(erl8583_message:get_attributes(IsoMsg)) ++ 
+		encode_attributes(erl8583_message:get_attributes(Message)) ++ 
 		">" ++ 
-		marshal_fields(erl8583_message:to_list(IsoMsg), [], FieldMarshaller) ++ 
+		marshal_fields(erl8583_message:to_list(Message), [], FieldMarshaller) ++ 
 		"</isomsg>\n".
 	
 %% @doc Unmarshals an XML element with root tag &lt;iso8583message&gt;
