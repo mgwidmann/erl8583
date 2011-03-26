@@ -112,7 +112,9 @@ unmarshal_data_element({b, fixed, Length}, AsciiFields) ->
 	Value = erl8583_convert:ascii_hex_to_binary(ValueStr),
 	{Value, Rest}.
 
-%% @doc Marshals a field value into an ASCII string.
+%% @doc Marshals a field value into an ASCII string. The 1987 version
+%%      of the ISO 8583 specification is used to determine how to
+%%      encode the field value.
 %%
 %% @spec marshal(integer(), iso8583field_value()) -> string()
 -spec(marshal(integer(), iso8583field_value()) -> string()).
@@ -123,6 +125,8 @@ marshal(FieldId, FieldValue) ->
 
 %% @doc Extracts a field value from the start of a string.  The field value 
 %%      and the rest of the unmarshalled string is returned as a 2-tuple.
+%%      The 1987 version of the ISO 8583 specification is used to determine how to
+%%      decode the field value.
 %%
 %% @spec unmarshal(integer(), string()) -> {iso8583field_value(), string()}
 -spec(unmarshal(integer(), string()) -> {iso8583field_value(), string()}).
