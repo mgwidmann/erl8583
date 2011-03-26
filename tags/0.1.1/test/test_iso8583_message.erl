@@ -1,0 +1,168 @@
+%% Author: carl
+%% Created: 20 Jan 2011
+%% Description: TODO: Add description to test_iso8583_message
+-module(test_iso8583_message).
+
+%%
+%% Include files
+%%
+-include_lib("eunit/include/eunit.hrl").
+
+%%
+%% Exported Functions
+%%
+-export([]).
+
+%%
+%% API Functions
+%%
+
+%%
+%% Tests
+%%
+
+%% Check that "new" creates the expected tuple.
+new_test() ->
+	{iso8583_message, _, _} = erl8583_message:new().
+
+%% Check that we can add a field with ID 0
+set_test() ->
+	Message = erl8583_message:new(),
+	erl8583_message:set(0, "0200", Message).
+
+%% Check that we can't add a field with a negative ID.
+set_negative_id_test() ->
+	Message = erl8583_message:new(),
+	?assertError(_, erl8583_message:set_field(-1, "0200", Message)).
+	
+%% Check that we can't add a field more than once.
+set_field_twice_test() ->
+	Message = erl8583_message:new(),
+	Message2 = erl8583_message:set(0, "0200", Message),
+	?assertError(_, erl8583_message:set(0, "0210", Message2)).
+
+set_field_not_integer_test() ->
+	Message = erl8583_message:new(),
+	?assertError
+	(_, erl8583_message:set(foo, "0210", Message)).
+
+set_negative_field_test() ->
+	Message = erl8583_message:new(),
+	?assertError(_, erl8583_message:set(-1, "0210", Message)).
+	
+%% Error should be thrown if we read an unset field.
+get_unset_field_test() ->
+	Message = erl8583_message:new(),
+	?assertError(_, erl8583_message:get(0, Message)).
+
+%% Should be able to read a set field.
+get_field_test() ->
+	Message = erl8583_message:new(),
+	Message2 = erl8583_message:set(0, "0200", Message),
+	?assertEqual("0200", erl8583_message:get(0, Message2)).
+
+%% Test that we can get fields.
+get_fields_test() ->
+	Message = erl8583_message:new([{mapper, ?MODULE}]),
+	Message2 = erl8583_message:set(180, "hello", Message),
+	Message3 = erl8583_message:set(0, "0200", Message2),
+	?assertEqual([0, 180], erl8583_message:get_fields(Message3)).
+
+%% Test to_list.
+to_list_test() ->
+	Message = erl8583_message:new(),
+	Message2 = erl8583_message:set(0, "0200", Message),
+	Message3 = erl8583_message:set(39, 0, Message2),
+	[{0, "0200"}, {39, 0}] = erl8583_message:to_list(Message3).
+
+from_list_test() ->
+	Message = erl8583_message:from_list([{0, "0200"}, {39, 0}]),
+	{iso8583_message, _, _} = Message,
+	[{0, "0200"}, {39, 0}] = erl8583_message:to_list(Message).
+
+get_attributes_test() ->
+	Message = erl8583_message:new([{"foo", "bar"}, {"hello", "world"}]),
+	[{"foo", "bar"}, {"hello", "world"}] = erl8583_message:get_attributes(Message).
+
+set_attributes_test() ->
+	Msg = erl8583_message:new(),
+	UpdatedMsg = erl8583_message:set_attributes([{"foo", "bar"}, {"hello", "world"}], Msg),
+	[{"foo", "bar"}, {"hello", "world"}] = erl8583_message:get_attributes(UpdatedMsg).
+
+update_test() ->
+	Msg = erl8583_message:new(),
+	UpdatedMsg = erl8583_message:update(3, "foo", Msg),
+	"foo" = erl8583_message:get(3, UpdatedMsg),
+	ChangedMsg = erl8583_message:update(3, "bar", UpdatedMsg),
+	"bar" = erl8583_message:get(3, ChangedMsg).
+
+repeat_test() ->
+	Msg = erl8583_message:new(),
+	Msg1 = erl8583_message:set(0, "0301", Msg),
+	Msg1Rep = erl8583_message:repeat(Msg1),
+	"0301" = erl8583_message:get(0, Msg1Rep),
+	Msg3 = erl8583_message:set(0, "0203", Msg),
+	Msg3Rep = erl8583_message:repeat(Msg3),
+	"0203" = erl8583_message:get(0, Msg3Rep),
+	Msg5 = erl8583_message:set(0, "0205", Msg),
+	Msg5Rep = erl8583_message:repeat(Msg5),
+	"0205" = erl8583_message:get(0, Msg5Rep),
+	Msg0 = erl8583_message:set(0, "0200", Msg),
+	Msg0Rep = erl8583_message:repeat(Msg0),
+	"0201" = erl8583_message:get(0, Msg0Rep),
+	Msg2 = erl8583_message:set(0, "0402", Msg),
+	Msg2Rep = erl8583_message:repeat(Msg2),
+	"0403" = erl8583_message:get(0, Msg2Rep),
+	Msg4 = erl8583_message:set(0, "0104", Msg),
+	Msg4Rep = erl8583_message:repeat(Msg4),
+	"0105" = erl8583_message:get(0, Msg4Rep).
+
+clone_fields_test() ->
+	Message = erl8583_message:new([{mapper, ?MODULE}]),
+	Message2 = erl8583_message:set(10, "hello", Message),
+	Message3 = erl8583_message:set(0, "0200", Message2),
+	Message4 = erl8583_message:set(2, "hello2", Message3),
+	Clone1 = erl8583_message:clone_fields([0, 2, 10], Message4),
+	[0, 2, 10] = erl8583_message:get_fields(Clone1),
+	Clone2 = erl8583_message:clone_fields([0, 10], Message4),
+	[0, 10] = erl8583_message:get_fields(Clone2),
+	"hello" = erl8583_message:get(10, Clone2),
+	"0200" = erl8583_message:get(0, Clone2).
+
+response_1_test() ->
+	Message = erl8583_message:new([{mapper, ?MODULE}]),
+	Message2 = erl8583_message:set(10, "hello", Message),
+	Message3 = erl8583_message:set(0, "0200", Message2),
+	Message4 = erl8583_message:set(2, "hello2", Message3),
+	Response1 = erl8583_message:response([0, 10], Message4),
+	[0, 10] = erl8583_message:get_fields(Response1),
+	"hello" = erl8583_message:get(10, Response1),
+	"0210" = erl8583_message:get(0, Response1),
+	Response2 = erl8583_message:response([2, 10], Message4),
+	[0, 2, 10] = erl8583_message:get_fields(Response2),
+	"hello2" = erl8583_message:get(2, Response2),
+	"0210" = erl8583_message:get(0, Response2).
+	
+response_2_test() ->
+	Message = erl8583_message:new([{mapper, ?MODULE}]),
+	Message2 = erl8583_message:set(10, "hello", Message),
+	Message3 = erl8583_message:set(0, "0220", Message2),
+	Message4 = erl8583_message:set(2, "hello2", Message3),
+	Response = erl8583_message:response(Message4),
+	[0, 2, 10] = erl8583_message:get_fields(Response),
+	"hello2" = erl8583_message:get(2, Response),
+	"0230" = erl8583_message:get(0, Response).
+	
+remove_fields_test() ->
+	Message = erl8583_message:new([{mapper, ?MODULE}]),
+	Message2 = erl8583_message:set(10, "hello", Message),
+	Message3 = erl8583_message:set(0, "0220", Message2),
+	Message4 = erl8583_message:set(2, "hello2", Message3),
+	Message5 = erl8583_message:set(3, "hello3", Message4),
+	UpdatedMessage = erl8583_message:remove_fields([2, 3], Message5),
+	[0, 10] = erl8583_message:get_fields(UpdatedMessage),
+	"hello" = erl8583_message:get(10, UpdatedMessage),
+	"0220" = erl8583_message:get(0, UpdatedMessage).
+
+
+	
