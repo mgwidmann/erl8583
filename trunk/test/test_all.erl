@@ -10,16 +10,21 @@
 %%
 %% Exported Functions
 %%
--export([test/0]).
+-export([test/0, test/1]).
 
 %%
 %% API Functions
 %%
 test() ->
-	{ok, Files} = file:list_dir("./erl8583/tbin"),
+	test(["./erl8583/ebin"]).
+
+test([Dir]) ->
+	{ok, Files} = file:list_dir(Dir),
 	BeamPred = fun(F) -> is_beam_file(F) end,
 	BeamFiles = lists:sort(lists:filter(BeamPred, Files)),
-	TestModules = [erlang:list_to_atom(lists:sublist(F, 1, length(F)-5)) || F <- BeamFiles],
+	TestPred = fun(F) -> is_test_file(F) end,
+	TestFiles = lists:sort(lists:filter(TestPred, BeamFiles)),
+	TestModules = [erlang:list_to_atom(lists:sublist(F, 1, length(F)-5)) || F <- TestFiles],
 	TestModules2 = [Mod || Mod <- TestModules, Mod =/= test_all],
 	[run_tests(Module) || Module <- TestModules2].
 
@@ -31,6 +36,12 @@ is_beam_file(FileName) when length(FileName) >= 5 ->
 	lists:sublist(FileName, Length-4, 5) =:= ".beam";
 is_beam_file(_FileName) ->
 	false.
+
+is_test_file(FileName) when length(FileName) >= 5 ->
+	lists:sublist(FileName, 1, 5) =:= "test_";
+is_test_file(_FileName) ->
+	false.
+
 
 run_tests(Module) ->
 	io:format("Running ~p:~n", [Module]),
