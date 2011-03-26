@@ -1,12 +1,12 @@
 #!/usr/bin/env escript
 
-main(_) ->
+main([Dir]) ->
 	io:format("Generating edocs~n"),
 	{ok, Files} = file:list_dir("./src"),
 	ErlPred = fun(F) -> is_erl_file(F) end,
 	ErlFiles = lists:filter(ErlPred, Files),
 	Modules = ["src/" ++ F || F <- ErlFiles],
-        edoc:files(Modules, [{dir, "erl8583/doc"}]).
+        edoc:files(Modules, [{dir, Dir}]).
 
 is_erl_file(FileName) when length(FileName) >= 4 ->
 	Length = length(FileName),
