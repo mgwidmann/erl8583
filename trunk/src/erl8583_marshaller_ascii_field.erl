@@ -12,8 +12,9 @@
 
 %% @author CA Meijer
 %% @copyright 2011 CA Meijer
-%% @doc This module marshalls a iso8583message() field into 
-%%      an ASCII string.
+%% @doc This module marshals an iso8583message() field into 
+%%      an ASCII string or unmarshals an ASCII string into
+%%      an iso8583message() field.
 
 -module(erl8583_marshaller_ascii_field).
 
@@ -38,34 +39,34 @@
 %% @spec marshal_data_element(Encoding::field_encoding(), iso8583field_value()) -> string()
 -spec(marshal_data_element(field_encoding(), iso8583field_value()) -> string()).
 
-marshal_data_element({n, llvar, Length}, Value) when length(Value) =< Length ->
-	erl8583_convert:integer_to_string(length(Value), 2) ++ Value;
-marshal_data_element({n, lllvar, Length}, Value) when length(Value) =< Length ->
-	erl8583_convert:integer_to_string(length(Value), 3) ++ Value;
-marshal_data_element({ns, llvar, Length}, Value) when length(Value) =< Length ->
-	erl8583_convert:integer_to_string(length(Value), 2) ++ Value;
-marshal_data_element({an, llvar, Length}, Value) when length(Value) =< Length ->
-	erl8583_convert:integer_to_string(length(Value), 2) ++ Value;
-marshal_data_element({an, lllvar, Length}, Value) when length(Value) =< Length ->
-	erl8583_convert:integer_to_string(length(Value), 3) ++ Value;
-marshal_data_element({ans, llvar, Length}, Value) when length(Value) =< Length ->
-	erl8583_convert:integer_to_string(length(Value), 2) ++ Value;
-marshal_data_element({ans, lllvar, Length}, Value) when length(Value) =< Length ->
-	erl8583_convert:integer_to_string(length(Value), 3) ++ Value;
-marshal_data_element({n, fixed, Length}, Value) when length(Value) =< Length ->
-	IntValue = list_to_integer(Value),
+marshal_data_element({n, llvar, Length}, FieldValue) when length(FieldValue) =< Length ->
+	erl8583_convert:integer_to_string(length(FieldValue), 2) ++ FieldValue;
+marshal_data_element({n, lllvar, Length}, FieldValue) when length(FieldValue) =< Length ->
+	erl8583_convert:integer_to_string(length(FieldValue), 3) ++ FieldValue;
+marshal_data_element({ns, llvar, Length}, FieldValue) when length(FieldValue) =< Length ->
+	erl8583_convert:integer_to_string(length(FieldValue), 2) ++ FieldValue;
+marshal_data_element({an, llvar, Length}, FieldValue) when length(FieldValue) =< Length ->
+	erl8583_convert:integer_to_string(length(FieldValue), 2) ++ FieldValue;
+marshal_data_element({an, lllvar, Length}, FieldValue) when length(FieldValue) =< Length ->
+	erl8583_convert:integer_to_string(length(FieldValue), 3) ++ FieldValue;
+marshal_data_element({ans, llvar, Length}, FieldValue) when length(FieldValue) =< Length ->
+	erl8583_convert:integer_to_string(length(FieldValue), 2) ++ FieldValue;
+marshal_data_element({ans, lllvar, Length}, FieldValue) when length(FieldValue) =< Length ->
+	erl8583_convert:integer_to_string(length(FieldValue), 3) ++ FieldValue;
+marshal_data_element({n, fixed, Length}, FieldValue) when length(FieldValue) =< Length ->
+	IntValue = list_to_integer(FieldValue),
 	erl8583_convert:integer_to_string(IntValue, Length);
-marshal_data_element({an, fixed, Length}, Value) when length(Value) =< Length ->
-	erl8583_convert:pad_with_trailing_spaces(Value, Length);
-marshal_data_element({ans, fixed, Length}, Value) when length(Value) =< Length ->
-	erl8583_convert:pad_with_trailing_spaces(Value, Length);
-marshal_data_element({x_n, fixed, Length}, [Head | Value]) when Head =:= $C orelse Head =:= $D ->
-	IntValue = list_to_integer(Value),
+marshal_data_element({an, fixed, Length}, FieldValue) when length(FieldValue) =< Length ->
+	erl8583_convert:pad_with_trailing_spaces(FieldValue, Length);
+marshal_data_element({ans, fixed, Length}, FieldValue) when length(FieldValue) =< Length ->
+	erl8583_convert:pad_with_trailing_spaces(FieldValue, Length);
+marshal_data_element({x_n, fixed, Length}, [Head | FieldValue]) when Head =:= $C orelse Head =:= $D ->
+	IntValue = list_to_integer(FieldValue),
 	[Head] ++ erl8583_convert:integer_to_string(IntValue, Length);
-marshal_data_element({z, llvar, Length}, Value) when length(Value) =< Length ->
-	erl8583_convert:integer_to_string(length(Value), 2) ++ Value;
-marshal_data_element({b, fixed, Length}, Value) when size(Value) =:= Length ->
-	erl8583_convert:binary_to_ascii_hex(Value).
+marshal_data_element({z, llvar, Length}, FieldValue) when length(FieldValue) =< Length ->
+	erl8583_convert:integer_to_string(length(FieldValue), 2) ++ FieldValue;
+marshal_data_element({b, fixed, Length}, FieldValue) when size(FieldValue) =:= Length ->
+	erl8583_convert:binary_to_ascii_hex(FieldValue).
 
 %% @doc Extracts a field value from the start of a string given how the field
 %%      is encoded.  The field value and the rest of the unmarshalled string
@@ -74,40 +75,40 @@ marshal_data_element({b, fixed, Length}, Value) when size(Value) =:= Length ->
 %% @spec unmarshal_data_element(Encoding::field_encoding(), string()) -> {iso8583field_value(), string()}
 -spec(unmarshal_data_element(field_encoding(), string()) -> {iso8583field_value(), string()}).
 
-unmarshal_data_element({n, llvar, _MaxLength}, Fields) ->
-	{N, Rest} = lists:split(2, Fields),
+unmarshal_data_element({n, llvar, _MaxLength}, AsciiFields) ->
+	{N, Rest} = lists:split(2, AsciiFields),
 	lists:split(list_to_integer(N), Rest);
-unmarshal_data_element({n, lllvar, _MaxLength}, Fields) ->
-	{N, Rest} = lists:split(3, Fields),
+unmarshal_data_element({n, lllvar, _MaxLength}, AsciiFields) ->
+	{N, Rest} = lists:split(3, AsciiFields),
 	lists:split(list_to_integer(N), Rest);
-unmarshal_data_element({ns, llvar, _MaxLength}, Fields) ->
-	{N, Rest} = lists:split(2, Fields),
+unmarshal_data_element({ns, llvar, _MaxLength}, AsciiFields) ->
+	{N, Rest} = lists:split(2, AsciiFields),
 	lists:split(list_to_integer(N), Rest);
-unmarshal_data_element({an, llvar, _MaxLength}, Fields) ->
-	{N, Rest} = lists:split(2, Fields),
+unmarshal_data_element({an, llvar, _MaxLength}, AsciiFields) ->
+	{N, Rest} = lists:split(2, AsciiFields),
 	lists:split(list_to_integer(N), Rest);
-unmarshal_data_element({an, lllvar, _MaxLength}, Fields) ->
-	{N, Rest} = lists:split(3, Fields),
+unmarshal_data_element({an, lllvar, _MaxLength}, AsciiFields) ->
+	{N, Rest} = lists:split(3, AsciiFields),
 	lists:split(list_to_integer(N), Rest);
-unmarshal_data_element({ans, llvar, _MaxLength}, Fields) ->
-	{N, Rest} = lists:split(2, Fields),
+unmarshal_data_element({ans, llvar, _MaxLength}, AsciiFields) ->
+	{N, Rest} = lists:split(2, AsciiFields),
 	lists:split(list_to_integer(N), Rest);
-unmarshal_data_element({ans, lllvar, _MaxLength}, Fields) ->
-	{N, Rest} = lists:split(3, Fields),
+unmarshal_data_element({ans, lllvar, _MaxLength}, AsciiFields) ->
+	{N, Rest} = lists:split(3, AsciiFields),
 	lists:split(list_to_integer(N), Rest);
-unmarshal_data_element({n, fixed, Length}, Fields) ->
-	lists:split(Length, Fields);
-unmarshal_data_element({an, fixed, Length}, Fields) ->
-	lists:split(Length, Fields);
-unmarshal_data_element({ans, fixed, Length}, Fields) ->
-	lists:split(Length, Fields);
+unmarshal_data_element({n, fixed, Length}, AsciiFields) ->
+	lists:split(Length, AsciiFields);
+unmarshal_data_element({an, fixed, Length}, AsciiFields) ->
+	lists:split(Length, AsciiFields);
+unmarshal_data_element({ans, fixed, Length}, AsciiFields) ->
+	lists:split(Length, AsciiFields);
 unmarshal_data_element({x_n, fixed, Length}, [Head|Tail]) when Head =:= $C orelse Head =:= $D ->
 	lists:split(Length+1, [Head|Tail]);
-unmarshal_data_element({z, llvar, _MaxLength}, Fields) ->
-	{N, Rest} = lists:split(2, Fields),
+unmarshal_data_element({z, llvar, _MaxLength}, AsciiFields) ->
+	{N, Rest} = lists:split(2, AsciiFields),
 	lists:split(list_to_integer(N), Rest);
-unmarshal_data_element({b, fixed, Length}, Fields) ->
-	{ValueStr, Rest} = lists:split(2 * Length, Fields),
+unmarshal_data_element({b, fixed, Length}, AsciiFields) ->
+	{ValueStr, Rest} = lists:split(2 * Length, AsciiFields),
 	Value = erl8583_convert:ascii_hex_to_binary(ValueStr),
 	{Value, Rest}.
 
@@ -116,9 +117,9 @@ unmarshal_data_element({b, fixed, Length}, Fields) ->
 %% @spec marshal(integer(), iso8583field_value()) -> string()
 -spec(marshal(integer(), iso8583field_value()) -> string()).
 
-marshal(FieldId, Value) ->
+marshal(FieldId, FieldValue) ->
 	Pattern = erl8583_fields:get_encoding(FieldId),
-	marshal_data_element(Pattern, Value).
+	marshal_data_element(Pattern, FieldValue).
 
 %% @doc Extracts a field value from the start of a string.  The field value 
 %%      and the rest of the unmarshalled string is returned as a 2-tuple.
@@ -126,9 +127,9 @@ marshal(FieldId, Value) ->
 %% @spec unmarshal(integer(), string()) -> {iso8583field_value(), string()}
 -spec(unmarshal(integer(), string()) -> {iso8583field_value(), string()}).
 
-unmarshal(FieldId, Fields) ->
+unmarshal(FieldId, AsciiFields) ->
 	Pattern = erl8583_fields:get_encoding(FieldId),
-	unmarshal_data_element(Pattern, Fields).
+	unmarshal_data_element(Pattern, AsciiFields).
 
 
 %%

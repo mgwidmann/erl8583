@@ -12,7 +12,7 @@
 
 %% @author CA Meijer
 %% @copyright 2011 CA Meijer
-%% @doc erl8583_marshaller_binary. This module marshalls an iso8583message into 
+%% @doc This module marshalls an iso8583message() into 
 %%      a binary.
 
 -module(erl8583_marshaller_binary).
@@ -38,8 +38,8 @@
 %% @spec marshal(iso8583message()) -> binary()
 -spec(marshal(iso8583message()) -> binary()).
 
-marshal(Msg) ->
-	marshal(Msg, erl8583_marshaller_binary_field).
+marshal(Message) ->
+	marshal(Message, erl8583_marshaller_binary_field).
 
 %% @doc Marshals an ISO 8583 message into an ASCII string. This function
 %%      uses the specified field marshalling module.
@@ -47,12 +47,12 @@ marshal(Msg) ->
 %% @spec marshal(iso8583message(), module()) -> binary()
 -spec(marshal(iso8583message(), module()) -> binary()).
 
-marshal(Msg, FieldMarshaller) ->
-	Mti = erl8583_message:get(0, Msg),
+marshal(Message, FieldMarshaller) ->
+	Mti = erl8583_message:get(0, Message),
 	MtiBits = erl8583_convert:ascii_hex_to_binary(Mti),
-	[0|Fields] = erl8583_message:get_fields(Msg),
+	[0|Fields] = erl8583_message:get_fields(Message),
 	BitMap = construct_bitmap(Fields),
-	EncodedFields = encode(Fields, Msg, FieldMarshaller),
+	EncodedFields = encode(Fields, Message, FieldMarshaller),
 	<< MtiBits/binary, BitMap/binary, EncodedFields/binary>>.
 
 %% @doc Unmarshals a binary into an ISO 8583 message. This function uses
@@ -61,8 +61,8 @@ marshal(Msg, FieldMarshaller) ->
 %% @spec unmarshal(binary()) -> iso8583message()
 -spec(unmarshal(binary()) -> iso8583message()).
 
-unmarshal(Msg) ->
-	unmarshal(Msg, erl8583_marshaller_binary_field).
+unmarshal(BinaryMessage) ->
+	unmarshal(BinaryMessage, erl8583_marshaller_binary_field).
 
 %% @doc Unmarshals a binary into an ISO 8583 message. This function uses
 %%      the specified field marshalling module.
@@ -70,9 +70,9 @@ unmarshal(Msg) ->
 %% @spec unmarshal(binary(), module()) -> iso8583message()
 -spec(unmarshal(binary(), module()) -> iso8583message()).
 
-unmarshal(Msg, FieldMarshaller) ->
+unmarshal(BinaryMessage, FieldMarshaller) ->
 	IsoMsg1 = erl8583_message:new(),
-	{MtiBin, Rest} = split_binary(Msg, 2),
+	{MtiBin, Rest} = split_binary(BinaryMessage, 2),
 	Mti = erl8583_convert:binary_to_ascii_hex(MtiBin),
 	IsoMsg2 = erl8583_message:set(0, Mti, IsoMsg1),
 	{FieldIds, Fields} = extract_fields(Rest),
@@ -86,23 +86,24 @@ unmarshal(Msg, FieldMarshaller) ->
 
 construct_bitmap([]) ->
 	<<>>;
-construct_bitmap(Fields) ->
-	NumBitMaps = (lists:max(Fields) + 63) div 64,
+construct_bitmap(FieldIds) ->
+	NumBitMaps = (lists:max(FieldIds) + 63) div 64,
 	ExtensionBits = [Bit * 64 - 127 || Bit <- lists:seq(2, NumBitMaps)],
 	BitMap = lists:duplicate(NumBitMaps * 8, 0),
-	construct_bitmap(lists:sort(ExtensionBits ++ Fields), BitMap).
+	construct_bitmap(lists:sort(ExtensionBits ++ FieldIds), BitMap).
 
 %% @doc Extracts a list of field IDs from a binary representation of 
-%%      the bitmap.
+%%      an ISO 8583 message.  The result is returned as a 2-tuple: a list
+%%      of field IDs and the remainder of the message excluding the bit map.
 %%
 %% @spec extract_fields(binary()) -> list(integer())
 -spec(extract_fields(binary()) -> list(integer())).
 
 extract_fields(<<>>) ->
 	{[], <<>>};
-extract_fields(Message) ->
-	BitMapLength = get_bit_map_length(Message),
-	{BinaryBitMap, Fields} = split_binary(Message, BitMapLength),
+extract_fields(BinaryMessage) ->
+	BitMapLength = get_bit_map_length(BinaryMessage),
+	{BinaryBitMap, Fields} = split_binary(BinaryMessage, BitMapLength),
 	BitMap = binary_to_list(BinaryBitMap),
 	extract_fields(BitMap, 0, 8, {[], Fields}).
 
