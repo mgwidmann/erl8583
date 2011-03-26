@@ -1,4 +1,4 @@
-ERL8583_BUILD=erl8583-0.1.0
+ERL8583_BUILD=erl8583-0.1.1
 mkdir $ERL8583_BUILD
 mkdir $ERL8583_BUILD/doc
 mkdir $ERL8583_BUILD/ebin
@@ -10,7 +10,7 @@ erlc -I include -o $ERL8583_BUILD/tbin test/*.erl
 erl -noshell -pa $ERL8583_BUILD/ebin -pa $ERL8583_BUILD/tbin -s test_all test $ERL8583_BUILD/tbin -s init stop
 rm -r $ERL8583_BUILD/tbin
 cp overview.edoc $ERL8583_BUILD/doc
-./gen_doc.sh
+./gen_doc.sh $ERL8583_BUILD/doc
 echo "Creating archive"
 rsync -p -r --exclude=".*" src $ERL8583_BUILD
 rsync -p -r --exclude=".*" test $ERL8583_BUILD
