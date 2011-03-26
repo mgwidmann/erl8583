@@ -12,7 +12,7 @@
 
 %% @author CA Meijer
 %% @copyright 2011 CA Meijer
-%% @doc This module marshals an erl8583_message() into 
+%% @doc This module marshals an iso8583message() into 
 %%      an ASCII string.
 
 -module(erl8583_marshaller_ascii).
@@ -38,8 +38,8 @@
 %% @spec marshal(iso8583message()) -> string()
 -spec(marshal(iso8583message()) -> string()).
 
-marshal(Msg) ->
-	marshal(Msg, erl8583_marshaller_ascii_field).
+marshal(Message) ->
+	marshal(Message, erl8583_marshaller_ascii_field).
 
 %% @doc Marshals an ISO 8583 message into an ASCII string. This function
 %%      uses the specified field marshalling module.
@@ -47,10 +47,10 @@ marshal(Msg) ->
 %% @spec marshal(iso8583message(), module()) -> string()
 -spec(marshal(iso8583message(), module()) -> string()).
 
-marshal(Msg, FieldMarshaller) ->
-	Mti = erl8583_message:get(0, Msg),
-	[0|Fields] = erl8583_message:get_fields(Msg),
-	Mti ++ construct_bitmap(Fields) ++ encode(Fields, Msg, FieldMarshaller).
+marshal(Message, FieldMarshaller) ->
+	Mti = erl8583_message:get(0, Message),
+	[0|Fields] = erl8583_message:get_fields(Message),
+	Mti ++ construct_bitmap(Fields) ++ encode(Fields, Message, FieldMarshaller).
 	
 %% @doc Unmarshals an ASCII string into an ISO 8583 message. This function
 %%      uses the erl8583_marshaller_ascii_field module to unmarshal the fields.
@@ -58,8 +58,8 @@ marshal(Msg, FieldMarshaller) ->
 %% @spec unmarshal(string()) -> iso8583message()
 -spec(unmarshal(string()) -> iso8583message()).
 
-unmarshal(Msg) ->
-	unmarshal(Msg, erl8583_marshaller_ascii_field).
+unmarshal(Message) ->
+	unmarshal(Message, erl8583_marshaller_ascii_field).
 
 %% @doc Unmarshals an ASCII string into an ISO 8583 message. This function
 %%      uses the specified field marshalling module.
@@ -67,9 +67,9 @@ unmarshal(Msg) ->
 %% @spec unmarshal(string(), module()) -> iso8583message()
 -spec(unmarshal(string(), module()) -> iso8583message()).
 
-unmarshal(Msg, FieldMarshaller) ->
+unmarshal(Message, FieldMarshaller) ->
 	IsoMsg1 = erl8583_message:new(),
-	{Mti, Rest} = lists:split(4, Msg),
+	{Mti, Rest} = lists:split(4, Message),
 	IsoMsg2 = erl8583_message:set(0, Mti, IsoMsg1),
 	{FieldIds, Fields} = extract_fields(Rest),
 	decode_fields(FieldIds, Fields, IsoMsg2, FieldMarshaller).
@@ -82,11 +82,11 @@ unmarshal(Msg, FieldMarshaller) ->
 
 construct_bitmap([]) ->
 	[];
-construct_bitmap(Fields) ->
-	NumBitMaps = (lists:max(Fields) + 63) div 64,
+construct_bitmap(FieldIds) ->
+	NumBitMaps = (lists:max(FieldIds) + 63) div 64,
 	ExtensionBits = [Bit * 64 - 127 || Bit <- lists:seq(2, NumBitMaps)],
 	BitMap = lists:duplicate(NumBitMaps * 8, 0),
-	erl8583_convert:string_to_ascii_hex(construct_bitmap(lists:sort(ExtensionBits ++ Fields), BitMap)).
+	erl8583_convert:string_to_ascii_hex(construct_bitmap(lists:sort(ExtensionBits ++ FieldIds), BitMap)).
 
 %% @doc Extracts a list of field IDs from an ASCII hex string 
 %%      representation of the bitmap.
