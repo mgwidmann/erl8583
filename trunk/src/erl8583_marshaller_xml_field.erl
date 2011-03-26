@@ -12,8 +12,9 @@
 
 %% @author CA Meijer
 %% @copyright 2011 CA Meijer
-%% @doc erl8583_marshaller_xml_field. This module marshalls an iso8583message 
-%%      field into an XML element.
+%% @doc This module marshals an iso8583message() 
+%%      field into an XML element or unmarshals an
+%%      XML element into an iso8583message() field.
 
 -module(erl8583_marshaller_xml_field).
 
@@ -38,25 +39,26 @@
 %% @spec marshal(integer(), iso8583field_value()) -> string()
 -spec(marshal(integer(), iso8583field_value()) -> string()).
 
-marshal(FieldId, Value) when is_list(Value)->
+marshal(FieldId, FieldValue) when is_list(FieldValue)->
 	Id = integer_to_list(FieldId),
-	"<field id=\"" ++ Id ++ "\" value=\"" ++ Value ++ "\" />";
-marshal(FieldId, Value) when is_binary(Value) ->
+	"<field id=\"" ++ Id ++ "\" value=\"" ++ FieldValue ++ "\" />";
+marshal(FieldId, FieldValue) when is_binary(FieldValue) ->
 	Id = integer_to_list(FieldId),
 	"<field id=\"" ++ 
 		Id ++ 
 		"\" value=\"" ++ 
-		erl8583_convert:binary_to_ascii_hex(Value) ++
+		erl8583_convert:binary_to_ascii_hex(FieldValue) ++
 		"\" type=\"binary\" />";
 % if we drop through to here, Value is of type iso8583message().
-marshal(FieldId, Value) ->
+marshal(FieldId, FieldValue) ->
+	{iso8583_message, _, _} = FieldValue,
 	Id = integer_to_list(FieldId),
 	"<isomsg id=\"" ++ 
 		Id ++ 
 		"\"" ++
-		encode_attributes(erl8583_message:get_attributes(Value)) ++
+		encode_attributes(erl8583_message:get_attributes(FieldValue)) ++
 		">" ++
-		marshal_fields(erl8583_message:to_list(Value), "") ++ 
+		marshal_fields(erl8583_message:to_list(FieldValue), "") ++ 
 		"</isomsg>".
 
 %% @doc Unarshals an XML element into a field value.
