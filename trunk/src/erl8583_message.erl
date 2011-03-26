@@ -29,6 +29,7 @@
 -export([new/0, 
 		 new/1, 
 		 set/3, 
+		 set/2,
 		 get/2, 
 		 get_fields/1, 
 		 to_list/1, 
@@ -36,6 +37,7 @@
 		 set_attributes/2, 
 		 get_attributes/1,
 		 update/3,
+		 update/2,
 		 repeat/1,
 		 clone_fields/2,
 		 response/1,
@@ -69,27 +71,40 @@ new(Attributes) ->
 %% @spec set(integer(), iso8583field_value(), iso8583message()) -> iso8583message()
 -spec(set(integer(), iso8583field_value(), iso8583message()) -> iso8583message()).
 
-set(Index, Value, Msg) when is_integer(Index) andalso Index >= 0 ->
-	{iso8583_message, Attrs, Dict} = Msg,
-	false = dict:is_key(Index, Dict),
-	{iso8583_message, Attrs, dict:store(Index, Value, Dict)}.
+set(FieldId, FieldValue, Message) when is_integer(FieldId) andalso FieldId >= 0 ->
+	{iso8583_message, Attrs, Dict} = Message,
+	false = dict:is_key(FieldId, Dict),
+	{iso8583_message, Attrs, dict:store(FieldId, FieldValue, Dict)}.
+	
+%% @doc Sets the values of zero or more fields in a message and returns an updated
+%%      message. The field IDs and field values are passed as 2-tuples in 
+%%      a list.
+%%
+%% @spec set(list({integer(), iso8583field_value()}), iso8583message()) -> iso8583message()
+-spec(set(list({integer(), iso8583field_value()}), iso8583message()) -> iso8583message()).
+
+set([], Message) ->
+	Message;
+set(FieldsList, Message) ->
+	[{FieldId, FieldValue}|Tail] = FieldsList,
+	set(Tail, set(FieldId, FieldValue, Message)).
 	
 %% @doc Gets the value of a field from a message given the field ID.
 %%
 %% @spec get(integer(), iso8583message()) -> iso8583field_value()
 -spec(get(integer(), iso8583message()) -> iso8583field_value()).
 
-get(Index, Msg) ->
-	{iso8583_message, _Attrs, Dict} = Msg,
-	dict:fetch(Index, Dict).
+get(FieldId, Message) ->
+	{iso8583_message, _Attrs, Dict} = Message,
+	dict:fetch(FieldId, Dict).
 
 %% @doc Gets the field IDs from a message.
 %%
 %% @spec get_fields(iso8583message()) -> list(integer())
 -spec(get_fields(iso8583message()) -> list(integer())).
 
-get_fields(Msg) ->
-	{iso8583_message, _Attrs, Dict} = Msg,
+get_fields(Message) ->
+	{iso8583_message, _Attrs, Dict} = Message,
 	lists:sort(dict:fetch_keys(Dict)).
 
 %% @doc Returns an encoding of a message as a list of
@@ -98,8 +113,8 @@ get_fields(Msg) ->
 %% @spec to_list(iso8583message()) -> list({integer(), iso8583field_value()})
 -spec(to_list(iso8583message()) -> list({integer(), iso8583field_value()})).
 
-to_list(Msg) ->
-	{iso8583_message, _Attrs, Dict} = Msg,
+to_list(Message) ->
+	{iso8583_message, _Attrs, Dict} = Message,
 	dict:to_list(Dict).
 
 %% @doc Returns a list of attributes of a 
@@ -108,8 +123,8 @@ to_list(Msg) ->
 %% @spec get_attributes(iso8583message()) -> list(iso8583attribute())
 -spec(get_attributes(iso8583message()) -> list(iso8583attribute())).
 
-get_attributes(Msg) ->
-	{iso8583_message, Attrs, _Dict} = Msg,
+get_attributes(Message) ->
+	{iso8583_message, Attrs, _Dict} = Message,
 	Attrs.
 									
 %% @doc Constructs an ISO 8583 message from a list
@@ -126,9 +141,9 @@ from_list(List) ->
 %% @spec set_attributes(list(iso8583attribute()), iso8583message())-> iso8583message()
 -spec(set_attributes(list(iso8583attribute()), iso8583message())-> iso8583message()).
 
-set_attributes(Attr, Msg) ->
-	{iso8583_message, [], Dict} = Msg,
-	{iso8583_message, Attr, Dict}.
+set_attributes(Attributes, Message) ->
+	{iso8583_message, [], Dict} = Message,
+	{iso8583_message, Attributes, Dict}.
 
 %% @doc Sets or updates the value of a field in a message and returns an updated
 %%      message. The value for the field need not have been set previously.
@@ -136,24 +151,37 @@ set_attributes(Attr, Msg) ->
 %% @spec update(integer(), iso8583field_value(), iso8583message()) -> iso8583message()
 -spec(update(integer(), iso8583field_value(), iso8583message()) -> iso8583message()).
 
-update(Index, Value, Msg) when is_integer(Index) andalso Index >= 0 ->
-	{iso8583_message, Attrs, Dict} = Msg,
-	{iso8583_message, Attrs, dict:store(Index, Value, Dict)}.
+update(FieldId, FieldValue, Message) when is_integer(FieldId) andalso FieldId >= 0 ->
+	{iso8583_message, Attrs, Dict} = Message,
+	{iso8583_message, Attrs, dict:store(FieldId, FieldValue, Dict)}.
 
+%% @doc Sets or updates the values of zero or more fields in a message and returns an updated
+%%      message. The field IDs and field values are passed as 2-tuples in 
+%%      a list.
+%%
+%% @spec update(list({integer(), iso8583field_value()}), iso8583message()) -> iso8583message()
+-spec(update(list({integer(), iso8583field_value()}), iso8583message()) -> iso8583message()).
+
+update([], Message) ->
+	Message;
+update(FieldsList, Message) ->
+	[{FieldId, FieldValue}|Tail] = FieldsList,
+	update(Tail, update(FieldId, FieldValue, Message)).
+	
 %% @doc Updates the message type of a message to indicate that it's a repeat.
 %%
 %% @spec repeat(iso8583message()) -> iso8583message()
 -spec(repeat(iso8583message()) -> iso8583message()).
 
-repeat(Msg) ->
-	[M1, M2, M3, M4] = get(?MTI, Msg),
+repeat(Message) ->
+	[M1, M2, M3, M4] = get(?MTI, Message),
 	if 
 		M4 =:= $0 orelse M4 =:= $2 orelse M4 =:= $4 ->
 			M4Updated = M4 + 1;
 		M4 =:= $1 orelse M4 =:= $3 orelse M4 =:= $5 ->
 			M4Updated = M4
 	end,
-	update(?MTI, [M1, M2, M3, M4Updated], Msg).
+	update(?MTI, [M1, M2, M3, M4Updated], Message).
 
 %% @doc Creates a new message from an old one where the new message has
 %%      the same field values as the original message for a list of
@@ -162,8 +190,8 @@ repeat(Msg) ->
 %% @spec clone_fields(list(integer()), iso8583message()) -> iso8583message()
 -spec(clone_fields(list(integer()), iso8583message()) -> iso8583message()).
 
-clone_fields(FieldIds, Msg) ->
-	clone_fields(FieldIds, Msg, new()).
+clone_fields(FieldIds, Message) ->
+	clone_fields(FieldIds, Message, new()).
 
 %% @doc Creates a response message for a message where the response has
 %%      the same field values as the original message. The MTI is changed 
@@ -172,8 +200,8 @@ clone_fields(FieldIds, Msg) ->
 %% @spec response(iso8583message()) -> iso8583message()
 -spec(response(iso8583message()) -> iso8583message()).
 
-response(Msg) ->
-	response(get_fields(Msg), Msg).
+response(Message) ->
+	response(get_fields(Message), Message).
 
 %% @doc Creates a response message for a message where the response has
 %%      the same field values as the original message for a list of
@@ -183,9 +211,9 @@ response(Msg) ->
 %% @spec response(list(integer()), iso8583message()) -> iso8583message()
 -spec(response(list(integer()), iso8583message()) -> iso8583message()).
 
-response(FieldIds, Msg) ->
-	Clone = clone_fields(FieldIds, Msg),
-	[M1, M2, M3, M4] = get(?MTI, Msg),
+response(FieldIds, Message) ->
+	Clone = clone_fields(FieldIds, Message),
+	[M1, M2, M3, M4] = get(?MTI, Message),
 	if
 		M3 =:= $0 orelse M3 =:= $2 orelse M3 =:= $4 ->
 			update(?MTI, [M1, M2, M3 + 1, M4], Clone)
@@ -198,8 +226,8 @@ response(FieldIds, Msg) ->
 %% @spec remove_fields(list(integer()), iso8583message()) -> iso8583message()
 -spec(remove_fields(list(integer()), iso8583message()) -> iso8583message()).
 
-remove_fields(FieldIds, Msg) ->
-	{iso8583_message, Attributes, Dict} = Msg,
+remove_fields(FieldIds, Message) ->
+	{iso8583_message, Attributes, Dict} = Message,
 	UpdatedDict = remove_fields_from_dict(FieldIds, Dict),
 	{iso8583_message, Attributes, UpdatedDict}.
 	

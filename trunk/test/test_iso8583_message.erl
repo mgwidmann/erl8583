@@ -164,5 +164,26 @@ remove_fields_test() ->
 	"hello" = erl8583_message:get(10, UpdatedMessage),
 	"0220" = erl8583_message:get(0, UpdatedMessage).
 
-
+set_list_test() ->
+	Message1 = erl8583_message:new(),
+	Message2 = erl8583_message:set(4, "baz", Message1),
+	Fields = [{2, "foo"}, {3, "bar"}],
+	Message3 = erl8583_message:set(Fields, Message2),
+	[2, 3, 4] = erl8583_message:get_fields(Message3),
+	"foo" = erl8583_message:get(2, Message3),
+	?assertError(_, erl8583_message:set(Fields, Message3)).
+	
+update_list_test() ->
+	Message1 = erl8583_message:new(),
+	Message2 = erl8583_message:set(4, "baz", Message1),
+	Fields1 = [{2, "foo"}, {3, "bar"}],
+	Message3 = erl8583_message:update(Fields1, Message2),
+	[2, 3, 4] = erl8583_message:get_fields(Message3),
+	"foo" = erl8583_message:get(2, Message3),
+	Fields2 = [{2, "foobar"}, {5, "baz"}],
+	Message4 = erl8583_message:update(Fields2, Message3),
+	[2, 3, 4, 5] = erl8583_message:get_fields(Message4),
+	"foobar" = erl8583_message:get(2, Message4).
+	
+	
 	
