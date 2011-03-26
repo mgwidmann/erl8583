@@ -22,7 +22,7 @@
 %% Include files
 %%
 %% @headerfile "../include/erl8583_types.hrl"
--include("field_defines.hrl").
+-include("erl8583_field_ids.hrl").
 -include("erl8583_types.hrl").
 
 %%

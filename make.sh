@@ -17,6 +17,7 @@ rsync -p -r --exclude=".*" include erl8583
 cp make.sh erl8583
 cp gen_doc.sh erl8583
 cp overview.edoc erl8583
+rm erl8583_0.1.0.zip
 zip -q erl8583_0.1.0.zip -r erl8583
 rm -r erl8583
 
