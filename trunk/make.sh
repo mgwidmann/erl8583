@@ -1,23 +1,24 @@
-mkdir erl8583
-mkdir erl8583/doc
-mkdir erl8583/ebin
-mkdir erl8583/tbin
+ERL8583_BUILD=erl8583-0.1.0
+mkdir $ERL8583_BUILD
+mkdir $ERL8583_BUILD/doc
+mkdir $ERL8583_BUILD/ebin
+mkdir $ERL8583_BUILD/tbin
 echo "Compiling source"
-erlc -I include -o erl8583/ebin src/*.erl
+erlc -I include -o $ERL8583_BUILD/ebin src/*.erl
 echo "Compiling tests"
-erlc -I include -o erl8583/tbin test/*.erl
-erl -noshell -pa erl8583/ebin -pa erl8583/tbin -s test_all test erl8583/tbin -s init stop
-rm -r erl8583/tbin
-cp overview.edoc erl8583/doc
+erlc -I include -o $ERL8583_BUILD/tbin test/*.erl
+erl -noshell -pa $ERL8583_BUILD/ebin -pa $ERL8583_BUILD/tbin -s test_all test $ERL8583_BUILD/tbin -s init stop
+rm -r $ERL8583_BUILD/tbin
+cp overview.edoc $ERL8583_BUILD/doc
 ./gen_doc.sh
 echo "Creating archive"
-rsync -p -r --exclude=".*" src erl8583
-rsync -p -r --exclude=".*" test erl8583
-rsync -p -r --exclude=".*" include erl8583
-cp make.sh erl8583
-cp gen_doc.sh erl8583
-cp overview.edoc erl8583
-rm erl8583_0.1.0.zip
-zip -q erl8583_0.1.0.zip -r erl8583
-rm -r erl8583
+rsync -p -r --exclude=".*" src $ERL8583_BUILD
+rsync -p -r --exclude=".*" test $ERL8583_BUILD
+rsync -p -r --exclude=".*" include $ERL8583_BUILD
+cp make.sh $ERL8583_BUILD
+cp gen_doc.sh $ERL8583_BUILD
+cp overview.edoc $ERL8583_BUILD
+rm $ERL8583_BUILD.zip
+zip -q $ERL8583_BUILD.zip -r $ERL8583_BUILD
+rm -r $ERL8583_BUILD
 
