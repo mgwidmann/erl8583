@@ -12,7 +12,7 @@
 
 %% @author CA Meijer
 %% @copyright 2011 CA Meijer
-%% @doc This module marshalls a iso8583message field into 
+%% @doc This module marshalls a iso8583message() field into 
 %%      an ASCII string.
 
 -module(erl8583_marshaller_ascii_field).
@@ -35,7 +35,7 @@
 %% @doc Marshals a data element into a string given the field encoding
 %%      and the value of the data element.
 %%
-%% @spec marshal_data_element(field_encoding(), iso8583field_value()) -> string()
+%% @spec marshal_data_element(Encoding::field_encoding(), iso8583field_value()) -> string()
 -spec(marshal_data_element(field_encoding(), iso8583field_value()) -> string()).
 
 marshal_data_element({n, llvar, Length}, Value) when length(Value) =< Length ->
@@ -69,9 +69,9 @@ marshal_data_element({b, fixed, Length}, Value) when size(Value) =:= Length ->
 
 %% @doc Extracts a field value from the start of a string given how the field
 %%      is encoded.  The field value and the rest of the unmarshalled string
-%%      is returned as a tuple.
+%%      is returned as a 2-tuple.
 %%
-%% @spec unmarshal_data_element(field_encoding(), string()) -> {iso8583field_value(), string()}
+%% @spec unmarshal_data_element(Encoding::field_encoding(), string()) -> {iso8583field_value(), string()}
 -spec(unmarshal_data_element(field_encoding(), string()) -> {iso8583field_value(), string()}).
 
 unmarshal_data_element({n, llvar, _MaxLength}, Fields) ->
@@ -121,7 +121,7 @@ marshal(FieldId, Value) ->
 	marshal_data_element(Pattern, Value).
 
 %% @doc Extracts a field value from the start of a string.  The field value 
-%%      and the rest of the unmarshalled string is returned as a tuple.
+%%      and the rest of the unmarshalled string is returned as a 2-tuple.
 %%
 %% @spec unmarshal(integer(), string()) -> {iso8583field_value(), string()}
 -spec(unmarshal(integer(), string()) -> {iso8583field_value(), string()}).
