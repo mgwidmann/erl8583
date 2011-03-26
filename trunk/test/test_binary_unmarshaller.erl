@@ -7,7 +7,7 @@
 %% Include files
 %%
 -include_lib("eunit/include/eunit.hrl").
--include("field_defines.hrl").
+-include("erl8583_field_ids.hrl").
 
 %%
 %% Exported Functions
