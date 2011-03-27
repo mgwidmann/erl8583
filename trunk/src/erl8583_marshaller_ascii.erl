@@ -27,7 +27,7 @@
 %%
 %% Exported Functions
 %%
--export([marshal/1, marshal/2, unmarshal/1, unmarshal/2, construct_bitmap/1, extract_fields/1]).
+-export([marshal/1, marshal/2, unmarshal/1, unmarshal/2, extract_fields/1]).
 
 %%
 %% API Functions
@@ -51,7 +51,7 @@ marshal(Message) ->
 marshal(Message, FieldMarshaller) ->
 	Mti = erl8583_message:get(0, Message),
 	[0|Fields] = erl8583_message:get_fields(Message),
-	Mti ++ construct_bitmap(Fields) ++ encode(Fields, Message, FieldMarshaller).
+	Mti ++ erl8583_marshaller_ascii_bitmap:marshal(Message) ++ encode(Fields, Message, FieldMarshaller).
 	
 %% @doc Unmarshals an ASCII string into an ISO 8583 message. This function
 %%      uses the erl8583_marshaller_ascii_field module to unmarshal the fields.
@@ -75,20 +75,6 @@ unmarshal(AsciiMessage, FieldMarshaller) ->
 	{FieldIds, Fields} = extract_fields(Rest),
 	decode_fields(FieldIds, Fields, IsoMsg2, FieldMarshaller).
 
-%% @doc Constructs an ASCII string representation of the
-%%      bitmap for a list of field IDs.
-%%
-%% @spec construct_bitmap(list(integer())) -> string()
--spec(construct_bitmap(list(integer())) -> string()).
-
-construct_bitmap([]) ->
-	[];
-construct_bitmap(FieldIds) ->
-	NumBitMaps = (lists:max(FieldIds) + 63) div 64,
-	ExtensionBits = [Bit * 64 - 127 || Bit <- lists:seq(2, NumBitMaps)],
-	BitMap = lists:duplicate(NumBitMaps * 8, 0),
-	erl8583_convert:string_to_ascii_hex(construct_bitmap(lists:sort(ExtensionBits ++ FieldIds), BitMap)).
-
 %% @doc Extracts a list of field IDs from an ASCII string 
 %%      representation of an ISO 8583 message. The result is returned
 %%      as a 2-tuple of the field IDs and the remainder of the 
@@ -108,15 +94,6 @@ extract_fields(AsciiMessage) ->
 %%
 %% Local Functions
 %%
-construct_bitmap([], Result) ->
-	Result;
-construct_bitmap([Field|Tail], Result) when Field > 0 ->
-	ByteNum = (Field - 1) div 8,
-	BitNum = 7 - ((Field - 1) rem 8),
-	{Left, Right} = lists:split(ByteNum, Result),
-	[ToUpdate | RightRest] = Right,
-	construct_bitmap(Tail, Left ++ ([ToUpdate + (1 bsl BitNum)]) ++ RightRest).
-
 encode(Fields, Msg, FieldMarshaller) ->
 	lists:reverse(encode(Fields, Msg, [], FieldMarshaller)).
 

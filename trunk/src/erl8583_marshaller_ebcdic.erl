@@ -51,7 +51,7 @@ marshal(Message) ->
 marshal(Message, FieldMarshaller) ->
 	Mti = erl8583_convert:ascii_to_ebcdic(erl8583_message:get(0, Message)),
 	[0|Fields] = erl8583_message:get_fields(Message),
-	MtiBitMap = erl8583_convert:concat_binaries(Mti, construct_bitmap(Fields)),
+	MtiBitMap = erl8583_convert:concat_binaries(Mti, construct_bitmap(Message)),
 	erl8583_convert:concat_binaries(MtiBitMap, encode(Fields, Message, FieldMarshaller)).
 	
 %% @doc Constructs an EBCDIC binary representation of the
@@ -60,8 +60,8 @@ marshal(Message, FieldMarshaller) ->
 %% @spec construct_bitmap(list(integer())) -> binary()
 -spec(construct_bitmap(list(integer())) -> binary()).
 
-construct_bitmap(FieldIds) ->
-	AsciiBitMap = erl8583_marshaller_ascii:construct_bitmap(FieldIds),
+construct_bitmap(Message) ->
+	AsciiBitMap = erl8583_marshaller_ascii_bitmap:marshal(Message),
 	erl8583_convert:ascii_to_ebcdic(AsciiBitMap).
 	%list_to_binary(AsciiBitMap).
 
