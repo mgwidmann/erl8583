@@ -190,3 +190,9 @@ ebcdic_to_ascii_punctuation_3_test() ->
 
 ebcdic_to_ascii_punctuation_4_test() ->
 	",%_>?" = erl8583_convert:ebcdic_to_ascii(<<107, 108, 109, 110, 111>>).
+
+ebcdic_to_ascii_punctuation_5_test() ->
+	"`:#@'=\"" = erl8583_convert:ebcdic_to_ascii(<<121, 122, 123, 124, 125, 126, 127>>).
+
+ebcdic_to_ascii_punctuation_6_test() ->
+	"~^[]{}\\" = erl8583_convert:ebcdic_to_ascii(<<161, 176, 186, 187, 192, 208, 224>>).
