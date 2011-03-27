@@ -111,3 +111,5 @@ ascii_to_ebcdic_upper_case_chars_test() ->
 	<<209, 210, 211, 212, 213, 214, 215, 216, 217>> = erl8583_convert:ascii_to_ebcdic("JKLMNOPQR"),
 	<<226, 227, 228, 229, 230, 231, 232, 233>> = erl8583_convert:ascii_to_ebcdic("STUVWXYZ").
 
+ascii_to_ebcdic_digits_test() ->
+	<<240, 241, 242, 243, 244, 245, 246, 247, 248, 249>> = erl8583_convert:ascii_to_ebcdic("0123456789").
