@@ -327,6 +327,8 @@ strip_leading_spaces(Str) ->
 ascii_to_ebcdic([], Result) ->
 	RevResult = lists:reverse(Result),
 	erlang:list_to_binary(RevResult);
+ascii_to_ebcdic([H|Tail], Result) when H >= $0 andalso H =< $9 ->
+	ascii_to_ebcdic(Tail, [H - $0 + 240|Result]);
 ascii_to_ebcdic([H|Tail], Result) when H >= $a andalso H =< $i ->
 	ascii_to_ebcdic(Tail, [H - $a + 129|Result]);
 ascii_to_ebcdic([H|Tail], Result) when H >= $j andalso H =< $r ->
@@ -339,4 +341,3 @@ ascii_to_ebcdic([H|Tail], Result) when H >= $J andalso H =< $R ->
 	ascii_to_ebcdic(Tail, [H - $J + 209|Result]);
 ascii_to_ebcdic([H|Tail], Result) when H >= $S andalso H =< $Z ->
 	ascii_to_ebcdic(Tail, [H - $S + 226|Result]).
-
