@@ -170,3 +170,14 @@ ebcdic_to_ascii_upper_case_chars_test() ->
 	"JKLMNOPQR" = erl8583_convert:ebcdic_to_ascii(<<209, 210, 211, 212, 213, 214, 215, 216, 217>>),
 	"STUVWXYZ" = erl8583_convert:ebcdic_to_ascii(<<226, 227, 228, 229, 230, 231, 232, 233>>).
 
+ebcdic_to_ascii_digits_test() ->
+	"0123456789" = erl8583_convert:ebcdic_to_ascii(<<240, 241, 242, 243, 244, 245, 246, 247, 248, 249>>).
+
+ebcdic_to_ascii_punctuation_1_test() ->
+	" " = erl8583_convert:ebcdic_to_ascii(<<64>>),
+	"." = erl8583_convert:ebcdic_to_ascii(<<75>>),
+	"<" = erl8583_convert:ebcdic_to_ascii(<<76>>),
+	"(" = erl8583_convert:ebcdic_to_ascii(<<77>>),
+	"+" = erl8583_convert:ebcdic_to_ascii(<<78>>),
+	"|" = erl8583_convert:ebcdic_to_ascii(<<79>>),
+	"&" = erl8583_convert:ebcdic_to_ascii(<<80>>).

@@ -430,4 +430,20 @@ ebcdic_to_ascii([H|Tail], Result) when H >= 193 andalso H =< 201 ->
 ebcdic_to_ascii([H|Tail], Result) when H >= 209 andalso H =< 217 ->
 	ebcdic_to_ascii(Tail, [H - 209 + $J|Result]);
 ebcdic_to_ascii([H|Tail], Result) when H >= 226 andalso H =< 233 ->
-	ebcdic_to_ascii(Tail, [H - 226 + $S|Result]).
+	ebcdic_to_ascii(Tail, [H - 226 + $S|Result]);
+ebcdic_to_ascii([H|Tail], Result) when H >= 240 andalso H =< 249 ->
+	ebcdic_to_ascii(Tail, [H - 240 + $0|Result]);
+ebcdic_to_ascii([64|Tail], Result) ->
+	ebcdic_to_ascii(Tail, [$ |Result]);
+ebcdic_to_ascii([75|Tail], Result) ->
+	ebcdic_to_ascii(Tail, [$.|Result]);
+ebcdic_to_ascii([76|Tail], Result) ->
+	ebcdic_to_ascii(Tail, [$<|Result]);
+ebcdic_to_ascii([77|Tail], Result) ->
+	ebcdic_to_ascii(Tail, [$(|Result]);
+ebcdic_to_ascii([78|Tail], Result) ->
+	ebcdic_to_ascii(Tail, [$+|Result]);
+ebcdic_to_ascii([79|Tail], Result) ->
+	ebcdic_to_ascii(Tail, [$||Result]);
+ebcdic_to_ascii([80|Tail], Result) ->
+	ebcdic_to_ascii(Tail, [$&|Result]).
