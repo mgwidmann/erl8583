@@ -340,4 +340,19 @@ ascii_to_ebcdic([H|Tail], Result) when H >= $A andalso H =< $I ->
 ascii_to_ebcdic([H|Tail], Result) when H >= $J andalso H =< $R ->
 	ascii_to_ebcdic(Tail, [H - $J + 209|Result]);
 ascii_to_ebcdic([H|Tail], Result) when H >= $S andalso H =< $Z ->
-	ascii_to_ebcdic(Tail, [H - $S + 226|Result]).
+	ascii_to_ebcdic(Tail, [H - $S + 226|Result]);
+ascii_to_ebcdic([$ |Tail], Result) ->
+	ascii_to_ebcdic(Tail, [64|Result]);
+ascii_to_ebcdic([$.|Tail], Result) ->
+	ascii_to_ebcdic(Tail, [75|Result]);
+ascii_to_ebcdic([$<|Tail], Result) ->
+	ascii_to_ebcdic(Tail, [76|Result]);
+ascii_to_ebcdic([$(|Tail], Result) ->
+	ascii_to_ebcdic(Tail, [77|Result]);
+ascii_to_ebcdic([$+|Tail], Result) ->
+	ascii_to_ebcdic(Tail, [78|Result]);
+ascii_to_ebcdic([$||Tail], Result) ->
+	ascii_to_ebcdic(Tail, [79|Result]);
+ascii_to_ebcdic([$&|Tail], Result) ->
+	ascii_to_ebcdic(Tail, [80|Result]).
+

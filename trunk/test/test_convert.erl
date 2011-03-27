@@ -113,3 +113,12 @@ ascii_to_ebcdic_upper_case_chars_test() ->
 
 ascii_to_ebcdic_digits_test() ->
 	<<240, 241, 242, 243, 244, 245, 246, 247, 248, 249>> = erl8583_convert:ascii_to_ebcdic("0123456789").
+
+ascii_to_ebcdic_punctuation_1_test() ->
+	<<64>> = erl8583_convert:ascii_to_ebcdic(" "),
+	<<75>> = erl8583_convert:ascii_to_ebcdic("."),
+	<<76>> = erl8583_convert:ascii_to_ebcdic("<"),
+	<<77>> = erl8583_convert:ascii_to_ebcdic("("),
+	<<78>> = erl8583_convert:ascii_to_ebcdic("+"),
+	<<79>> = erl8583_convert:ascii_to_ebcdic("|"),
+	<<80>> = erl8583_convert:ascii_to_ebcdic("&").
