@@ -41,7 +41,8 @@
 		 ascii_hex_to_digit/1,
 		 digit_to_ascii_hex/1,
 		 strip_trailing_spaces/1,
-		 strip_leading_zeroes/1]).
+		 strip_leading_zeroes/1,
+		 ascii_to_ebcdic/1]).
 
 %%
 %% API Functions
@@ -228,6 +229,13 @@ strip_leading_zeroes([$0|Tail]) ->
 strip_leading_zeroes(Str) ->
 	Str.
 
+%% @doc Converts an ASCII string to an EBCDIC binary.
+%%
+%% @spec ascii_to_ebcdic(string()) -> binary()
+-spec(ascii_to_ebcdic(string()) -> binary()).
+
+ascii_to_ebcdic(Str) ->
+	ascii_to_ebcdic(Str, []).
 
 %%
 %% Local Functions
@@ -315,3 +323,13 @@ strip_leading_spaces([$ |Tail]) ->
 	strip_leading_spaces(Tail);
 strip_leading_spaces(Str) ->
 	Str.
+
+ascii_to_ebcdic([], Result) ->
+	RevResult = lists:reverse(Result),
+	erlang:list_to_binary(RevResult);
+ascii_to_ebcdic([H|Tail], Result) when H >= $a andalso H =< $i ->
+	ascii_to_ebcdic(Tail, [H - $a + 129|Result]);
+ascii_to_ebcdic([H|Tail], Result) when H >= $j andalso H =< $r ->
+	ascii_to_ebcdic(Tail, [H - $j + 145|Result]);
+ascii_to_ebcdic([H|Tail], Result) when H >= $s andalso H =< $z ->
+	ascii_to_ebcdic(Tail, [H - $s + 162|Result]).

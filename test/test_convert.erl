@@ -100,3 +100,9 @@ strip_leading_spaces_test() ->
 strip_leading_zeroes_test() ->
 	"1234" = erl8583_convert:strip_leading_zeroes("1234"),
 	"2345" = erl8583_convert:strip_leading_zeroes("0000000002345").
+
+ascii_to_ebcdic_lower_case_chars_test() ->
+	<<129, 130, 131, 132, 133, 134, 135, 136, 137>> = erl8583_convert:ascii_to_ebcdic("abcdefghi"),
+	<<145, 146, 147, 148, 149, 150, 151, 152, 153>> = erl8583_convert:ascii_to_ebcdic("jklmnopqr"),
+	<<162, 163, 164, 165, 166, 167, 168, 169>> = erl8583_convert:ascii_to_ebcdic("stuvwxyz").
+	
