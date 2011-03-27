@@ -181,3 +181,12 @@ ebcdic_to_ascii_punctuation_1_test() ->
 	"+" = erl8583_convert:ebcdic_to_ascii(<<78>>),
 	"|" = erl8583_convert:ebcdic_to_ascii(<<79>>),
 	"&" = erl8583_convert:ebcdic_to_ascii(<<80>>).
+
+ebcdic_to_ascii_punctuation_2_test() ->
+	"!$*);" = erl8583_convert:ebcdic_to_ascii(<<90, 91, 92, 93, 94>>).
+
+ebcdic_to_ascii_punctuation_3_test() ->
+	"-/" ++ [45] = erl8583_convert:ebcdic_to_ascii(<<96, 97, 96>>).
+
+ebcdic_to_ascii_punctuation_4_test() ->
+	",%_>?" = erl8583_convert:ebcdic_to_ascii(<<107, 108, 109, 110, 111>>).
