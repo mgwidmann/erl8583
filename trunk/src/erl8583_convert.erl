@@ -354,5 +354,28 @@ ascii_to_ebcdic([$+|Tail], Result) ->
 ascii_to_ebcdic([$||Tail], Result) ->
 	ascii_to_ebcdic(Tail, [79|Result]);
 ascii_to_ebcdic([$&|Tail], Result) ->
-	ascii_to_ebcdic(Tail, [80|Result]).
-
+	ascii_to_ebcdic(Tail, [80|Result]);
+ascii_to_ebcdic([$!|Tail], Result) ->
+	ascii_to_ebcdic(Tail, [90|Result]);
+ascii_to_ebcdic([$$|Tail], Result) ->
+	ascii_to_ebcdic(Tail, [91|Result]);
+ascii_to_ebcdic([$*|Tail], Result) ->
+	ascii_to_ebcdic(Tail, [92|Result]);
+ascii_to_ebcdic([$)|Tail], Result) ->
+	ascii_to_ebcdic(Tail, [93|Result]);
+ascii_to_ebcdic([$;|Tail], Result) ->
+	ascii_to_ebcdic(Tail, [94|Result]);
+ascii_to_ebcdic([$-|Tail], Result) ->
+	ascii_to_ebcdic(Tail, [96|Result]);
+ascii_to_ebcdic([$/|Tail], Result) ->
+	ascii_to_ebcdic(Tail, [97|Result]);
+ascii_to_ebcdic([$,|Tail], Result) ->
+	ascii_to_ebcdic(Tail, [107|Result]);
+ascii_to_ebcdic([$%|Tail], Result) ->
+	ascii_to_ebcdic(Tail, [108|Result]);
+ascii_to_ebcdic([$_|Tail], Result) ->
+	ascii_to_ebcdic(Tail, [109|Result]);
+ascii_to_ebcdic([$>|Tail], Result) ->
+	ascii_to_ebcdic(Tail, [110|Result]);
+ascii_to_ebcdic([$?|Tail], Result) ->
+	ascii_to_ebcdic(Tail, [111|Result]).
