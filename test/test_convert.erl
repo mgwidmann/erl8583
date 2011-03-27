@@ -122,3 +122,22 @@ ascii_to_ebcdic_punctuation_1_test() ->
 	<<78>> = erl8583_convert:ascii_to_ebcdic("+"),
 	<<79>> = erl8583_convert:ascii_to_ebcdic("|"),
 	<<80>> = erl8583_convert:ascii_to_ebcdic("&").
+
+ascii_to_ebcdic_punctuation_2_test() ->
+	<<90>> = erl8583_convert:ascii_to_ebcdic("!"),
+	<<91>> = erl8583_convert:ascii_to_ebcdic("$"),
+	<<92>> = erl8583_convert:ascii_to_ebcdic("*"),
+	<<93>> = erl8583_convert:ascii_to_ebcdic(")"),
+	<<94>> = erl8583_convert:ascii_to_ebcdic(";").
+
+ascii_to_ebcdic_punctuation_3_test() ->
+	<<96>> = erl8583_convert:ascii_to_ebcdic("-"),
+	<<97>> = erl8583_convert:ascii_to_ebcdic("/"),
+	<<96>> = erl8583_convert:ascii_to_ebcdic([45]).
+
+ascii_to_ebcdic_punctuation_4_test() ->
+	<<107>> = erl8583_convert:ascii_to_ebcdic(","),
+	<<108>> = erl8583_convert:ascii_to_ebcdic("%"),
+	<<109>> = erl8583_convert:ascii_to_ebcdic("_"),
+	<<110>> = erl8583_convert:ascii_to_ebcdic(">"),
+	<<111>> = erl8583_convert:ascii_to_ebcdic("?").
