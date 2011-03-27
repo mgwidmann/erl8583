@@ -24,7 +24,7 @@ marshal(3, _Msg) ->
 marshal(4, _Msg) ->
 	"Field 4";
 marshal(FieldId, Msg) ->
-	erl8583_marshaller_ascii:encode_field(FieldId, Msg).
+	erl8583_marshaller_ascii_field:marshal(FieldId, Msg).
 
 %% Test that a message with only an MTI can be exported.
 mti_only_test() ->
