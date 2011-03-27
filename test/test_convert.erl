@@ -196,3 +196,14 @@ ebcdic_to_ascii_punctuation_5_test() ->
 
 ebcdic_to_ascii_punctuation_6_test() ->
 	"~^[]{}\\" = erl8583_convert:ebcdic_to_ascii(<<161, 176, 186, 187, 192, 208, 224>>).
+
+ascii_to_ebcdic_sanity_test() ->
+	EbcdicList = [64] ++ lists:seq(75, 79) ++ [80] ++ lists:seq(90, 94) ++
+					 [96, 97] ++ lists:seq(107, 111) ++ lists:seq(121, 127) ++
+					 lists:seq(129, 137) ++ lists:seq(145, 153) ++ 
+					 lists:seq(161, 169) ++ [176, 186, 187] ++ 
+					 lists:seq(192, 201) ++ lists:seq(208, 217) ++ [224] ++
+					 lists:seq(226, 233) ++ lists:seq(240, 249),
+	Ebcdic = list_to_binary(EbcdicList),
+	Ascii = erl8583_convert:ebcdic_to_ascii(Ebcdic),
+	Ebcdic = erl8583_convert:ascii_to_ebcdic(Ascii).
