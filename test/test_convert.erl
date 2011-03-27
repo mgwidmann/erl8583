@@ -159,3 +159,14 @@ ascii_to_ebcdic_punctuation_6_test() ->
 	<<192>> = erl8583_convert:ascii_to_ebcdic("{"),
 	<<208>> = erl8583_convert:ascii_to_ebcdic("}"),
 	<<224>> = erl8583_convert:ascii_to_ebcdic("\\").
+
+ebcdic_to_ascii_lower_case_chars_test() ->
+	"abcdefghi" = erl8583_convert:ebcdic_to_ascii(<<129, 130, 131, 132, 133, 134, 135, 136, 137>>),
+	"jklmnopqr" = erl8583_convert:ebcdic_to_ascii(<<145, 146, 147, 148, 149, 150, 151, 152, 153>>),
+	"stuvwxyz" = erl8583_convert:ebcdic_to_ascii(<<162, 163, 164, 165, 166, 167, 168, 169>>).
+
+ebcdic_to_ascii_upper_case_chars_test() ->
+	"ABCDEFGHI" = erl8583_convert:ebcdic_to_ascii(<<193, 194, 195, 196, 197, 198, 199, 200, 201>>),
+	"JKLMNOPQR" = erl8583_convert:ebcdic_to_ascii(<<209, 210, 211, 212, 213, 214, 215, 216, 217>>),
+	"STUVWXYZ" = erl8583_convert:ebcdic_to_ascii(<<226, 227, 228, 229, 230, 231, 232, 233>>).
+

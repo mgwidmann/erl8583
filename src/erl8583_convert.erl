@@ -42,7 +42,8 @@
 		 digit_to_ascii_hex/1,
 		 strip_trailing_spaces/1,
 		 strip_leading_zeroes/1,
-		 ascii_to_ebcdic/1]).
+		 ascii_to_ebcdic/1,
+		 ebcdic_to_ascii/1]).
 
 %%
 %% API Functions
@@ -237,6 +238,14 @@ strip_leading_zeroes(Str) ->
 ascii_to_ebcdic(Str) ->
 	ascii_to_ebcdic(Str, []).
 
+%% @doc Converts an EBCDIC binary to an ASCII string.
+%%
+%% @spec ebcdic_to_ascii(binary) -> string()
+-spec(ebcdic_to_ascii(binary) -> string()).
+
+ebcdic_to_ascii(Bin) ->
+	ebcdic_to_ascii(binary_to_list(Bin), []).
+
 %%
 %% Local Functions
 %%
@@ -408,3 +417,17 @@ ascii_to_ebcdic([$}|Tail], Result) ->
 ascii_to_ebcdic([92|Tail], Result) ->
 	ascii_to_ebcdic(Tail, [224|Result]).
 
+ebcdic_to_ascii([], Result) ->
+	lists:reverse(Result);
+ebcdic_to_ascii([H|Tail], Result) when H >= 129 andalso H =< 137 ->
+	ebcdic_to_ascii(Tail, [H - 129 + $a|Result]);
+ebcdic_to_ascii([H|Tail], Result) when H >= 145 andalso H =< 153 ->
+	ebcdic_to_ascii(Tail, [H - 145 + $j|Result]);
+ebcdic_to_ascii([H|Tail], Result) when H >= 162 andalso H =< 169 ->
+	ebcdic_to_ascii(Tail, [H - 162 + $s|Result]);
+ebcdic_to_ascii([H|Tail], Result) when H >= 193 andalso H =< 201 ->
+	ebcdic_to_ascii(Tail, [H - 193 + $A|Result]);
+ebcdic_to_ascii([H|Tail], Result) when H >= 209 andalso H =< 217 ->
+	ebcdic_to_ascii(Tail, [H - 209 + $J|Result]);
+ebcdic_to_ascii([H|Tail], Result) when H >= 226 andalso H =< 233 ->
+	ebcdic_to_ascii(Tail, [H - 226 + $S|Result]).
