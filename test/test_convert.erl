@@ -106,3 +106,8 @@ ascii_to_ebcdic_lower_case_chars_test() ->
 	<<145, 146, 147, 148, 149, 150, 151, 152, 153>> = erl8583_convert:ascii_to_ebcdic("jklmnopqr"),
 	<<162, 163, 164, 165, 166, 167, 168, 169>> = erl8583_convert:ascii_to_ebcdic("stuvwxyz").
 	
+ascii_to_ebcdic_upper_case_chars_test() ->
+	<<193, 194, 195, 196, 197, 198, 199, 200, 201>> = erl8583_convert:ascii_to_ebcdic("ABCDEFGHI"),
+	<<209, 210, 211, 212, 213, 214, 215, 216, 217>> = erl8583_convert:ascii_to_ebcdic("JKLMNOPQR"),
+	<<226, 227, 228, 229, 230, 231, 232, 233>> = erl8583_convert:ascii_to_ebcdic("STUVWXYZ").
+
