@@ -141,3 +141,21 @@ ascii_to_ebcdic_punctuation_4_test() ->
 	<<109>> = erl8583_convert:ascii_to_ebcdic("_"),
 	<<110>> = erl8583_convert:ascii_to_ebcdic(">"),
 	<<111>> = erl8583_convert:ascii_to_ebcdic("?").
+
+ascii_to_ebcdic_punctuation_5_test() ->
+	<<121>> = erl8583_convert:ascii_to_ebcdic("`"),
+	<<122>> = erl8583_convert:ascii_to_ebcdic(":"),
+	<<123>> = erl8583_convert:ascii_to_ebcdic("#"),
+	<<124>> = erl8583_convert:ascii_to_ebcdic("@"),
+	<<125>> = erl8583_convert:ascii_to_ebcdic("'"),
+	<<126>> = erl8583_convert:ascii_to_ebcdic("="),
+	<<127>> = erl8583_convert:ascii_to_ebcdic("\"").
+
+ascii_to_ebcdic_punctuation_6_test() ->
+	<<161>> = erl8583_convert:ascii_to_ebcdic("~"),
+	<<176>> = erl8583_convert:ascii_to_ebcdic("^"),
+	<<186>> = erl8583_convert:ascii_to_ebcdic("["),
+	<<187>> = erl8583_convert:ascii_to_ebcdic("]"),
+	<<192>> = erl8583_convert:ascii_to_ebcdic("{"),
+	<<208>> = erl8583_convert:ascii_to_ebcdic("}"),
+	<<224>> = erl8583_convert:ascii_to_ebcdic("\\").
