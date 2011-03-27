@@ -63,6 +63,7 @@ marshal(Message, FieldMarshaller) ->
 construct_bitmap(FieldIds) ->
 	AsciiBitMap = erl8583_marshaller_ascii:construct_bitmap(FieldIds),
 	erl8583_convert:ascii_to_ebcdic(AsciiBitMap).
+	%list_to_binary(AsciiBitMap).
 
 
 
