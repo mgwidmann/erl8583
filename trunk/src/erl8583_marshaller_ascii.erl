@@ -27,7 +27,7 @@
 %%
 %% Exported Functions
 %%
--export([marshal/1, marshal/2, unmarshal/1, unmarshal/2, extract_fields/1]).
+-export([marshal/1, marshal/2, unmarshal/1, unmarshal/2]).
 
 %%
 %% API Functions
@@ -72,24 +72,8 @@ unmarshal(AsciiMessage, FieldMarshaller) ->
 	IsoMsg1 = erl8583_message:new(),
 	{Mti, Rest} = lists:split(4, AsciiMessage),
 	IsoMsg2 = erl8583_message:set(0, Mti, IsoMsg1),
-	{FieldIds, Fields} = extract_fields(Rest),
+	{FieldIds, Fields} = erl8583_marshaller_ascii_bitmap:unmarshal(Rest),
 	decode_fields(FieldIds, Fields, IsoMsg2, FieldMarshaller).
-
-%% @doc Extracts a list of field IDs from an ASCII string 
-%%      representation of an ISO 8583 message. The result is returned
-%%      as a 2-tuple of the field IDs and the remainder of the 
-%%      the message (encoding the field values but not the bit map).
-%%
-%% @spec extract_fields(string()) -> list(integer())
--spec(extract_fields(string()) -> list(integer())).
-
-extract_fields([]) ->
-	{[], []};
-extract_fields(AsciiMessage) ->
-	BitMapLength = get_bit_map_length(AsciiMessage),
-	{AsciiBitMap, Fields} = lists:split(BitMapLength, AsciiMessage),
-	BitMap = erl8583_convert:ascii_hex_to_string(AsciiBitMap),
-	extract_fields(BitMap, 0, 8, {[], Fields}).
 
 %%
 %% Local Functions
@@ -104,36 +88,9 @@ encode([FieldId|Tail], Msg, Result, FieldMarshaller) ->
 	EncodedValue = FieldMarshaller:marshal(FieldId, Value),
 	encode(Tail, Msg, lists:reverse(EncodedValue) ++ Result, FieldMarshaller).
  
-extract_fields([], _Offset, _Index, {FieldIds, Fields}) ->
-	Ids = lists:sort(FieldIds),
-	{[Id || Id <- Ids, Id rem 64 =/= 1], Fields};
-extract_fields([_Head|Tail], Offset, 0, {FieldIds, Fields}) ->
-	extract_fields(Tail, Offset+1, 8, {FieldIds, Fields});
-extract_fields([Head|Tail], Offset, Index, {FieldIds, Fields}) ->
-	case Head band (1 bsl (Index-1)) of
-		0 ->
-			extract_fields([Head|Tail], Offset, Index-1, {FieldIds, Fields});
-		_ ->
-			extract_fields([Head|Tail], Offset, Index-1, {[Offset*8+9-Index|FieldIds], Fields})
-	end.
-			
 decode_fields([], _, Result, _FieldMarshaller) ->
 	Result;
 decode_fields([FieldId|Tail], Fields, Result, FieldMarshaller) ->
 	{Value, UpdatedFields} = FieldMarshaller:unmarshal(FieldId, Fields),
 	UpdatedResult = erl8583_message:set(FieldId, Value, Result),
 	decode_fields(Tail, UpdatedFields, UpdatedResult, FieldMarshaller).
-	
-get_bit_map_length(Msg) ->
-	get_bit_map_length(Msg, 16).
-
-get_bit_map_length(Msg, Length) ->
-	[HexDig1, HexDig2|_Tail] = Msg,
-	<<Byte>> = erl8583_convert:ascii_hex_to_binary([HexDig1, HexDig2]),
-	case (Byte band 128) of
-		0 ->
-			Length;
-		_ ->
-			{_Msg1, Msg2} = lists:split(16, Msg),
-			get_bit_map_length(Msg2, Length+16)
-	end.
