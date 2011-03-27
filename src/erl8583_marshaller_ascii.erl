@@ -27,14 +27,15 @@
 %%
 %% Exported Functions
 %%
--export([marshal/1, marshal/2, unmarshal/1, unmarshal/2]).
+-export([marshal/1, marshal/2, marshal/3, unmarshal/1, unmarshal/2]).
 
 %%
 %% API Functions
 %%
 
 %% @doc Marshals an ISO 8583 message into an ASCII string. This function
-%%      uses the erl8583_marshaller_ascii_field module to marshal the fields.
+%%      uses the erl8583_marshaller_ascii_field module to marshal the fields
+%%      and erl8385_marshaller_ascii_bitmap to marshal the bit map.
 %%
 %% @spec marshal(iso8583message()) -> string()
 -spec(marshal(iso8583message()) -> string()).
@@ -43,15 +44,26 @@ marshal(Message) ->
 	marshal(Message, erl8583_marshaller_ascii_field).
 
 %% @doc Marshals an ISO 8583 message into an ASCII string. This function
-%%      uses the specified field marshalling module.
+%%      uses the specified field marshalling module and 
+%%      erl8385_marshaller_ascii_bitmap to marshal the bit map.
 %%
 %% @spec marshal(iso8583message(), module()) -> string()
 -spec(marshal(iso8583message(), module()) -> string()).
 
 marshal(Message, FieldMarshaller) ->
+	marshal(Message, FieldMarshaller, erl8583_marshaller_ascii_bitmap).
+	
+%% @doc Marshals an ISO 8583 message into an ASCII string. This function
+%%      uses the specified field marshalling module and the specified
+%%      bit map marshaller.
+%%
+%% @spec marshal(iso8583message(), module(), module()) -> string()
+-spec(marshal(iso8583message(), module(), module()) -> string()).
+
+marshal(Message, FieldMarshaller, BitMapMarshaller) ->
 	Mti = erl8583_message:get(0, Message),
 	[0|Fields] = erl8583_message:get_fields(Message),
-	FieldMarshaller:marshal(0, Mti) ++ erl8583_marshaller_ascii_bitmap:marshal(Message) ++ encode(Fields, Message, FieldMarshaller).
+	FieldMarshaller:marshal(0, Mti) ++ BitMapMarshaller:marshal(Message) ++ encode(Fields, Message, FieldMarshaller).
 	
 %% @doc Unmarshals an ASCII string into an ISO 8583 message. This function
 %%      uses the erl8583_marshaller_ascii_field module to unmarshal the fields.
