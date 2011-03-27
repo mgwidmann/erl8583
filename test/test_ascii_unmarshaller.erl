@@ -12,7 +12,7 @@
 %%
 %% Exported Functions
 %%
--export([unmarshal/2]).
+-export([unmarshal/2, unmarshal/1]).
 
 %%
 %% API Functions
@@ -20,8 +20,16 @@
 unmarshal(3, [$3|Tail]) ->
 	{"Field 3", Tail};
 unmarshal(4, [$4|Tail]) ->
-	{"Field 4", Tail}.
+	{"Field 4", Tail};
+unmarshal(0, [$X|Tail]) ->
+	{"0200", Tail};
+unmarshal(Id, Str) ->
+	erl8583_marshaller_ascii_field:unmarshal(Id, Str).
+	
 
+% bit map unmarshaller
+unmarshal([$B|Rest]) ->
+	{[3, 4], Rest}.
 
 %%
 %% Local Functions
@@ -230,3 +238,9 @@ custom_marshaller_test() ->
 	Msg = erl8583_marshaller_ascii:unmarshal("0200300000000000000034", ?MODULE),
 	"Field 3" = erl8583_message:get(3, Msg),
 	"Field 4" = erl8583_message:get(4, Msg).
+
+custom_bit_map_test() ->
+	Msg = erl8583_marshaller_ascii:unmarshal("XB34", ?MODULE, ?MODULE),
+	"Field 3" = erl8583_message:get(3, Msg),
+	"Field 4" = erl8583_message:get(4, Msg).
+	

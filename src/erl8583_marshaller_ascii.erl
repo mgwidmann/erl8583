@@ -27,7 +27,7 @@
 %%
 %% Exported Functions
 %%
--export([marshal/1, marshal/2, marshal/3, unmarshal/1, unmarshal/2]).
+-export([marshal/1, marshal/2, marshal/3, unmarshal/1, unmarshal/2, unmarshal/3]).
 
 %%
 %% API Functions
@@ -66,7 +66,8 @@ marshal(Message, FieldMarshaller, BitMapMarshaller) ->
 	FieldMarshaller:marshal(0, Mti) ++ BitMapMarshaller:marshal(Message) ++ encode(Fields, Message, FieldMarshaller).
 	
 %% @doc Unmarshals an ASCII string into an ISO 8583 message. This function
-%%      uses the erl8583_marshaller_ascii_field module to unmarshal the fields.
+%%      uses the erl8583_marshaller_ascii_field module to unmarshal the fields
+%%      and the erl8583_marshaller_ascii_bitmap module to unmarshal the bit map.
 %%
 %% @spec unmarshal(string()) -> iso8583message()
 -spec(unmarshal(string()) -> iso8583message()).
@@ -75,16 +76,27 @@ unmarshal(AsciiMessage) ->
 	unmarshal(AsciiMessage, erl8583_marshaller_ascii_field).
 
 %% @doc Unmarshals an ASCII string into an ISO 8583 message. This function
-%%      uses the specified field marshalling module.
+%%      uses the specified field marshalling module and the 
+%%      erl8583_marshaller_ascii_bitmap module to unmarshal the bit map.
 %%
 %% @spec unmarshal(string(), module()) -> iso8583message()
 -spec(unmarshal(string(), module()) -> iso8583message()).
 
 unmarshal(AsciiMessage, FieldMarshaller) ->
+	unmarshal(AsciiMessage, FieldMarshaller, erl8583_marshaller_ascii_bitmap).
+
+%% @doc Unmarshals an ASCII string into an ISO 8583 message. This function
+%%      uses the specified field marshalling module and the 
+%%      specified module to unmarshal the bit map.
+%%
+%% @spec unmarshal(string(), module(), module()) -> iso8583message()
+-spec(unmarshal(string(), module(), module()) -> iso8583message()).
+
+unmarshal(AsciiMessage, FieldMarshaller, BitMapMarshaller) ->
 	IsoMsg1 = erl8583_message:new(),
-	{Mti, Rest} = lists:split(4, AsciiMessage),
+	{Mti, Rest} = FieldMarshaller:unmarshal(0, AsciiMessage),
 	IsoMsg2 = erl8583_message:set(0, Mti, IsoMsg1),
-	{FieldIds, Fields} = erl8583_marshaller_ascii_bitmap:unmarshal(Rest),
+	{FieldIds, Fields} = BitMapMarshaller:unmarshal(Rest),
 	decode_fields(FieldIds, Fields, IsoMsg2, FieldMarshaller).
 
 %%

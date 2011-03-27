@@ -23,6 +23,8 @@ marshal(3, _Msg) ->
 	"Field 3";
 marshal(4, _Msg) ->
 	"Field 4";
+marshal(0, "0200") ->
+	"X";
 marshal(FieldId, Msg) ->
 	erl8583_marshaller_ascii_field:marshal(FieldId, Msg).
 
@@ -295,14 +297,14 @@ custom_marshaller_test() ->
 	Msg2 = erl8583_message:set(0, "0200", Msg1),
 	Msg3 = erl8583_message:set(3, "1", Msg2),
 	Msg4 = erl8583_message:set(4, "4", Msg3),
-	"02003000000000000000Field 3Field 4" = erl8583_marshaller_ascii:marshal(Msg4, ?MODULE).
+	"X3000000000000000Field 3Field 4" = erl8583_marshaller_ascii:marshal(Msg4, ?MODULE).
 	
 custom_bitmap_test() ->
 	Msg1 = erl8583_message:new(),
-	Msg2 = erl8583_message:set(0, "0200", Msg1),
+	Msg2 = erl8583_message:set(0, "0210", Msg1),
 	Msg3 = erl8583_message:set(3, "1", Msg2),
 	Msg4 = erl8583_message:set(4, "4", Msg3),
-	"0200bitmapField 3Field 4" = erl8583_marshaller_ascii:marshal(Msg4, ?MODULE, ?MODULE).
+	"0210bitmapField 3Field 4" = erl8583_marshaller_ascii:marshal(Msg4, ?MODULE, ?MODULE).
 	
 %%
 %% Local Functions
