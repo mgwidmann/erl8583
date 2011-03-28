@@ -27,7 +27,7 @@
 %%
 %% Exported Functions
 %%
--export([marshal/1, marshal/2, unmarshal/1, unmarshal/2, extract_fields/1]).
+-export([marshal/1, marshal/2, unmarshal/1, unmarshal/2]).
 
 %%
 %% API Functions
@@ -75,23 +75,8 @@ unmarshal(BinaryMessage, FieldMarshaller) ->
 	IsoMsg1 = erl8583_message:new(),
 	{Mti, Rest} = FieldMarshaller:unmarshal(?MTI, BinaryMessage),
 	IsoMsg2 = erl8583_message:set(?MTI, Mti, IsoMsg1),
-	{FieldIds, Fields} = extract_fields(Rest),
+	{FieldIds, Fields} = erl8583_marshaller_binary_bitmap:unmarshal(Rest),
 	decode_fields(FieldIds, Fields, IsoMsg2, FieldMarshaller).
-
-%% @doc Extracts a list of field IDs from a binary representation of 
-%%      an ISO 8583 message.  The result is returned as a 2-tuple: a list
-%%      of field IDs and the remainder of the message excluding the bit map.
-%%
-%% @spec extract_fields(binary()) -> list(integer())
--spec(extract_fields(binary()) -> list(integer())).
-
-extract_fields(<<>>) ->
-	{[], <<>>};
-extract_fields(BinaryMessage) ->
-	BitMapLength = get_bit_map_length(BinaryMessage),
-	{BinaryBitMap, Fields} = split_binary(BinaryMessage, BitMapLength),
-	BitMap = binary_to_list(BinaryBitMap),
-	extract_fields(BitMap, 0, 8, {[], Fields}).
 
 %%
 %% Local Functions
@@ -105,29 +90,6 @@ encode([FieldId|Tail], Msg, Result, FieldMarshaller) ->
 	Value = erl8583_message:get(FieldId, Msg),
 	EncodedValue = FieldMarshaller:marshal(FieldId, Value),
 	encode(Tail, Msg, erl8583_convert:concat_binaries(Result, EncodedValue), FieldMarshaller).
-
-get_bit_map_length(Message) ->
-	[Head|_Tail] = binary_to_list(Message),
-	case Head >= 128 of
-		false ->
-			8;
-		true ->
-			{_, Rest} = erlang:split_binary(Message, 8),
-			8 + get_bit_map_length(Rest)
-	end.
-
-extract_fields([], _Offset, _Index, {FieldIds, Fields}) ->
-	Ids = lists:sort(FieldIds),
-	{[Id || Id <- Ids, Id rem 64 =/= 1], Fields};
-extract_fields([_Head|Tail], Offset, 0, {FieldIds, Fields}) ->
-	extract_fields(Tail, Offset+1, 8, {FieldIds, Fields});
-extract_fields([Head|Tail], Offset, Index, {FieldIds, Fields}) ->
-	case Head band (1 bsl (Index-1)) of
-		0 ->
-			extract_fields([Head|Tail], Offset, Index-1, {FieldIds, Fields});
-		_ ->
-			extract_fields([Head|Tail], Offset, Index-1, {[Offset*8+9-Index|FieldIds], Fields})
-	end.
 
 decode_fields([], _, Result, _EncodingRules) ->
 	Result;
