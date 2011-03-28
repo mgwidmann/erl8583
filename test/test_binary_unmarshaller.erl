@@ -12,7 +12,7 @@
 %%
 %% Exported Functions
 %%
--export([unmarshal/2]).
+-export([unmarshal/2, unmarshal/1]).
 
 %%
 %% API Functions
@@ -25,6 +25,9 @@ unmarshal(0, Binary) ->
 	{B1, B2} = erlang:split_binary(Binary, 1),
 	B1 = <<255>>,
 	{"0200", B2}.
+
+unmarshal(<<254, 3, 0, 4, 0>>) ->
+	{[3, 4], <<3, 0, 4, 0>>}.
 
 %%
 %% Local Functions
@@ -185,3 +188,10 @@ custom_marshaller_test() ->
 	Msg = erl8583_marshaller_binary:unmarshal(<<255, 48, 0, 0, 0, 0, 0, 0, 0, 3, 0, 4, 0>>, ?MODULE),
 	"3" = erl8583_message:get(3, Msg),
 	"4" = erl8583_message:get(4, Msg).
+
+custom_bitmap_test() ->
+	Msg = erl8583_marshaller_binary:unmarshal(<<255, 254, 3, 0, 4, 0>>, ?MODULE, ?MODULE),
+	"0200" = erl8583_message:get(0, Msg),
+	"3" = erl8583_message:get(3, Msg),
+	"4" = erl8583_message:get(4, Msg).
+	
