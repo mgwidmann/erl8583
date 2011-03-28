@@ -44,7 +44,7 @@ marshal(Message) ->
 %%      an ISO 8583 message.  The result is returned as a 2-tuple: a list
 %%      of field IDs and the remainder of the message excluding the bit map.
 %%
-%% @spec unmarshal(binary()) -> {list(integer()), binary()})
+%% @spec unmarshal(binary()) -> {list(integer()), binary()}
 -spec(unmarshal(binary()) -> {list(integer()), binary()}).
 
 unmarshal(<<>>) ->

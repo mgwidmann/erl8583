@@ -27,7 +27,7 @@
 %%
 %% Exported Functions
 %%
--export([marshal/1, marshal/2, unmarshal/1, unmarshal/2]).
+-export([marshal/1, marshal/2, marshal/3, unmarshal/1, unmarshal/2]).
 
 %%
 %% API Functions
@@ -43,15 +43,26 @@ marshal(Message) ->
 	marshal(Message, erl8583_marshaller_binary_field).
 
 %% @doc Marshals an ISO 8583 message into an ASCII string. This function
-%%      uses the specified field marshalling module.
+%%      uses the specified field marshalling module and the 
+%%      erl8583_marshaller_binary_bitmap module to marshal the bit map.
 %%
 %% @spec marshal(iso8583message(), module()) -> binary()
 -spec(marshal(iso8583message(), module()) -> binary()).
 
 marshal(Message, FieldMarshaller) ->
+	marshal(Message, FieldMarshaller, erl8583_marshaller_binary_bitmap).
+
+%% @doc Marshals an ISO 8583 message into an ASCII string. This function
+%%      uses the specified field marshalling module and the 
+%%      specified bit map marshaller.
+%%
+%% @spec marshal(iso8583message(), module(), module()) -> binary()
+-spec(marshal(iso8583message(), module(), module()) -> binary()).
+
+marshal(Message, FieldMarshaller, BitMapMarshaller) ->
 	Mti = erl8583_message:get(0, Message),
 	MtiBin = FieldMarshaller:marshal(?MTI, Mti),
-	BitMap = erl8583_marshaller_binary_bitmap:marshal(Message),
+	BitMap = BitMapMarshaller:marshal(Message),
 	[?MTI|Fields] = erl8583_message:get_fields(Message),
 	EncodedFields = encode(Fields, Message, FieldMarshaller),
 	<< MtiBin/binary, BitMap/binary, EncodedFields/binary>>.
