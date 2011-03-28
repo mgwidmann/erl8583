@@ -112,7 +112,7 @@ encode([FieldId|Tail], Msg, Result, FieldMarshaller) ->
 	EncodedValue = FieldMarshaller:marshal(FieldId, Value),
 	encode(Tail, Msg, lists:reverse(EncodedValue) ++ Result, FieldMarshaller).
  
-decode_fields([], _, Result, _FieldMarshaller) ->
+decode_fields([], [], Result, _FieldMarshaller) ->
 	Result;
 decode_fields([FieldId|Tail], Fields, Result, FieldMarshaller) ->
 	{Value, UpdatedFields} = FieldMarshaller:unmarshal(FieldId, Fields),

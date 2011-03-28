@@ -114,7 +114,7 @@ encode([FieldId|Tail], Msg, Result, FieldMarshaller) ->
 	EncodedValue = FieldMarshaller:marshal(FieldId, Value),
 	encode(Tail, Msg, erl8583_convert:concat_binaries(Result, EncodedValue), FieldMarshaller).
 
-decode_fields([], _, Result, _EncodingRules) ->
+decode_fields([], <<>>, Result, _FieldMarshaller) ->
 	Result;
 decode_fields([FieldId|Tail], Fields, Result, FieldMarshaller) ->
 	{Value, UpdatedFields} = FieldMarshaller:unmarshal(FieldId, Fields),
