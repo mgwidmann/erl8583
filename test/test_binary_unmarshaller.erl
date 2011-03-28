@@ -20,7 +20,11 @@
 unmarshal(3, <<3, 0, 4, 0>>) ->
 	{"3", <<4, 0>>};
 unmarshal(4, <<4, 0>>) ->
-	{"4", <<>>}.
+	{"4", <<>>};
+unmarshal(0, Binary) ->
+	{B1, B2} = erlang:split_binary(Binary, 1),
+	B1 = <<255>>,
+	{"0200", B2}.
 
 %%
 %% Local Functions
@@ -178,6 +182,6 @@ field_101_test() ->
 	"FileName" = erl8583_message:get(101, Msg).
 
 custom_marshaller_test() ->
-	Msg = erl8583_marshaller_binary:unmarshal(<<2, 0, 48, 0, 0, 0, 0, 0, 0, 0, 3, 0, 4, 0>>, ?MODULE),
+	Msg = erl8583_marshaller_binary:unmarshal(<<255, 48, 0, 0, 0, 0, 0, 0, 0, 3, 0, 4, 0>>, ?MODULE),
 	"3" = erl8583_message:get(3, Msg),
 	"4" = erl8583_message:get(4, Msg).
