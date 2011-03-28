@@ -20,7 +20,11 @@
 marshal(3, 3) ->
 	<<3>>;
 marshal(4, 4) ->
-	<<4>>.
+	<<4>>;
+marshal(0, "0200") ->
+	<<255>>;
+marshal(FieldId, FieldValue) ->
+	erl8583_marshaller_binary_field:marshal(FieldId, FieldValue).
 
 %%
 %% Local Functions
@@ -170,6 +174,6 @@ custom_marshaller_test() ->
 	Msg2 = erl8583_message:set(0, "0200", Msg1),
 	Msg3 = erl8583_message:set(3, 3, Msg2),
 	Msg4 = erl8583_message:set(4, 4, Msg3),
-	<<2, 0, 48, 0, 0, 0, 0, 0, 0, 0, 3, 4>> 
+	<<255, 48, 0, 0, 0, 0, 0, 0, 0, 3, 4>> 
 		= erl8583_marshaller_binary:marshal(Msg4, ?MODULE).
 

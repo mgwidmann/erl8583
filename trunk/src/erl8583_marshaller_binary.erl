@@ -22,6 +22,7 @@
 %%
 %% @headerfile "../include/erl8583_types.hrl"
 -include("erl8583_types.hrl").
+-include("erl8583_field_ids.hrl").
 
 %%
 %% Exported Functions
@@ -49,11 +50,11 @@ marshal(Message) ->
 
 marshal(Message, FieldMarshaller) ->
 	Mti = erl8583_message:get(0, Message),
-	MtiBits = erl8583_convert:ascii_hex_to_binary(Mti),
-	[0|Fields] = erl8583_message:get_fields(Message),
+	MtiBin = FieldMarshaller:marshal(?MTI, Mti),
+	[?MTI|Fields] = erl8583_message:get_fields(Message),
 	BitMap = construct_bitmap(Fields),
 	EncodedFields = encode(Fields, Message, FieldMarshaller),
-	<< MtiBits/binary, BitMap/binary, EncodedFields/binary>>.
+	<< MtiBin/binary, BitMap/binary, EncodedFields/binary>>.
 
 %% @doc Unmarshals a binary into an ISO 8583 message. This function uses
 %%      the erl8583_marshaller_binary_field module to unmarshal the fields.
@@ -72,9 +73,8 @@ unmarshal(BinaryMessage) ->
 
 unmarshal(BinaryMessage, FieldMarshaller) ->
 	IsoMsg1 = erl8583_message:new(),
-	{MtiBin, Rest} = split_binary(BinaryMessage, 2),
-	Mti = erl8583_convert:binary_to_ascii_hex(MtiBin),
-	IsoMsg2 = erl8583_message:set(0, Mti, IsoMsg1),
+	{Mti, Rest} = FieldMarshaller:unmarshal(?MTI, BinaryMessage),
+	IsoMsg2 = erl8583_message:set(?MTI, Mti, IsoMsg1),
 	{FieldIds, Fields} = extract_fields(Rest),
 	decode_fields(FieldIds, Fields, IsoMsg2, FieldMarshaller).
 
