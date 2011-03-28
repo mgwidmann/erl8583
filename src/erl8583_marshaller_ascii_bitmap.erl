@@ -14,7 +14,6 @@
 %% @copyright 2011 CA Meijer
 %% @doc This module constructs an ASCII string representation of the bit map of
 %%      an iso8583message() field.
-
 -module(erl8583_marshaller_ascii_bitmap).
 
 %%
