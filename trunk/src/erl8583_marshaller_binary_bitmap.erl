@@ -12,7 +12,7 @@
 %%
 %% Exported Functions
 %%
--export([marshal/1]).
+-export([marshal/1, unmarshal/1]).
 
 %%
 %% API Functions
@@ -26,9 +26,21 @@
 
 marshal(Message) ->
 	[0|Fields] = erl8583_message:get_fields(Message),
-	construct_bitmap(Fields).
+	construct_bitmap(Fields).%% @doc Extracts a list of field IDs from a binary representation of 
 
+%%      an ISO 8583 message.  The result is returned as a 2-tuple: a list
+%%      of field IDs and the remainder of the message excluding the bit map.
+%%
+%% @spec unmarshal(binary()) -> {list(integer()), binary()})
+-spec(unmarshal(binary()) -> {list(integer()), binary()}).
 
+unmarshal(<<>>) ->
+	{[], <<>>};
+unmarshal(BinaryMessage) ->
+	BitMapLength = get_bit_map_length(BinaryMessage),
+	{BinaryBitMap, Fields} = split_binary(BinaryMessage, BitMapLength),
+	BitMap = binary_to_list(BinaryBitMap),
+	extract_fields(BitMap, 0, 8, {[], Fields}).
 
 %%
 %% Local Functions
@@ -56,4 +68,25 @@ construct_bitmap([Field|Tail], Result) when Field > 0 ->
 	[ToUpdate | RightRest] = Right,
 	construct_bitmap(Tail, Left ++ ([ToUpdate + (1 bsl BitNum)]) ++ RightRest).
 
+get_bit_map_length(Message) ->
+	[Head|_Tail] = binary_to_list(Message),
+	case Head >= 128 of
+		false ->
+			8;
+		true ->
+			{_, Rest} = erlang:split_binary(Message, 8),
+			8 + get_bit_map_length(Rest)
+	end.
 
+extract_fields([], _Offset, _Index, {FieldIds, Fields}) ->
+	Ids = lists:sort(FieldIds),
+	{[Id || Id <- Ids, Id rem 64 =/= 1], Fields};
+extract_fields([_Head|Tail], Offset, 0, {FieldIds, Fields}) ->
+	extract_fields(Tail, Offset+1, 8, {FieldIds, Fields});
+extract_fields([Head|Tail], Offset, Index, {FieldIds, Fields}) ->
+	case Head band (1 bsl (Index-1)) of
+		0 ->
+			extract_fields([Head|Tail], Offset, Index-1, {FieldIds, Fields});
+		_ ->
+			extract_fields([Head|Tail], Offset, Index-1, {[Offset*8+9-Index|FieldIds], Fields})
+	end.
