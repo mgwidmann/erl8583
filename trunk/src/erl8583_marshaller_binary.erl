@@ -27,7 +27,7 @@
 %%
 %% Exported Functions
 %%
--export([marshal/1, marshal/2, unmarshal/1, unmarshal/2, construct_bitmap/1, extract_fields/1]).
+-export([marshal/1, marshal/2, unmarshal/1, unmarshal/2, extract_fields/1]).
 
 %%
 %% API Functions
@@ -51,8 +51,8 @@ marshal(Message) ->
 marshal(Message, FieldMarshaller) ->
 	Mti = erl8583_message:get(0, Message),
 	MtiBin = FieldMarshaller:marshal(?MTI, Mti),
+	BitMap = erl8583_marshaller_binary_bitmap:marshal(Message),
 	[?MTI|Fields] = erl8583_message:get_fields(Message),
-	BitMap = construct_bitmap(Fields),
 	EncodedFields = encode(Fields, Message, FieldMarshaller),
 	<< MtiBin/binary, BitMap/binary, EncodedFields/binary>>.
 
@@ -78,20 +78,6 @@ unmarshal(BinaryMessage, FieldMarshaller) ->
 	{FieldIds, Fields} = extract_fields(Rest),
 	decode_fields(FieldIds, Fields, IsoMsg2, FieldMarshaller).
 
-%% @doc Constructs a binary representation of the bitmap for a list of 
-%%      field IDs.
-%%
-%% @spec construct_bitmap(list(integer())) -> binary()
--spec(construct_bitmap(list(integer())) -> binary()).
-
-construct_bitmap([]) ->
-	<<>>;
-construct_bitmap(FieldIds) ->
-	NumBitMaps = (lists:max(FieldIds) + 63) div 64,
-	ExtensionBits = [Bit * 64 - 127 || Bit <- lists:seq(2, NumBitMaps)],
-	BitMap = lists:duplicate(NumBitMaps * 8, 0),
-	construct_bitmap(lists:sort(ExtensionBits ++ FieldIds), BitMap).
-
 %% @doc Extracts a list of field IDs from a binary representation of 
 %%      an ISO 8583 message.  The result is returned as a 2-tuple: a list
 %%      of field IDs and the remainder of the message excluding the bit map.
@@ -110,15 +96,6 @@ extract_fields(BinaryMessage) ->
 %%
 %% Local Functions
 %%
-construct_bitmap([], Result) ->
-	list_to_binary(Result);
-construct_bitmap([Field|Tail], Result) when Field > 0 ->
-	ByteNum = (Field - 1) div 8,
-	BitNum = 7 - ((Field - 1) rem 8),
-	{Left, Right} = lists:split(ByteNum, Result),
-	[ToUpdate | RightRest] = Right,
-	construct_bitmap(Tail, Left ++ ([ToUpdate + (1 bsl BitNum)]) ++ RightRest).
-
 encode(Fields, Msg, FieldMarshaller) ->
 	encode(Fields, Msg, <<>>, FieldMarshaller).
 
