@@ -15,7 +15,6 @@
 %% @doc This module marshals an iso8583message() into 
 %%      an EBCDIC binary or unmarshals an EBCDIC binary into an
 %%      iso8583message().
-
 -module(erl8583_marshaller_ebcdic).
 
 %%
@@ -27,8 +26,7 @@
 %%
 %% Exported Functions
 %%
--export([marshal/1 %, marshal/2, unmarshal/1, unmarshal/2, construct_bitmap/1, extract_fields/1]).
-]).
+-export([marshal/1]).
 
 %%
 %% API Functions
@@ -49,7 +47,7 @@ marshal(Message) ->
 -spec(marshal(iso8583message(), module()) -> binary()).
 
 marshal(Message, FieldMarshaller) ->
-	Mti = erl8583_convert:ascii_to_ebcdic(erl8583_message:get(0, Message)),
+	Mti = erl8583_marshaller_ebcdic_field:marshal(0, erl8583_message:get(0, Message)),
 	[0|Fields] = erl8583_message:get_fields(Message),
 	MtiBitMap = erl8583_convert:concat_binaries(Mti, construct_bitmap(Message)),
 	erl8583_convert:concat_binaries(MtiBitMap, encode(Fields, Message, FieldMarshaller)).
