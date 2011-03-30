@@ -70,8 +70,8 @@ marshal(Message, FieldMarshaller, BitMapMarshaller) ->
 %% @doc Unmarshals a binary into an ISO 8583 message. This function uses
 %%      the erl8583_marshaller_binary_field module to unmarshal the fields.
 %%
-%% @spec unmarshal(binary()) -> iso8583message()
--spec(unmarshal(binary()) -> iso8583message()).
+%% @spec unmarshal(list(byte())) -> iso8583message()
+-spec(unmarshal(list(byte())) -> iso8583message()).
 
 unmarshal(BinaryMessage) ->
 	unmarshal(BinaryMessage, erl8583_marshaller_binary_field).
@@ -95,8 +95,9 @@ unmarshal(BinaryMessage, FieldMarshaller) ->
 -spec(unmarshal(binary(), module(), module()) -> iso8583message()).
 
 unmarshal(BinaryMessage, FieldMarshaller, BitMapMarshaller) ->
+	Message = list_to_binary(BinaryMessage),
 	IsoMsg1 = erl8583_message:new(),
-	{Mti, Rest} = FieldMarshaller:unmarshal(?MTI, BinaryMessage),
+	{Mti, Rest} = FieldMarshaller:unmarshal(?MTI, Message),
 	IsoMsg2 = erl8583_message:set(?MTI, Mti, IsoMsg1),
 	{FieldIds, Fields} = BitMapMarshaller:unmarshal(Rest),
 	decode_fields(FieldIds, Fields, IsoMsg2, FieldMarshaller).
