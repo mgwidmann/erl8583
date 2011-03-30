@@ -27,7 +27,7 @@ marshal(FieldId, FieldValue) ->
 	erl8583_marshaller_binary_field:marshal(FieldId, FieldValue).
 
 marshal(_) ->
-	<<254>>.
+	[254].
 
 %%
 %% Local Functions

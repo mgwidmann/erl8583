@@ -62,7 +62,7 @@ marshal(Message, FieldMarshaller) ->
 marshal(Message, FieldMarshaller, BitMapMarshaller) ->
 	Mti = erl8583_message:get(0, Message),
 	MtiBin = FieldMarshaller:marshal(?MTI, Mti),
-	BitMap = BitMapMarshaller:marshal(Message),
+	BitMap = list_to_binary(BitMapMarshaller:marshal(Message)),
 	[?MTI|Fields] = erl8583_message:get_fields(Message),
 	EncodedFields = encode(Fields, Message, FieldMarshaller),
 	<< MtiBin/binary, BitMap/binary, EncodedFields/binary>>.
