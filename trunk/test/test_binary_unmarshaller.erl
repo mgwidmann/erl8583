@@ -18,13 +18,12 @@
 %% API Functions
 %%
 unmarshal(3, [3, 0, 4, 0]) ->
-	{"3", <<4, 0>>};
+	{"3", [4, 0]};
 unmarshal(4, [4, 0]) ->
-	{"4", <<>>};
+	{"4", []};
 unmarshal(0, Binary) ->
-	Bin = list_to_binary(Binary),
-	{B1, B2} = erlang:split_binary(Bin, 1),
-	B1 = <<255>>,
+	{B1, B2} = lists:split(1, Binary),
+	B1 = [255],
 	{"0200", B2}.
 
 unmarshal(<<254, 3, 0, 4, 0>>) ->
