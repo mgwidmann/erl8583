@@ -169,7 +169,8 @@ marshal(FieldId, FieldValue) ->
 unmarshal(FieldId, BinaryFields) ->
 	BinFields = list_to_binary(BinaryFields),
 	Pattern = erl8583_fields:get_encoding(FieldId),
-	unmarshal_data_element(Pattern, BinFields).
+	{X, Y} = unmarshal_data_element(Pattern, BinFields),
+	{X, binary_to_list(Y)}.
 
 
 %%
