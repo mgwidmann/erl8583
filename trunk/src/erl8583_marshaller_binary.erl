@@ -95,9 +95,8 @@ unmarshal(BinaryMessage, FieldMarshaller) ->
 -spec(unmarshal(binary(), module(), module()) -> iso8583message()).
 
 unmarshal(BinaryMessage, FieldMarshaller, BitMapMarshaller) ->
-	Message = list_to_binary(BinaryMessage),
 	IsoMsg1 = erl8583_message:new(),
-	{Mti, Rest} = FieldMarshaller:unmarshal(?MTI, Message),
+	{Mti, Rest} = FieldMarshaller:unmarshal(?MTI, BinaryMessage),
 	IsoMsg2 = erl8583_message:set(?MTI, Mti, IsoMsg1),
 	{FieldIds, Fields} = BitMapMarshaller:unmarshal(Rest),
 	decode_fields(FieldIds, Fields, IsoMsg2, FieldMarshaller).
@@ -118,6 +117,6 @@ encode([FieldId|Tail], Msg, Result, FieldMarshaller) ->
 decode_fields([], <<>>, Result, _FieldMarshaller) ->
 	Result;
 decode_fields([FieldId|Tail], Fields, Result, FieldMarshaller) ->
-	{Value, UpdatedFields} = FieldMarshaller:unmarshal(FieldId, Fields),
+	{Value, UpdatedFields} = FieldMarshaller:unmarshal(FieldId, binary_to_list(Fields)),
 	UpdatedResult = erl8583_message:set(FieldId, Value, Result),
 	decode_fields(Tail, UpdatedFields, UpdatedResult, FieldMarshaller).

@@ -163,12 +163,13 @@ marshal(FieldId, FieldValue) ->
 %%      The 1987 version of the ISO 8583 specification is used to determine how to
 %%      decode the field value.
 %%
-%% @spec unmarshal(integer(), binary()) -> {iso8583field_value(), binary()}
--spec(unmarshal(integer(), binary()) -> {iso8583field_value(), binary()}).
+%% @spec unmarshal(integer(), list(byte())) -> {iso8583field_value(), binary()}
+-spec(unmarshal(integer(), list(byte())) -> {iso8583field_value(), binary()}).
 
 unmarshal(FieldId, BinaryFields) ->
+	BinFields = list_to_binary(BinaryFields),
 	Pattern = erl8583_fields:get_encoding(FieldId),
-	unmarshal_data_element(Pattern, BinaryFields).
+	unmarshal_data_element(Pattern, BinFields).
 
 
 %%
