@@ -186,7 +186,7 @@ track2_to_string(Data, Length) ->
 -spec(string_to_track2(string()) -> list(byte())).
 
 string_to_track2(Data) ->
-	string_to_track2(Data, <<>>, 0, true).
+	string_to_track2(Data, [], 0, true).
 
 %% @doc Converts a string containing 1 ASCII hex character
 %%      to its value.
@@ -292,11 +292,9 @@ integer_to_bcd(0, 0, List) ->
 	[Head|Tail] = List,
 	case length(List) rem 2 of
 		0 ->
-			Result = concat_adjacent_bytes(List, []),
-			list_to_binary(Result);
+			concat_adjacent_bytes(List, []);
 		1 when Head =< 9 ->
-			Result = concat_adjacent_bytes(Tail, []),
-			list_to_binary([Head|Result])
+			[Head|concat_adjacent_bytes(Tail, [])]
 	end;	
 integer_to_bcd(Value, Length, List) when Length > 0 ->
 	integer_to_bcd(Value div 10, Length-1, [Value rem 10|List]).
@@ -307,7 +305,7 @@ concat_adjacent_bytes([Dig1, Dig2|Tail], Result) ->
 	concat_adjacent_bytes(Tail, [Dig1 * 16 + Dig2|Result]).
 
 ascii_hex_to_bcd2([], Result) ->
-	list_to_binary(lists:reverse(Result));
+	lists:reverse(Result);
 ascii_hex_to_bcd2([Dig1, Dig2|Tail], Result) ->
 	Byte = ascii_hex_to_digit([Dig1]) * 16 + ascii_hex_to_digit([Dig2]),
 	ascii_hex_to_bcd2(Tail, [Byte|Result]).
@@ -319,14 +317,14 @@ track2_to_string2(Data, Result) ->
 	track2_to_string2(Rest, [X rem 16 + $0, X div 16 + $0 | Result]).
 
 string_to_track2([], Result, 0, true) ->
-	Result;
+	lists:reverse(Result);
 string_to_track2([], Result, X, false) ->
-	concat_binaries(Result, << (X*16) >>);
+	lists:reverse(Result) ++ [X*16];
 string_to_track2([H|T], Result, 0, true) ->
 	string_to_track2(T, Result, H-$0, false);
 string_to_track2([H|T], Result, X, false) ->
 	Xupdated = X*16 + H - $0,
-	string_to_track2(T, concat_binaries(Result, <<Xupdated>>), 0, true).
+	string_to_track2(T, [Xupdated|Result], 0, true).
 
 strip_leading_spaces([$ |Tail]) ->
 	strip_leading_spaces(Tail);

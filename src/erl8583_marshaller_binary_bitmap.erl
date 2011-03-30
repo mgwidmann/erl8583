@@ -34,8 +34,8 @@
 %% @doc Constructs a binary representation of the
 %%      bitmap for an iso8583message().
 %%
-%% @spec marshal(iso8583message()) -> list()
--spec(marshal(iso8583message()) -> list()).
+%% @spec marshal(iso8583message()) -> list(byte())
+-spec(marshal(iso8583message()) -> list(byte())).
 
 marshal(Message) ->
 	[0|Fields] = erl8583_message:get_fields(Message),
