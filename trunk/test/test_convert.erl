@@ -57,21 +57,20 @@ concat_binaries_test() ->
 	<<1, 2, 3, 4>> = erl8583_convert:concat_binaries([<<1>>, <<2, 3>>, <<4>>]).
 
 integer_to_bcd_test() ->
-	<<1>> = erl8583_convert:integer_to_bcd(1, 1),
-	<<1>> = erl8583_convert:integer_to_bcd(1, 2),
-	<<0, 1>> = erl8583_convert:integer_to_bcd(1, 3),
-	<<16>> = erl8583_convert:integer_to_bcd(10, 2),
-	<<0, 16>> = erl8583_convert:integer_to_bcd(10, 3),
-	<<9, 153>> = erl8583_convert:integer_to_bcd(999, 3),
-	<<0,18,52,86,120>> = erl8583_convert:integer_to_bcd(12345678, 10),
-	<<1,35,69,103,137>> = erl8583_convert:integer_to_bcd(123456789, 9),
+	[1] = erl8583_convert:integer_to_bcd(1, 1),
+	[1] = erl8583_convert:integer_to_bcd(1, 2),
+	[0, 1] = erl8583_convert:integer_to_bcd(1, 3),
+	[16] = erl8583_convert:integer_to_bcd(10, 2),
+	[0, 16] = erl8583_convert:integer_to_bcd(10, 3),
+	[9, 153] = erl8583_convert:integer_to_bcd(999, 3),
+	[0,18,52,86,120] = erl8583_convert:integer_to_bcd(12345678, 10),
 	?assertError(_, erl8583_convert:integer_to_bcd(1000, 3)).
 
 ascii_hex_to_bcd_test() ->
-	<<48, 31>> = erl8583_convert:ascii_hex_to_bcd("301", "F"),
-	<<64, 31>> = erl8583_convert:ascii_hex_to_bcd("401", "F"),
-	<<48, 16>> = erl8583_convert:ascii_hex_to_bcd("301", "0"),
-	<<18, 52>> = erl8583_convert:ascii_hex_to_bcd("1234", "0").
+	[48, 31] = erl8583_convert:ascii_hex_to_bcd("301", "F"),
+	[64, 31] = erl8583_convert:ascii_hex_to_bcd("401", "F"),
+	[48, 16] = erl8583_convert:ascii_hex_to_bcd("301", "0"),
+	[18, 52] = erl8583_convert:ascii_hex_to_bcd("1234", "0").
 
 bcd_to_integer_test() ->
 	17 = erl8583_convert:bcd_to_integer(<<23>>),
@@ -90,7 +89,7 @@ track2_to_string_test() ->
 	";1234123412341234=0305101193010877?" = erl8583_convert:track2_to_string(<<177, 35, 65, 35, 65, 35, 65, 35, 77, 3, 5, 16, 17, 147, 1, 8, 119, 240>>,  35).
 
 string_to_track2_test() ->
-	<<177, 35, 65, 35, 65, 35, 65, 35, 77, 3, 5, 16, 17, 147, 1, 8, 119, 240>> = erl8583_convert:string_to_track2(";1234123412341234=0305101193010877?").
+	[177, 35, 65, 35, 65, 35, 65, 35, 77, 3, 5, 16, 17, 147, 1, 8, 119, 240] = erl8583_convert:string_to_track2(";1234123412341234=0305101193010877?").
 
 strip_leading_spaces_test() ->
 	"hello" = erl8583_convert:strip_trailing_spaces("hello"),

@@ -18,11 +18,11 @@
 %% API Functions
 %%
 marshal(3, 3) ->
-	<<3>>;
+	[3];
 marshal(4, 4) ->
-	<<4>>;
+	[4];
 marshal(0, "0200") ->
-	<<255>>;
+	[255];
 marshal(FieldId, FieldValue) ->
 	erl8583_marshaller_binary_field:marshal(FieldId, FieldValue).
 
