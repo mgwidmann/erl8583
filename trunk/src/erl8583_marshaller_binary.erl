@@ -62,10 +62,10 @@ marshal(Message, FieldMarshaller) ->
 marshal(Message, FieldMarshaller, BitMapMarshaller) ->
 	Mti = erl8583_message:get(0, Message),
 	MtiBin = FieldMarshaller:marshal(?MTI, Mti),
-	BitMap = list_to_binary(BitMapMarshaller:marshal(Message)),
+	BitMap = BitMapMarshaller:marshal(Message),
 	[?MTI|Fields] = erl8583_message:get_fields(Message),
 	EncodedFields = encode(Fields, Message, FieldMarshaller),
-	<< MtiBin/binary, BitMap/binary, EncodedFields/binary>>.
+	binary_to_list(<< MtiBin/binary>>) ++ BitMap ++ binary_to_list(<<EncodedFields/binary>>).
 
 %% @doc Unmarshals a binary into an ISO 8583 message. This function uses
 %%      the erl8583_marshaller_binary_field module to unmarshal the fields.
