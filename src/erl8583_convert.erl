@@ -145,21 +145,20 @@ ascii_hex_to_bcd(Value, _PaddingChar) ->
 -spec(bcd_to_integer(list(byte())) -> integer()).
 
 bcd_to_integer(Bcd) ->
-	BcdList = binary_to_list(Bcd),
 	F = fun(Value, Acc) ->
 				Dig1 = Value div 16,
 				Dig2 = Value rem 16,
 				100 * Acc + 10 * Dig1 + Dig2
 		end,
-	lists:foldl(F, 0, BcdList).
+	lists:foldl(F, 0, Bcd).
 
-%% @doc Converts a BCD encoding of a value of specified length possibly
-%%      padded with a padding character to an ASCII hex string.
+%% @doc Converts a BCD encoding of a value of specified length, possibly
+%%      padded with a padding character, to an ASCII hex string.
 %%
-%% @spec bcd_to_ascii_hex(list(binary()), integer(), char()) -> string()
--spec(bcd_to_ascii_hex(list(binary()), integer(), char()) -> string()).
+%% @spec bcd_to_ascii_hex(list(byte()), integer(), char()) -> string()
+-spec(bcd_to_ascii_hex(list(byte()), integer(), char()) -> string()).
 
-bcd_to_ascii_hex(Bcd, Length, PaddingChar) when size(Bcd) =:= (Length + 1) div 2 ->
+bcd_to_ascii_hex(Bcd, Length, PaddingChar) when length(Bcd) =:= (Length + 1) div 2 ->
 	IntValue = bcd_to_integer(Bcd),
 	case Length rem 2 of
 		0 ->
