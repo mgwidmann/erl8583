@@ -176,7 +176,7 @@ bcd_to_ascii_hex(Bcd, Length, PaddingChar) when length(Bcd) =:= (Length + 1) div
 -spec(track2_to_string(list(byte()), integer()) -> string()).
 
 track2_to_string(Data, Length) ->
-	lists:sublist(track2_to_string2(Data, []), 1, Length).
+	lists:sublist(track2_to_string2(list_to_binary(Data), []), 1, Length).
 
 %% @doc Converts a string of ASCII characters to a track 2
 %%      encoding.

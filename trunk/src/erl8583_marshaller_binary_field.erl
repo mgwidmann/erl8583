@@ -85,67 +85,63 @@ marshal_data_element({b, fixed, Length}, FieldValue) when size(FieldValue) =:= L
 -spec(unmarshal_data_element(field_encoding(), binary()) -> {iso8583field_value(), binary()}).
 
 unmarshal_data_element({n, llvar, _MaxLength}, BinaryFields) ->
-	{NBin, RestBin} = split_binary(BinaryFields, 1),
-	N = erl8583_convert:bcd_to_integer(binary_to_list(NBin)),
-	{ValueBin, Rest} = split_binary(RestBin, (N+1) div 2), 
-	{erl8583_convert:bcd_to_ascii_hex(binary_to_list(ValueBin), N, "0"), Rest};
+	{NBin, RestBin} = lists:split(1, BinaryFields),
+	N = erl8583_convert:bcd_to_integer(NBin),
+	{ValueBin, Rest} = lists:split((N+1) div 2, RestBin), 
+	{erl8583_convert:bcd_to_ascii_hex(ValueBin, N, "0"), Rest};
 unmarshal_data_element({n, lllvar, _MaxLength}, BinaryFields) ->
 	{NBin, RestBin} = split_binary(BinaryFields, 2),
 	N = erl8583_convert:bcd_to_integer(binary_to_list(NBin)),
 	{ValueBin, Rest} = split_binary(RestBin, (N+1) div 2), 
 	{erl8583_convert:bcd_to_ascii_hex(binary_to_list(ValueBin), N, "0"), Rest};
 unmarshal_data_element({an, llvar, _MaxLength}, BinaryFields) ->
-	{NBin, RestBin} = split_binary(BinaryFields, 1),
-	N = erl8583_convert:bcd_to_integer(binary_to_list(NBin)),
-	{ValueBin, Rest} = split_binary(RestBin, N), 
-	{binary_to_list(ValueBin), Rest};
+	{NBin, RestBin} = lists:split(1, BinaryFields),
+	N = erl8583_convert:bcd_to_integer(NBin),
+	lists:split(N, RestBin); 
+	%{binary_to_list(ValueBin, Rest};
 unmarshal_data_element({ns, llvar, _MaxLength}, BinaryFields) ->
-	{NBin, RestBin} = split_binary(BinaryFields, 1),
-	N = erl8583_convert:bcd_to_integer(binary_to_list(NBin)),
-	{ValueBin, Rest} = split_binary(RestBin, N), 
-	{binary_to_list(ValueBin), Rest};
+	{NBin, Rest} = lists:split(1, BinaryFields),
+	N = erl8583_convert:bcd_to_integer(NBin),
+	lists:split(N, Rest); 
 unmarshal_data_element({ans, llvar, _MaxLength}, BinaryFields) ->
-	{NBin, RestBin} = split_binary(BinaryFields, 1),
-	N = erl8583_convert:bcd_to_integer(binary_to_list(NBin)),
-	{ValueBin, Rest} = split_binary(RestBin, N), 
-	{binary_to_list(ValueBin), Rest};
+	{NBin, Rest} = lists:split(1, BinaryFields),
+	N = erl8583_convert:bcd_to_integer(NBin),
+	lists:split(N, Rest); 
 unmarshal_data_element({ans, lllvar, _MaxLength}, BinaryFields) ->
-	{NBin, RestBin} = split_binary(BinaryFields, 2),
-	N = erl8583_convert:bcd_to_integer(binary_to_list(NBin)),
-	{ValueBin, Rest} = split_binary(RestBin, N), 
-	{binary_to_list(ValueBin), Rest};
+	{NBin, Rest} = lists:split(2, BinaryFields),
+	N = erl8583_convert:bcd_to_integer(NBin),
+	lists:split(N, Rest); 
 unmarshal_data_element({n, fixed, Length}, BinaryFields) ->
-	{NBin, RestBin} = split_binary(BinaryFields, (Length + 1) div 2),
+	{NBin, RestBin} = lists:split((Length + 1) div 2, BinaryFields),
 	case Length rem 2 of
 		0 ->
-			{erl8583_convert:bcd_to_ascii_hex(binary_to_list(NBin), Length, "0"), RestBin};
+			{erl8583_convert:bcd_to_ascii_hex(NBin, Length, "0"), RestBin};
 		1 ->
-			[$0|AsciiHex] = erl8583_convert:bcd_to_ascii_hex(binary_to_list(NBin), Length+1, "0"),
+			[$0|AsciiHex] = erl8583_convert:bcd_to_ascii_hex(NBin, Length+1, "0"),
 			{AsciiHex, RestBin}
 	end;
 unmarshal_data_element({an, fixed, Length}, BinaryFields) ->
-	{FieldBin, RestBin} = split_binary(BinaryFields, Length),
-	FieldStr = binary_to_list(FieldBin),
-	{erl8583_convert:pad_with_trailing_spaces(FieldStr, Length), RestBin};
+	{Field, Rest} = lists:split(Length, BinaryFields),
+	{erl8583_convert:pad_with_trailing_spaces(Field, Length), Rest};
 unmarshal_data_element({ans, fixed, Length}, BinaryFields) ->
-	{FieldBin, RestBin} = split_binary(BinaryFields, Length),
-	FieldStr = binary_to_list(FieldBin),
-	{erl8583_convert:pad_with_trailing_spaces(FieldStr, Length), RestBin};
+	{Field, Rest} = lists:split(Length, BinaryFields),
+	{erl8583_convert:pad_with_trailing_spaces(Field, Length), Rest};
 unmarshal_data_element({x_n, fixed, Length}, BinaryFields) ->
-	{FieldBin, RestBin} = split_binary(BinaryFields, Length div 2 + 1),
-	{<<X>>, Value} = split_binary(FieldBin, 1),
-	ValueStr = erl8583_convert:bcd_to_ascii_hex(binary_to_list(Value), Length, "0"),
+	{Field, Rest} = lists:split(Length div 2 + 1, BinaryFields),
+	{[X], Value} = lists:split(1, Field),
+	ValueStr = erl8583_convert:bcd_to_ascii_hex(Value, Length, "0"),
 	case X =:= $C orelse X =:= $D of
 		true ->
-			{[X] ++ ValueStr, RestBin}
+			{[X] ++ ValueStr, Rest}
 	end;
 unmarshal_data_element({z, llvar, _MaxLength}, BinaryFields) ->
-	{NBin, RestBin} = split_binary(BinaryFields, 1),
-	N = erl8583_convert:bcd_to_integer(binary_to_list(NBin)),
-	{ValueBin, Rest} = split_binary(RestBin, (N+1) div 2), 
+	{NBin, RestBin} = lists:split(1, BinaryFields),
+	N = erl8583_convert:bcd_to_integer(NBin),
+	{ValueBin, Rest} = lists:split((N+1) div 2, RestBin), 
 	{erl8583_convert:track2_to_string(ValueBin, N), Rest};
 unmarshal_data_element({b, fixed, Length}, BinaryFields) ->
-	split_binary(BinaryFields, Length).
+	{Bin, Rest} = lists:split(Length, BinaryFields),
+	{list_to_binary(Bin), Rest}.
 
 %% @doc Marshals a field value into a binary. The 1987 version
 %%      of the ISO 8583 specification is used to determine how to
@@ -167,10 +163,8 @@ marshal(FieldId, FieldValue) ->
 -spec(unmarshal(integer(), list(byte())) -> {iso8583field_value(), binary()}).
 
 unmarshal(FieldId, BinaryFields) ->
-	BinFields = list_to_binary(BinaryFields),
 	Pattern = erl8583_fields:get_encoding(FieldId),
-	{X, Y} = unmarshal_data_element(Pattern, BinFields),
-	{X, binary_to_list(Y)}.
+	unmarshal_data_element(Pattern, BinaryFields).
 
 
 %%
