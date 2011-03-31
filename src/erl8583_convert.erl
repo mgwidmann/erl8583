@@ -176,7 +176,7 @@ bcd_to_ascii_hex(Bcd, Length, PaddingChar) when length(Bcd) =:= (Length + 1) div
 -spec(track2_to_string(list(byte()), integer()) -> string()).
 
 track2_to_string(Data, Length) ->
-	lists:sublist(track2_to_string2(list_to_binary(Data), []), 1, Length).
+	lists:sublist(track2_to_string2(Data, []), 1, Length).
 
 %% @doc Converts a string of ASCII characters to a track 2
 %%      encoding.
@@ -309,11 +309,11 @@ ascii_hex_to_bcd2([Dig1, Dig2|Tail], Result) ->
 	Byte = ascii_hex_to_digit([Dig1]) * 16 + ascii_hex_to_digit([Dig2]),
 	ascii_hex_to_bcd2(Tail, [Byte|Result]).
 
-track2_to_string2(<<>>, Result) ->
+track2_to_string2([], Result) ->
 	lists:reverse(Result);
 track2_to_string2(Data, Result) ->
-	{<<X>>, Rest} = erlang:split_binary(Data, 1),
-	track2_to_string2(Rest, [X rem 16 + $0, X div 16 + $0 | Result]).
+	[H|Tail] = Data,
+	track2_to_string2(Tail, [H rem 16 + $0, H div 16 + $0 | Result]).
 
 string_to_track2([], Result, 0, true) ->
 	lists:reverse(Result);
