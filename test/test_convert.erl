@@ -53,9 +53,6 @@ binary_to_ascii_hex_test() ->
 ascii_hex_to_binary_test() ->
 	<<0, 255, 165>> = erl8583_convert:ascii_hex_to_binary("00FFa5").
 
-concat_binaries_test() ->
-	<<1, 2, 3, 4>> = erl8583_convert:concat_binaries([<<1>>, <<2, 3>>, <<4>>]).
-
 integer_to_bcd_test() ->
 	[1] = erl8583_convert:integer_to_bcd(1, 1),
 	[1] = erl8583_convert:integer_to_bcd(1, 2),

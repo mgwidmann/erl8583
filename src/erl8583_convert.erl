@@ -30,8 +30,6 @@
 		 pad_with_trailing_spaces/2,
 		 binary_to_ascii_hex/1,
 		 ascii_hex_to_binary/1,
-		 concat_binaries/1,
-		 concat_binaries/2,
 		 integer_to_bcd/2,
 		 ascii_hex_to_bcd/2,
 		 bcd_to_integer/1,
@@ -102,22 +100,6 @@ ascii_hex_to_binary(List) ->
 	Bytes = ascii_hex_to_bytes(List, []),
 	list_to_binary(Bytes).
 	
-%% @doc Concatenates a list of binaries and returns the result.
-%%
-%% @spec concat_binaries(list(binary())) -> binary()
--spec(concat_binaries(list(binary())) -> binary()).
-
-concat_binaries(List) ->
-	lists:foldr({erl8583_convert, concat_binaries}, <<>>, List).
-
-%% @doc Concatenates two binaries.
-%%
-%% @spec concat_binaries(binary(), binary()) -> binary()
--spec(concat_binaries(binary(), binary()) -> binary()).
-
-concat_binaries(X, Y) ->
-	<<X/binary, Y/binary>>.
-
 %% @doc Converts an integer to a list of specified length 
 %%      of BCD encoded bytes.
 %%
