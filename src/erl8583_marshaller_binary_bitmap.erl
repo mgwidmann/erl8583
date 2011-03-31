@@ -45,15 +45,15 @@ marshal(Message) ->
 %%      an ISO 8583 message.  The result is returned as a 2-tuple: a list
 %%      of field IDs and the remainder of the message excluding the bit map.
 %%
-%% @spec unmarshal(binary()) -> {list(integer()), binary()}
--spec(unmarshal(binary()) -> {list(integer()), binary()}).
+%% @spec unmarshal(list(byte())) -> {list(integer()), list(byte())}
+-spec(unmarshal(list(byte())) -> {list(integer()), list(byte())}).
 
-unmarshal(<<>>) ->
-	{[], <<>>};
+unmarshal([]) ->
+	{[], []};
 unmarshal(BinaryMessage) ->
 	BitMapLength = get_bit_map_length(BinaryMessage),
-	{BinaryBitMap, Fields} = split_binary(BinaryMessage, BitMapLength),
-	BitMap = binary_to_list(BinaryBitMap),
+	{BitMap, Fields} = lists:split(BitMapLength, BinaryMessage),
+	%BitMap = binary_to_list(BinaryBitMap),
 	extract_fields(BitMap, 0, 8, {[], Fields}).
 
 %%
@@ -77,12 +77,12 @@ construct_bitmap([Field|Tail], Result) when Field > 0 ->
 	construct_bitmap(Tail, Left ++ ([ToUpdate + (1 bsl BitNum)]) ++ RightRest).
 
 get_bit_map_length(Message) ->
-	[Head|_Tail] = binary_to_list(Message),
+	[Head|_Tail] = Message,
 	case Head >= 128 of
 		false ->
 			8;
 		true ->
-			{_, Rest} = erlang:split_binary(Message, 8),
+			{_, Rest} = lists:split(8, Message),
 			8 + get_bit_map_length(Rest)
 	end.
 

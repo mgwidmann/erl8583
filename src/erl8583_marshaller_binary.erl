@@ -98,8 +98,8 @@ unmarshal(BinaryMessage, FieldMarshaller, BitMapMarshaller) ->
 	IsoMsg1 = erl8583_message:new(),
 	{Mti, Rest} = FieldMarshaller:unmarshal(?MTI, BinaryMessage),
 	IsoMsg2 = erl8583_message:set(?MTI, Mti, IsoMsg1),
-	{FieldIds, Fields} = BitMapMarshaller:unmarshal(list_to_binary(Rest)),
-	decode_fields(FieldIds, binary_to_list(Fields), IsoMsg2, FieldMarshaller).
+	{FieldIds, Fields} = BitMapMarshaller:unmarshal(Rest),
+	decode_fields(FieldIds, Fields, IsoMsg2, FieldMarshaller).
 
 %%
 %% Local Functions
