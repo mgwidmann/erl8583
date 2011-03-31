@@ -53,8 +53,7 @@ unmarshal([]) ->
 unmarshal(BinaryMessage) ->
 	BitMapLength = get_bit_map_length(BinaryMessage),
 	{BitMap, Fields} = lists:split(BitMapLength, BinaryMessage),
-	%BitMap = binary_to_list(BinaryBitMap),
-	extract_fields(BitMap, 0, 8, {[], Fields}).
+	{extract_fields(BitMap, 0, 8, []), Fields}.
 
 %%
 %% Local Functions
@@ -86,15 +85,15 @@ get_bit_map_length(Message) ->
 			8 + get_bit_map_length(Rest)
 	end.
 
-extract_fields([], _Offset, _Index, {FieldIds, Fields}) ->
+extract_fields([], _Offset, _Index, FieldIds) ->
 	Ids = lists:sort(FieldIds),
-	{[Id || Id <- Ids, Id rem 64 =/= 1], Fields};
-extract_fields([_Head|Tail], Offset, 0, {FieldIds, Fields}) ->
-	extract_fields(Tail, Offset+1, 8, {FieldIds, Fields});
-extract_fields([Head|Tail], Offset, Index, {FieldIds, Fields}) ->
+	[Id || Id <- Ids, Id rem 64 =/= 1];
+extract_fields([_Head|Tail], Offset, 0, FieldIds) ->
+	extract_fields(Tail, Offset+1, 8, FieldIds);
+extract_fields([Head|Tail], Offset, Index, FieldIds) ->
 	case Head band (1 bsl (Index-1)) of
 		0 ->
-			extract_fields([Head|Tail], Offset, Index-1, {FieldIds, Fields});
+			extract_fields([Head|Tail], Offset, Index-1, FieldIds);
 		_ ->
-			extract_fields([Head|Tail], Offset, Index-1, {[Offset*8+9-Index|FieldIds], Fields})
+			extract_fields([Head|Tail], Offset, Index-1, [Offset*8+9-Index|FieldIds])
 	end.
