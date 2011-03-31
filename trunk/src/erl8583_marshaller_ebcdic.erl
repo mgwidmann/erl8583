@@ -49,19 +49,18 @@ marshal(Message) ->
 marshal(Message, FieldMarshaller) ->
 	Mti = erl8583_marshaller_ebcdic_field:marshal(0, erl8583_message:get(0, Message)),
 	[0|Fields] = erl8583_message:get_fields(Message),
-	MtiBitMap = erl8583_convert:concat_binaries(Mti, erl8583_marshaller_ebcdic_bitmap:marshal(Message)),
-	erl8583_convert:concat_binaries(MtiBitMap, encode(Fields, Message, FieldMarshaller)).
+	Mti ++ erl8583_marshaller_ebcdic_bitmap:marshal(Message) ++ encode(Fields, Message, FieldMarshaller).
 	
 %%
 %% Local Functions
 %%
 encode(Fields, Msg, FieldMarshaller) ->
-	encode(Fields, Msg, <<>>, FieldMarshaller).
+	encode(Fields, Msg, [], FieldMarshaller).
 
 encode([], _Msg, Result, _FieldMarshaller) ->
 	Result;
 encode([FieldId|Tail], Msg, Result, FieldMarshaller) ->
 	Value = erl8583_message:get(FieldId, Msg),
 	EncodedValue = FieldMarshaller:marshal(FieldId, Value),
-	encode(Tail, Msg, erl8583_convert:concat_binaries(Result, EncodedValue), FieldMarshaller).
+	encode(Tail, Msg, Result ++ EncodedValue, FieldMarshaller).
 

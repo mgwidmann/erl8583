@@ -108,11 +108,11 @@ encode(Fields, Msg, FieldMarshaller) ->
 	encode(Fields, Msg, [], FieldMarshaller).
 
 encode([], _Msg, Result, _FieldMarshaller) ->
-	Result;
+	lists:reverse(Result);
 encode([FieldId|Tail], Msg, Result, FieldMarshaller) ->
 	Value = erl8583_message:get(FieldId, Msg),
 	EncodedValue = FieldMarshaller:marshal(FieldId, Value),
-	encode(Tail, Msg, Result ++ EncodedValue, FieldMarshaller).
+	encode(Tail, Msg, lists:reverse(EncodedValue) ++ Result, FieldMarshaller).
 
 decode_fields([], [], Result, _FieldMarshaller) ->
 	Result;

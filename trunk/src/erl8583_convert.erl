@@ -229,10 +229,10 @@ strip_leading_zeroes([$0|Tail]) ->
 strip_leading_zeroes(Str) ->
 	Str.
 
-%% @doc Converts an ASCII string to an EBCDIC binary.
+%% @doc Converts an ASCII string to an EBCDIC string.
 %%
-%% @spec ascii_to_ebcdic(string()) -> binary()
--spec(ascii_to_ebcdic(string()) -> binary()).
+%% @spec ascii_to_ebcdic(string()) -> list(byte())
+-spec(ascii_to_ebcdic(string()) -> list(byte())).
 
 ascii_to_ebcdic(Str) ->
 	ascii_to_ebcdic(Str, []).
@@ -331,8 +331,7 @@ strip_leading_spaces(Str) ->
 	Str.
 
 ascii_to_ebcdic([], Result) ->
-	RevResult = lists:reverse(Result),
-	erlang:list_to_binary(RevResult);
+	lists:reverse(Result);
 ascii_to_ebcdic([H|Tail], Result) when H >= $0 andalso H =< $9 ->
 	ascii_to_ebcdic(Tail, [H - $0 + 240|Result]);
 ascii_to_ebcdic([H|Tail], Result) when H >= $a andalso H =< $i ->
