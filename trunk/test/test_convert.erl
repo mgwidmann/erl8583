@@ -160,41 +160,41 @@ ascii_to_ebcdic_punctuation_6_test() ->
 	[224] = erl8583_convert:ascii_to_ebcdic("\\").
 
 ebcdic_to_ascii_lower_case_chars_test() ->
-	"abcdefghi" = erl8583_convert:ebcdic_to_ascii(<<129, 130, 131, 132, 133, 134, 135, 136, 137>>),
-	"jklmnopqr" = erl8583_convert:ebcdic_to_ascii(<<145, 146, 147, 148, 149, 150, 151, 152, 153>>),
-	"stuvwxyz" = erl8583_convert:ebcdic_to_ascii(<<162, 163, 164, 165, 166, 167, 168, 169>>).
+	"abcdefghi" = erl8583_convert:ebcdic_to_ascii([129, 130, 131, 132, 133, 134, 135, 136, 137]),
+	"jklmnopqr" = erl8583_convert:ebcdic_to_ascii([145, 146, 147, 148, 149, 150, 151, 152, 153]),
+	"stuvwxyz" = erl8583_convert:ebcdic_to_ascii([162, 163, 164, 165, 166, 167, 168, 169]).
 
 ebcdic_to_ascii_upper_case_chars_test() ->
-	"ABCDEFGHI" = erl8583_convert:ebcdic_to_ascii(<<193, 194, 195, 196, 197, 198, 199, 200, 201>>),
-	"JKLMNOPQR" = erl8583_convert:ebcdic_to_ascii(<<209, 210, 211, 212, 213, 214, 215, 216, 217>>),
-	"STUVWXYZ" = erl8583_convert:ebcdic_to_ascii(<<226, 227, 228, 229, 230, 231, 232, 233>>).
+	"ABCDEFGHI" = erl8583_convert:ebcdic_to_ascii([193, 194, 195, 196, 197, 198, 199, 200, 201]),
+	"JKLMNOPQR" = erl8583_convert:ebcdic_to_ascii([209, 210, 211, 212, 213, 214, 215, 216, 217]),
+	"STUVWXYZ" = erl8583_convert:ebcdic_to_ascii([226, 227, 228, 229, 230, 231, 232, 233]).
 
 ebcdic_to_ascii_digits_test() ->
-	"0123456789" = erl8583_convert:ebcdic_to_ascii(<<240, 241, 242, 243, 244, 245, 246, 247, 248, 249>>).
+	"0123456789" = erl8583_convert:ebcdic_to_ascii([240, 241, 242, 243, 244, 245, 246, 247, 248, 249]).
 
 ebcdic_to_ascii_punctuation_1_test() ->
-	" " = erl8583_convert:ebcdic_to_ascii(<<64>>),
-	"." = erl8583_convert:ebcdic_to_ascii(<<75>>),
-	"<" = erl8583_convert:ebcdic_to_ascii(<<76>>),
-	"(" = erl8583_convert:ebcdic_to_ascii(<<77>>),
-	"+" = erl8583_convert:ebcdic_to_ascii(<<78>>),
-	"|" = erl8583_convert:ebcdic_to_ascii(<<79>>),
-	"&" = erl8583_convert:ebcdic_to_ascii(<<80>>).
+	" " = erl8583_convert:ebcdic_to_ascii([64]),
+	"." = erl8583_convert:ebcdic_to_ascii([75]),
+	"<" = erl8583_convert:ebcdic_to_ascii([76]),
+	"(" = erl8583_convert:ebcdic_to_ascii([77]),
+	"+" = erl8583_convert:ebcdic_to_ascii([78]),
+	"|" = erl8583_convert:ebcdic_to_ascii([79]),
+	"&" = erl8583_convert:ebcdic_to_ascii([80]).
 
 ebcdic_to_ascii_punctuation_2_test() ->
-	"!$*);" = erl8583_convert:ebcdic_to_ascii(<<90, 91, 92, 93, 94>>).
+	"!$*);" = erl8583_convert:ebcdic_to_ascii([90, 91, 92, 93, 94]).
 
 ebcdic_to_ascii_punctuation_3_test() ->
-	"-/" ++ [45] = erl8583_convert:ebcdic_to_ascii(<<96, 97, 96>>).
+	"-/" ++ [45] = erl8583_convert:ebcdic_to_ascii([96, 97, 96]).
 
 ebcdic_to_ascii_punctuation_4_test() ->
-	",%_>?" = erl8583_convert:ebcdic_to_ascii(<<107, 108, 109, 110, 111>>).
+	",%_>?" = erl8583_convert:ebcdic_to_ascii([107, 108, 109, 110, 111]).
 
 ebcdic_to_ascii_punctuation_5_test() ->
-	"`:#@'=\"" = erl8583_convert:ebcdic_to_ascii(<<121, 122, 123, 124, 125, 126, 127>>).
+	"`:#@'=\"" = erl8583_convert:ebcdic_to_ascii([121, 122, 123, 124, 125, 126, 127]).
 
 ebcdic_to_ascii_punctuation_6_test() ->
-	"~^[]{}\\" = erl8583_convert:ebcdic_to_ascii(<<161, 176, 186, 187, 192, 208, 224>>).
+	"~^[]{}\\" = erl8583_convert:ebcdic_to_ascii([161, 176, 186, 187, 192, 208, 224]).
 
 ascii_to_ebcdic_sanity_test() ->
 	Ebcdic = [64] ++ lists:seq(75, 79) ++ [80] ++ lists:seq(90, 94) ++
@@ -203,5 +203,5 @@ ascii_to_ebcdic_sanity_test() ->
 					lists:seq(161, 169) ++ [176, 186, 187] ++ 
 					lists:seq(192, 201) ++ lists:seq(208, 217) ++ [224] ++
 					lists:seq(226, 233) ++ lists:seq(240, 249),
-	Ascii = erl8583_convert:ebcdic_to_ascii(list_to_binary(Ebcdic)),
+	Ascii = erl8583_convert:ebcdic_to_ascii(Ebcdic),
 	Ebcdic = erl8583_convert:ascii_to_ebcdic(Ascii).

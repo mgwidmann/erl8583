@@ -239,11 +239,11 @@ ascii_to_ebcdic(Str) ->
 
 %% @doc Converts an EBCDIC binary to an ASCII string.
 %%
-%% @spec ebcdic_to_ascii(binary) -> string()
--spec(ebcdic_to_ascii(binary) -> string()).
+%% @spec ebcdic_to_ascii(list(byte())) -> string()
+-spec(ebcdic_to_ascii(list(byte())) -> string()).
 
-ebcdic_to_ascii(Bin) ->
-	ebcdic_to_ascii(binary_to_list(Bin), []).
+ebcdic_to_ascii(EbcdicStr) ->
+	ebcdic_to_ascii(EbcdicStr, []).
 
 %%
 %% Local Functions
