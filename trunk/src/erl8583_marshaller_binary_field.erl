@@ -85,27 +85,26 @@ marshal_data_element({b, fixed, Length}, FieldValue) when size(FieldValue) =:= L
 -spec(unmarshal_data_element(field_encoding(), binary()) -> {iso8583field_value(), binary()}).
 
 unmarshal_data_element({n, llvar, _MaxLength}, BinaryFields) ->
-	{NBin, RestBin} = lists:split(1, BinaryFields),
-	N = erl8583_convert:bcd_to_integer(NBin),
+	[NBin|RestBin] = BinaryFields,
+	N = erl8583_convert:bcd_to_integer([NBin]),
 	{ValueBin, Rest} = lists:split((N+1) div 2, RestBin), 
 	{erl8583_convert:bcd_to_ascii_hex(ValueBin, N, "0"), Rest};
 unmarshal_data_element({n, lllvar, _MaxLength}, BinaryFields) ->
-	{NBin, RestBin} = split_binary(BinaryFields, 2),
-	N = erl8583_convert:bcd_to_integer(binary_to_list(NBin)),
-	{ValueBin, Rest} = split_binary(RestBin, (N+1) div 2), 
-	{erl8583_convert:bcd_to_ascii_hex(binary_to_list(ValueBin), N, "0"), Rest};
+	{NBin, RestBin} = lists:split(2, BinaryFields),
+	N = erl8583_convert:bcd_to_integer(NBin),
+	{ValueBin, Rest} = lists:split((N+1) div 2, RestBin), 
+	{erl8583_convert:bcd_to_ascii_hex(ValueBin, N, "0"), Rest};
 unmarshal_data_element({an, llvar, _MaxLength}, BinaryFields) ->
-	{NBin, RestBin} = lists:split(1, BinaryFields),
-	N = erl8583_convert:bcd_to_integer(NBin),
+	[NBin|RestBin] = BinaryFields,
+	N = erl8583_convert:bcd_to_integer([NBin]),
 	lists:split(N, RestBin); 
-	%{binary_to_list(ValueBin, Rest};
 unmarshal_data_element({ns, llvar, _MaxLength}, BinaryFields) ->
-	{NBin, Rest} = lists:split(1, BinaryFields),
-	N = erl8583_convert:bcd_to_integer(NBin),
+	[NBin|Rest] = BinaryFields,
+	N = erl8583_convert:bcd_to_integer([NBin]),
 	lists:split(N, Rest); 
 unmarshal_data_element({ans, llvar, _MaxLength}, BinaryFields) ->
-	{NBin, Rest} = lists:split(1, BinaryFields),
-	N = erl8583_convert:bcd_to_integer(NBin),
+	[NBin|Rest] = BinaryFields,
+	N = erl8583_convert:bcd_to_integer([NBin]),
 	lists:split(N, Rest); 
 unmarshal_data_element({ans, lllvar, _MaxLength}, BinaryFields) ->
 	{NBin, Rest} = lists:split(2, BinaryFields),
@@ -135,8 +134,8 @@ unmarshal_data_element({x_n, fixed, Length}, BinaryFields) ->
 			{[X] ++ ValueStr, Rest}
 	end;
 unmarshal_data_element({z, llvar, _MaxLength}, BinaryFields) ->
-	{NBin, RestBin} = lists:split(1, BinaryFields),
-	N = erl8583_convert:bcd_to_integer(NBin),
+	[NBin|RestBin] = BinaryFields,
+	N = erl8583_convert:bcd_to_integer([NBin]),
 	{ValueBin, Rest} = lists:split((N+1) div 2, RestBin), 
 	{erl8583_convert:track2_to_string(ValueBin, N), Rest};
 unmarshal_data_element({b, fixed, Length}, BinaryFields) ->
