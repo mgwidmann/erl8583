@@ -10,7 +10,10 @@
 %%
 %% Records
 %%
--record(marshal_options, {field_marshaller, bitmap_marshaller, encoding_rules=erl8583_fields}).
+-record(marshal_options, {field_marshaller, 
+						  bitmap_marshaller, 
+						  wrapper_marshaller, 
+						  encoding_rules=erl8583_fields}).
 
 %%
 %% Exported Functions
@@ -46,7 +49,13 @@ marshal(Message, Options) ->
 		FieldMarshalModule =/= undefined ->
 			Marshalled3 = Marshalled2 ++ encode(Fields, Message, FieldMarshalModule, EncodingRules) 
 	end,
-	Marshalled3.
+	WrapperMarshalModule = OptionsRecord#marshal_options.wrapper_marshaller,
+	if
+		WrapperMarshalModule =:= undefined ->
+			Marshalled3;
+		WrapperMarshalModule =/= undefined ->
+			WrapperMarshalModule:marshal_wrap(Message, Marshalled3) 
+	end.
 
 
 %%
@@ -58,6 +67,8 @@ parse_options([{field_marshaller, Marshaller}|Tail], OptionsRecord) ->
 	parse_options(Tail, OptionsRecord#marshal_options{field_marshaller=Marshaller});
 parse_options([{bitmap_marshaller, Marshaller}|Tail], OptionsRecord) ->
 	parse_options(Tail, OptionsRecord#marshal_options{bitmap_marshaller=Marshaller});
+parse_options([{wrapper_marshaller, Marshaller}|Tail], OptionsRecord) ->
+	parse_options(Tail, OptionsRecord#marshal_options{wrapper_marshaller=Marshaller});
 parse_options([{encoding_rules, Rules}|Tail], OptionsRecord) ->
 	parse_options(Tail, OptionsRecord#marshal_options{encoding_rules=Rules}).
 

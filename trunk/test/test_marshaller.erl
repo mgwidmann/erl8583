@@ -11,7 +11,7 @@
 %%
 %% Exported Functions
 %%
--export([marshal_field/3, marshal_bitmap/1]).
+-export([marshal_field/3, marshal_bitmap/1, marshal_wrap/2]).
 
 %%
 %% API Functions
@@ -27,6 +27,9 @@ marshal_field(_N, Value, foo_rules) ->
 
 marshal_bitmap([1, 2, 3]) ->
 	"bitmap = 123".
+
+marshal_wrap(_Message, Marshalled) ->
+	"Start" ++ Marshalled ++ "End".
 
 mti_test() ->
 	Message = erl8583_message:set(0, "0200", erl8583_message:new()),
@@ -53,6 +56,11 @@ fields_with_encoding_rules_test() ->
 	Message3 = erl8583_message:set(3, "V3", Message2),
 	Options = [{field_marshaller, ?MODULE}, {encoding_rules, foo_rules}],
 	"_0100_V1_V2_V3" = erl8583_marshaller:marshal(Message3, Options).
+
+field_wrapper_test() ->
+	Message = erl8583_message:set(0, "0200", erl8583_message:new()),
+	Options = [{field_marshaller, ?MODULE}, {wrapper_marshaller, ?MODULE}],
+	"Start" ++ [0, 2, 0, 0] ++ "End" = erl8583_marshaller:marshal(Message, Options).
 	
 %%
 %% Local Functions
