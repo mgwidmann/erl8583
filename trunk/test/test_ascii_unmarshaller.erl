@@ -12,19 +12,19 @@
 %%
 %% Exported Functions
 %%
--export([unmarshal/2, unmarshal_bitmap/1]).
+-export([unmarshal_field/2, unmarshal_bitmap/1]).
 
 %%
 %% API Functions
 %%
-unmarshal(3, [$3|Tail]) ->
+unmarshal_field(3, [$3|Tail]) ->
 	{"Field 3", Tail};
-unmarshal(4, [$4|Tail]) ->
+unmarshal_field(4, [$4|Tail]) ->
 	{"Field 4", Tail};
-unmarshal(0, [$X|Tail]) ->
+unmarshal_field(0, [$X|Tail]) ->
 	{"0200", Tail};
-unmarshal(Id, Str) ->
-	erl8583_marshaller_ascii_field:unmarshal(Id, Str).
+unmarshal_field(Id, Str) ->
+	erl8583_marshaller_ascii_field:unmarshal_field(Id, Str).
 	
 
 % bit map unmarshaller

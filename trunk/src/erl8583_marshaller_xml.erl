@@ -89,7 +89,7 @@ unmarshal(XmlMessage, FieldMarshaller) ->
 marshal_fields([], Result, _FieldMarshaller) ->
 	Result;
 marshal_fields([{FieldId, Value}|Tail], Result, FieldMarshaller) ->
-	MarshalledValue = FieldMarshaller:marshal(FieldId, Value),
+	MarshalledValue = FieldMarshaller:marshal_field(FieldId, Value),
 	marshal_fields(Tail, MarshalledValue ++ Result, FieldMarshaller).
 	
 encode_attributes(List) ->
@@ -107,7 +107,7 @@ unmarshal([Field|T], Iso8583Msg, FieldMarshaller) when is_record(Field, xmlEleme
 	AttributesList = attributes_to_list(Attributes, []),
 	Id = get_attribute_value("id", AttributesList),
 	FieldId = list_to_integer(Id),
-	Value = FieldMarshaller:unmarshal(FieldId, Field),
+	Value = FieldMarshaller:unmarshal_field(FieldId, Field),
 	UpdatedMsg = erl8583_message:set(FieldId, Value, Iso8583Msg),
 	unmarshal(T, UpdatedMsg, FieldMarshaller);
 unmarshal([_H|T], Iso8583Msg, FieldMarshaller) ->

@@ -47,7 +47,7 @@ marshal(Message) ->
 -spec(marshal(iso8583message(), module()) -> binary()).
 
 marshal(Message, FieldMarshaller) ->
-	Mti = erl8583_marshaller_ebcdic_field:marshal(0, erl8583_message:get(0, Message)),
+	Mti = erl8583_marshaller_ebcdic_field:marshal_field(0, erl8583_message:get(0, Message)),
 	[0|Fields] = erl8583_message:get_fields(Message),
 	Mti ++ erl8583_marshaller_ebcdic_bitmap:marshal_bitmap(Message) ++ encode(Fields, Message, FieldMarshaller).
 	
@@ -61,6 +61,6 @@ encode([], _Msg, Result, _FieldMarshaller) ->
 	lists:reverse(Result);
 encode([FieldId|Tail], Msg, Result, FieldMarshaller) ->
 	Value = erl8583_message:get(FieldId, Msg),
-	EncodedValue = FieldMarshaller:marshal(FieldId, Value),
+	EncodedValue = FieldMarshaller:marshal_field(FieldId, Value),
 	encode(Tail, Msg, lists:reverse(EncodedValue) ++ Result, FieldMarshaller).
 
