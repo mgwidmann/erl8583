@@ -12,7 +12,7 @@
 %%
 %% Exported Functions
 %%
--export([unmarshal/2, unmarshal/1]).
+-export([unmarshal/2, unmarshal_bitmap/1]).
 
 %%
 %% API Functions
@@ -28,7 +28,7 @@ unmarshal(Id, Str) ->
 	
 
 % bit map unmarshaller
-unmarshal([$B|Rest]) ->
+unmarshal_bitmap([$B|Rest]) ->
 	{[3, 4], Rest}.
 
 %%

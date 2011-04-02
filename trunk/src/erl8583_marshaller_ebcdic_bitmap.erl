@@ -25,7 +25,7 @@
 %%
 %% Exported Functions
 %%
--export([marshal/1]).
+-export([marshal_bitmap/1]).
 
 %%
 %% API Functions
@@ -34,11 +34,11 @@
 %% @doc Constructs an EBCDIC binary representation of the
 %%      bitmap for an iso8583message().
 %%
-%% @spec marshal(iso8583message()) -> binary()
--spec(marshal(iso8583message()) -> binary()).
+%% @spec marshal_bitmap(iso8583message()) -> binary()
+-spec(marshal_bitmap(iso8583message()) -> binary()).
 
-marshal(Message) ->
-	erl8583_convert:ascii_to_ebcdic(erl8583_marshaller_ascii_bitmap:marshal(Message)).
+marshal_bitmap(Message) ->
+	erl8583_convert:ascii_to_ebcdic(erl8583_marshaller_ascii_bitmap:marshal_bitmap(Message)).
 
 
 %%

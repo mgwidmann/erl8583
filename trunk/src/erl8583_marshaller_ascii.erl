@@ -63,7 +63,7 @@ marshal(Message, FieldMarshaller) ->
 marshal(Message, FieldMarshaller, BitMapMarshaller) ->
 	Mti = erl8583_message:get(0, Message),
 	[0|Fields] = erl8583_message:get_fields(Message),
-	FieldMarshaller:marshal(0, Mti) ++ BitMapMarshaller:marshal(Message) ++ encode(Fields, Message, FieldMarshaller).
+	FieldMarshaller:marshal(0, Mti) ++ BitMapMarshaller:marshal_bitmap(Message) ++ encode(Fields, Message, FieldMarshaller).
 	
 %% @doc Unmarshals an ASCII string into an ISO 8583 message. This function
 %%      uses the erl8583_marshaller_ascii_field module to unmarshal the fields
@@ -96,7 +96,7 @@ unmarshal(AsciiMessage, FieldMarshaller, BitMapMarshaller) ->
 	IsoMsg1 = erl8583_message:new(),
 	{Mti, Rest} = FieldMarshaller:unmarshal(0, AsciiMessage),
 	IsoMsg2 = erl8583_message:set(0, Mti, IsoMsg1),
-	{FieldIds, Fields} = BitMapMarshaller:unmarshal(Rest),
+	{FieldIds, Fields} = BitMapMarshaller:unmarshal_bitmap(Rest),
 	decode_fields(FieldIds, Fields, IsoMsg2, FieldMarshaller).
 
 %%

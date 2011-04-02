@@ -12,7 +12,7 @@
 %%
 %% Exported Functions
 %%
--export([marshal/2, marshal/1]).
+-export([marshal/2, marshal_bitmap/1]).
 
 %%
 %% API Functions
@@ -26,7 +26,7 @@ marshal(0, "0200") ->
 marshal(FieldId, FieldValue) ->
 	erl8583_marshaller_binary_field:marshal(FieldId, FieldValue).
 
-marshal(_) ->
+marshal_bitmap(_) ->
 	[254].
 
 %%

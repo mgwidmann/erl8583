@@ -25,7 +25,7 @@
 %%
 %% Exported Functions
 %%
--export([marshal/1, unmarshal/1]).
+-export([marshal_bitmap/1, unmarshal_bitmap/1]).
 
 %%
 %% API Functions
@@ -34,10 +34,10 @@
 %% @doc Constructs a binary representation of the
 %%      bitmap for an iso8583message().
 %%
-%% @spec marshal(iso8583message()) -> list(byte())
--spec(marshal(iso8583message()) -> list(byte())).
+%% @spec marshal_bitmap(iso8583message()) -> list(byte())
+-spec(marshal_bitmap(iso8583message()) -> list(byte())).
 
-marshal(Message) ->
+marshal_bitmap(Message) ->
 	[0|Fields] = erl8583_message:get_fields(Message),
 	construct_bitmap(Fields).
 
@@ -45,12 +45,12 @@ marshal(Message) ->
 %%      an ISO 8583 message.  The result is returned as a 2-tuple: a list
 %%      of field IDs and the remainder of the message excluding the bit map.
 %%
-%% @spec unmarshal(list(byte())) -> {list(integer()), list(byte())}
--spec(unmarshal(list(byte())) -> {list(integer()), list(byte())}).
+%% @spec unmarshal_bitmap(list(byte())) -> {list(integer()), list(byte())}
+-spec(unmarshal_bitmap(list(byte())) -> {list(integer()), list(byte())}).
 
-unmarshal([]) ->
+unmarshal_bitmap([]) ->
 	{[], []};
-unmarshal(BinaryMessage) ->
+unmarshal_bitmap(BinaryMessage) ->
 	BitMapLength = get_bit_map_length(BinaryMessage),
 	{BitMap, Fields} = lists:split(BitMapLength, BinaryMessage),
 	{extract_fields(BitMap, 0, 8, []), Fields}.

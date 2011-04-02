@@ -62,7 +62,7 @@ marshal(Message, FieldMarshaller) ->
 marshal(Message, FieldMarshaller, BitMapMarshaller) ->
 	Mti = erl8583_message:get(0, Message),
 	MtiBin = FieldMarshaller:marshal(?MTI, Mti),
-	BitMap = BitMapMarshaller:marshal(Message),
+	BitMap = BitMapMarshaller:marshal_bitmap(Message),
 	[?MTI|Fields] = erl8583_message:get_fields(Message),
 	EncodedFields = encode(Fields, Message, FieldMarshaller),
 	MtiBin ++ BitMap ++ EncodedFields.
@@ -98,7 +98,7 @@ unmarshal(BinaryMessage, FieldMarshaller, BitMapMarshaller) ->
 	IsoMsg1 = erl8583_message:new(),
 	{Mti, Rest} = FieldMarshaller:unmarshal(?MTI, BinaryMessage),
 	IsoMsg2 = erl8583_message:set(?MTI, Mti, IsoMsg1),
-	{FieldIds, Fields} = BitMapMarshaller:unmarshal(Rest),
+	{FieldIds, Fields} = BitMapMarshaller:unmarshal_bitmap(Rest),
 	decode_fields(FieldIds, Fields, IsoMsg2, FieldMarshaller).
 
 %%

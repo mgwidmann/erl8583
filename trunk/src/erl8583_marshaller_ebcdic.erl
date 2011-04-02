@@ -49,7 +49,7 @@ marshal(Message) ->
 marshal(Message, FieldMarshaller) ->
 	Mti = erl8583_marshaller_ebcdic_field:marshal(0, erl8583_message:get(0, Message)),
 	[0|Fields] = erl8583_message:get_fields(Message),
-	Mti ++ erl8583_marshaller_ebcdic_bitmap:marshal(Message) ++ encode(Fields, Message, FieldMarshaller).
+	Mti ++ erl8583_marshaller_ebcdic_bitmap:marshal_bitmap(Message) ++ encode(Fields, Message, FieldMarshaller).
 	
 %%
 %% Local Functions
