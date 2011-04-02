@@ -17,7 +17,11 @@
 %% API Functions
 %%
 marshal_field(0, "0200", erl8583_fields) ->
-	[0,2,0,0].
+	[0,2,0,0];
+marshal_field(0, "0100", erl8583_fields) ->
+	"0100";
+marshal_field(_N, Value, erl8583_fields) ->
+	Value.
 
 marshal_bitmap([1, 2, 3]) ->
 	"bitmap = 123".
@@ -33,6 +37,13 @@ bitmap_test() ->
 	Message3 = erl8583_message:set(3, "1", Message2),
 	"bitmap = 123" = erl8583_marshaller:marshal(Message3, [{bitmap_marshaller, ?MODULE}]).
 
+fields_test() ->
+	Message0 = erl8583_message:set(0, "0100", erl8583_message:new()),
+	Message1 = erl8583_message:set(1, "V1", Message0),
+	Message2 = erl8583_message:set(2, "V2", Message1),	
+	Message3 = erl8583_message:set(3, "V3", Message2),
+	"0100V1V2V3" = erl8583_marshaller:marshal(Message3, [{field_marshaller, ?MODULE}]).
+	
 	
 %%
 %% Local Functions
