@@ -12,19 +12,18 @@
 %%
 %% Exported Functions
 %%
--export([unmarshal/2, unmarshal_bitmap/1]).
+-export([unmarshal_field/2, unmarshal_bitmap/1]).
 
 %%
 %% API Functions
 %%
-unmarshal(3, [3, 0, 4, 0]) ->
+unmarshal_field(3, [3, 0, 4, 0]) ->
 	{"3", [4, 0]};
-unmarshal(4, [4, 0]) ->
+unmarshal_field(4, [4, 0]) ->
 	{"4", []};
-unmarshal(0, Binary) ->
-	{B1, B2} = lists:split(1, Binary),
-	B1 = [255],
-	{"0200", B2}.
+unmarshal_field(0, Binary) ->
+	[255|B] = Binary,
+	{"0200", B}.
 
 unmarshal_bitmap([254, 3, 0, 4, 0]) ->
 	{[3, 4], [3, 0, 4, 0]}.

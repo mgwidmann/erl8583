@@ -28,7 +28,7 @@
 %%
 %% Exported Functions
 %%
--export([marshal/2, unmarshal/2]).
+-export([marshal_field/2, unmarshal_field/2]).
 
 %%
 %% API Functions
@@ -36,13 +36,13 @@
 
 %% @doc Marshals a field into an XML element.
 %%
-%% @spec marshal(integer(), iso8583field_value()) -> string()
--spec(marshal(integer(), iso8583field_value()) -> string()).
+%% @spec marshal_field(integer(), iso8583field_value()) -> string()
+-spec(marshal_field(integer(), iso8583field_value()) -> string()).
 
-marshal(FieldId, FieldValue) when is_list(FieldValue)->
+marshal_field(FieldId, FieldValue) when is_list(FieldValue)->
 	Id = integer_to_list(FieldId),
 	"<field id=\"" ++ Id ++ "\" value=\"" ++ FieldValue ++ "\" />";
-marshal(FieldId, FieldValue) when is_binary(FieldValue) ->
+marshal_field(FieldId, FieldValue) when is_binary(FieldValue) ->
 	Id = integer_to_list(FieldId),
 	"<field id=\"" ++ 
 		Id ++ 
@@ -50,7 +50,7 @@ marshal(FieldId, FieldValue) when is_binary(FieldValue) ->
 		erl8583_convert:binary_to_ascii_hex(FieldValue) ++
 		"\" type=\"binary\" />";
 % if we drop through to here, Value is of type iso8583message().
-marshal(FieldId, FieldValue) ->
+marshal_field(FieldId, FieldValue) ->
 	{iso8583_message, _, _} = FieldValue,
 	Id = integer_to_list(FieldId),
 	"<isomsg id=\"" ++ 
@@ -63,10 +63,10 @@ marshal(FieldId, FieldValue) ->
 
 %% @doc Unarshals an XML element into a field value.
 %%
-%% @spec unmarshal(integer(), string()) -> iso8583field_value()
--spec(unmarshal(integer(), string()) -> iso8583field_value()).
+%% @spec unmarshal_field(integer(), string()) -> iso8583field_value()
+-spec(unmarshal_field(integer(), string()) -> iso8583field_value()).
 
-unmarshal(_FieldId, FieldElement) ->
+unmarshal_field(_FieldId, FieldElement) ->
 	Attributes = FieldElement#xmlElement.attributes,
 	AttributesList = attributes_to_list(Attributes, []),
 	Id = get_attribute_value("id", AttributesList),
@@ -120,7 +120,7 @@ get_attribute_value(Key, [_Head|Tail]) ->
 marshal_fields([], Result) ->
 	Result;
 marshal_fields([{FieldId, Value}|Tail], Result) ->
-	MarshalledValue = marshal(FieldId, Value),
+	MarshalledValue = marshal_field(FieldId, Value),
 	marshal_fields(Tail, MarshalledValue ++ Result).
 
 unmarshal_complex([], Iso8583Msg) ->
@@ -130,7 +130,7 @@ unmarshal_complex([Field|T], Iso8583Msg) when is_record(Field, xmlElement) ->
 	AttributesList = attributes_to_list(Attributes, []),
 	Id = get_attribute_value("id", AttributesList),
 	FieldId = list_to_integer(Id),
-	Value = unmarshal(FieldId, Field),
+	Value = unmarshal_field(FieldId, Field),
 	UpdatedMsg = erl8583_message:set(FieldId, Value, Iso8583Msg),
 	unmarshal_complex(T, UpdatedMsg);
 unmarshal_complex([_H|T], Iso8583Msg) ->

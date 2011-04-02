@@ -12,21 +12,21 @@
 %%
 %% Exported Functions
 %%
--export([marshal/2, marshal_bitmap/1]).
+-export([marshal_field/2, marshal_bitmap/1]).
 
 %%
 %% API Functions
 %%
 
 % Self-shunting for marshalling fields in tests.
-marshal(3, _Msg) ->
+marshal_field(3, _Msg) ->
 	"Field 3";
-marshal(4, _Msg) ->
+marshal_field(4, _Msg) ->
 	"Field 4";
-marshal(0, "0200") ->
+marshal_field(0, "0200") ->
 	"X";
-marshal(FieldId, Msg) ->
-	erl8583_marshaller_ascii_field:marshal(FieldId, Msg).
+marshal_field(FieldId, Msg) ->
+	erl8583_marshaller_ascii_field:marshal_field(FieldId, Msg).
 
 % Self-shunting for marshalling bit map in tests.
 marshal_bitmap(_Msg) ->

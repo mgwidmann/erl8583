@@ -27,7 +27,7 @@
 %%
 %% Exported Functions
 %%
--export([marshal/2, marshal_data_element/2, unmarshal/2, unmarshal_data_element/2]).
+-export([marshal_field/2, marshal_data_element/2, unmarshal_field/2, unmarshal_data_element/2]).
 
 %%
 %% API Functions
@@ -116,10 +116,10 @@ unmarshal_data_element({b, fixed, Length}, AsciiFields) ->
 %%      of the ISO 8583 specification is used to determine how to
 %%      encode the field value.
 %%
-%% @spec marshal(integer(), iso8583field_value()) -> string()
--spec(marshal(integer(), iso8583field_value()) -> string()).
+%% @spec marshal_field(integer(), iso8583field_value()) -> string()
+-spec(marshal_field(integer(), iso8583field_value()) -> string()).
 
-marshal(FieldId, FieldValue) ->
+marshal_field(FieldId, FieldValue) ->
 	Pattern = erl8583_fields:get_encoding(FieldId),
 	marshal_data_element(Pattern, FieldValue).
 
@@ -128,10 +128,10 @@ marshal(FieldId, FieldValue) ->
 %%      The 1987 version of the ISO 8583 specification is used to determine how to
 %%      decode the field value.
 %%
-%% @spec unmarshal(integer(), string()) -> {iso8583field_value(), string()}
--spec(unmarshal(integer(), string()) -> {iso8583field_value(), string()}).
+%% @spec unmarshal_field(integer(), string()) -> {iso8583field_value(), string()}
+-spec(unmarshal_field(integer(), string()) -> {iso8583field_value(), string()}).
 
-unmarshal(FieldId, AsciiFields) ->
+unmarshal_field(FieldId, AsciiFields) ->
 	Pattern = erl8583_fields:get_encoding(FieldId),
 	unmarshal_data_element(Pattern, AsciiFields).
 
