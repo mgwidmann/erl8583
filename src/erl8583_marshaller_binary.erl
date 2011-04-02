@@ -62,8 +62,8 @@ marshal(Message, FieldMarshaller) ->
 marshal(Message, FieldMarshaller, BitMapMarshaller) ->
 	Mti = erl8583_message:get(0, Message),
 	MtiBin = FieldMarshaller:marshal_field(?MTI, Mti),
-	BitMap = BitMapMarshaller:marshal_bitmap(Message),
 	[?MTI|Fields] = erl8583_message:get_fields(Message),
+	BitMap = BitMapMarshaller:marshal_bitmap(Fields),
 	EncodedFields = encode(Fields, Message, FieldMarshaller),
 	MtiBin ++ BitMap ++ EncodedFields.
 

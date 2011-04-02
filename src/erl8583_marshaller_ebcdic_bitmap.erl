@@ -34,11 +34,11 @@
 %% @doc Constructs an EBCDIC binary representation of the
 %%      bitmap for an iso8583message().
 %%
-%% @spec marshal_bitmap(iso8583message()) -> binary()
--spec(marshal_bitmap(iso8583message()) -> binary()).
+%% @spec marshal_bitmap(list(integer())) -> list(byte())
+-spec(marshal_bitmap(list(integer())) -> list(byte())).
 
-marshal_bitmap(Message) ->
-	erl8583_convert:ascii_to_ebcdic(erl8583_marshaller_ascii_bitmap:marshal_bitmap(Message)).
+marshal_bitmap(FieldIds) ->
+	erl8583_convert:ascii_to_ebcdic(erl8583_marshaller_ascii_bitmap:marshal_bitmap(FieldIds)).
 
 
 %%

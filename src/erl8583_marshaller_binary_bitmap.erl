@@ -34,12 +34,16 @@
 %% @doc Constructs a binary representation of the
 %%      bitmap for an iso8583message().
 %%
-%% @spec marshal_bitmap(iso8583message()) -> list(byte())
--spec(marshal_bitmap(iso8583message()) -> list(byte())).
+%% @spec marshal_bitmap(list(integer())) -> list(byte())
+-spec(marshal_bitmap(list(integer())) -> list(byte())).
 
-marshal_bitmap(Message) ->
-	[0|Fields] = erl8583_message:get_fields(Message),
-	construct_bitmap(Fields).
+marshal_bitmap([]) ->
+	[];
+marshal_bitmap(FieldIds) ->
+	NumBitMaps = (lists:max(FieldIds) + 63) div 64,
+	ExtensionBits = [Bit * 64 - 127 || Bit <- lists:seq(2, NumBitMaps)],
+	BitMap = lists:duplicate(NumBitMaps * 8, 0),
+	construct_bitmap(lists:sort(ExtensionBits ++ FieldIds), BitMap).
 
 %% @doc Extracts a list of field IDs from a binary representation of 
 %%      an ISO 8583 message.  The result is returned as a 2-tuple: a list
@@ -58,14 +62,6 @@ unmarshal_bitmap(BinaryMessage) ->
 %%
 %% Local Functions
 %%
-construct_bitmap([]) ->
-	[];
-construct_bitmap(FieldIds) ->
-	NumBitMaps = (lists:max(FieldIds) + 63) div 64,
-	ExtensionBits = [Bit * 64 - 127 || Bit <- lists:seq(2, NumBitMaps)],
-	BitMap = lists:duplicate(NumBitMaps * 8, 0),
-	construct_bitmap(lists:sort(ExtensionBits ++ FieldIds), BitMap).
-
 construct_bitmap([], Result) ->
 	Result;
 construct_bitmap([Field|Tail], Result) when Field > 0 ->

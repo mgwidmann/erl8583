@@ -34,12 +34,16 @@
 %% @doc Constructs an ASCII string representation of the
 %%      bitmap for an iso8583message().
 %%
-%% @spec marshal_bitmap(iso8583message()) -> string()
--spec(marshal_bitmap(iso8583message()) -> string()).
+%% @spec marshal_bitmap(list(integer())) -> string()
+-spec(marshal_bitmap(list(integer())) -> string()).
 
-marshal_bitmap(Message) ->
-	[0|Fields] = erl8583_message:get_fields(Message),
-	construct_bitmap(Fields).
+marshal_bitmap([]) ->
+	[];
+marshal_bitmap(FieldIds) ->
+	NumBitMaps = (lists:max(FieldIds) + 63) div 64,
+	ExtensionBits = [Bit * 64 - 127 || Bit <- lists:seq(2, NumBitMaps)],
+	BitMap = lists:duplicate(NumBitMaps * 8, 0),
+	erl8583_convert:string_to_ascii_hex(construct_bitmap(lists:sort(ExtensionBits ++ FieldIds), BitMap)).
 
 %% @doc Extracts a list of field IDs from an ASCII string 
 %%      representation of an ISO 8583 message. The result is returned
@@ -60,14 +64,6 @@ unmarshal_bitmap(AsciiMessage) ->
 %%
 %% Local Functions
 %%
-construct_bitmap([]) ->
-	[];
-construct_bitmap(FieldIds) ->
-	NumBitMaps = (lists:max(FieldIds) + 63) div 64,
-	ExtensionBits = [Bit * 64 - 127 || Bit <- lists:seq(2, NumBitMaps)],
-	BitMap = lists:duplicate(NumBitMaps * 8, 0),
-	erl8583_convert:string_to_ascii_hex(construct_bitmap(lists:sort(ExtensionBits ++ FieldIds), BitMap)).
-
 construct_bitmap([], Result) ->
 	Result;
 construct_bitmap([Field|Tail], Result) when Field > 0 ->
