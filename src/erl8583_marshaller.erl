@@ -57,7 +57,9 @@ parse_options([], OptionsRecord) ->
 parse_options([{field_marshaller, Marshaller}|Tail], OptionsRecord) ->
 	parse_options(Tail, OptionsRecord#marshal_options{field_marshaller=Marshaller});
 parse_options([{bitmap_marshaller, Marshaller}|Tail], OptionsRecord) ->
-	parse_options(Tail, OptionsRecord#marshal_options{bitmap_marshaller=Marshaller}).
+	parse_options(Tail, OptionsRecord#marshal_options{bitmap_marshaller=Marshaller});
+parse_options([{encoding_rules, Rules}|Tail], OptionsRecord) ->
+	parse_options(Tail, OptionsRecord#marshal_options{encoding_rules=Rules}).
 
 encode(Fields, Msg, FieldMarshaller, EncodingRules) ->
 	encode(Fields, Msg, [], FieldMarshaller, EncodingRules).
