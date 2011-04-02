@@ -12,7 +12,7 @@
 %%
 %% Exported Functions
 %%
--export([unmarshal/2, unmarshal/1]).
+-export([unmarshal/2, unmarshal_bitmap/1]).
 
 %%
 %% API Functions
@@ -26,7 +26,7 @@ unmarshal(0, Binary) ->
 	B1 = [255],
 	{"0200", B2}.
 
-unmarshal([254, 3, 0, 4, 0]) ->
+unmarshal_bitmap([254, 3, 0, 4, 0]) ->
 	{[3, 4], [3, 0, 4, 0]}.
 
 %%

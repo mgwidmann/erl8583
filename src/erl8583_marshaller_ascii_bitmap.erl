@@ -12,7 +12,7 @@
 
 %% @author CA Meijer
 %% @copyright 2011 CA Meijer
-%% @doc This module constructs an ASCII string representation of the bit map of
+%% @doc This module constructs an ASCII string representation of the bitmap of
 %%      an iso8583message() field.
 -module(erl8583_marshaller_ascii_bitmap).
 
@@ -25,7 +25,7 @@
 %%
 %% Exported Functions
 %%
--export([marshal/1, unmarshal/1]).
+-export([marshal_bitmap/1, unmarshal_bitmap/1]).
 
 %%
 %% API Functions
@@ -34,10 +34,10 @@
 %% @doc Constructs an ASCII string representation of the
 %%      bitmap for an iso8583message().
 %%
-%% @spec marshal(iso8583message()) -> string()
--spec(marshal(iso8583message()) -> string()).
+%% @spec marshal_bitmap(iso8583message()) -> string()
+-spec(marshal_bitmap(iso8583message()) -> string()).
 
-marshal(Message) ->
+marshal_bitmap(Message) ->
 	[0|Fields] = erl8583_message:get_fields(Message),
 	construct_bitmap(Fields).
 
@@ -46,12 +46,12 @@ marshal(Message) ->
 %%      as a 2-tuple of the field IDs and the remainder of the 
 %%      the message (encoding the field values but not the bit map).
 %%
-%% @spec unmarshal(string()) -> {list(integer()), string()}
--spec(unmarshal(string()) -> {list(integer()), string()}).
+%% @spec unmarshal_bitmap(string()) -> {list(integer()), string()}
+-spec(unmarshal_bitmap(string()) -> {list(integer()), string()}).
 
-unmarshal([]) ->
+unmarshal_bitmap([]) ->
 	{[], []};
-unmarshal(AsciiMessage) ->
+unmarshal_bitmap(AsciiMessage) ->
 	BitMapLength = get_bit_map_length(AsciiMessage),
 	{AsciiBitMap, Fields} = lists:split(BitMapLength, AsciiMessage),
 	BitMap = erl8583_convert:ascii_hex_to_string(AsciiBitMap),

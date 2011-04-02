@@ -12,7 +12,7 @@
 %%
 %% Exported Functions
 %%
--export([marshal/2, marshal/1]).
+-export([marshal/2, marshal_bitmap/1]).
 
 %%
 %% API Functions
@@ -29,7 +29,7 @@ marshal(FieldId, Msg) ->
 	erl8583_marshaller_ascii_field:marshal(FieldId, Msg).
 
 % Self-shunting for marshalling bit map in tests.
-marshal(_Msg) ->
+marshal_bitmap(_Msg) ->
 	"bitmap".
 
 %% Test that a message with only an MTI can be exported.
