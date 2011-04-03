@@ -61,10 +61,9 @@ marshal(Message, FieldMarshaller) ->
 -spec(marshal(iso8583message(), module(), module()) -> string()).
 
 marshal(Message, FieldMarshaller, BitMapMarshaller) ->
-	Mti = erl8583_message:get(0, Message),
-	[0|Fields] = erl8583_message:get_fields(Message),
-	FieldMarshaller:marshal_field(0, Mti) ++ BitMapMarshaller:marshal_bitmap(Fields) ++ encode(Fields, Message, FieldMarshaller).
-	
+	erl8583_marshaller:marshal(Message, [{field_marshaller, FieldMarshaller}, 
+										 {bitmap_marshaller, BitMapMarshaller}]).
+
 %% @doc Unmarshals an ASCII string into an ISO 8583 message. This function
 %%      uses the erl8583_marshaller_ascii_field module to unmarshal the fields
 %%      and the erl8583_marshaller_ascii_bitmap module to unmarshal the bit map.
@@ -102,16 +101,6 @@ unmarshal(AsciiMessage, FieldMarshaller, BitMapMarshaller) ->
 %%
 %% Local Functions
 %%
-encode(Fields, Msg, FieldMarshaller) ->
-	encode(Fields, Msg, [], FieldMarshaller).
-
-encode([], _Msg, Result, _FieldMarshaller) ->
-	lists:reverse(Result);
-encode([FieldId|Tail], Msg, Result, FieldMarshaller) ->
-	Value = erl8583_message:get(FieldId, Msg),
-	EncodedValue = FieldMarshaller:marshal_field(FieldId, Value),
-	encode(Tail, Msg, lists:reverse(EncodedValue) ++ Result, FieldMarshaller).
- 
 decode_fields([], [], Result, _FieldMarshaller) ->
 	Result;
 decode_fields([FieldId|Tail], Fields, Result, FieldMarshaller) ->

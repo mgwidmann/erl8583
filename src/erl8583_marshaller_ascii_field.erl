@@ -27,7 +27,7 @@
 %%
 %% Exported Functions
 %%
--export([marshal_field/2, marshal_data_element/2, unmarshal_field/2, unmarshal_data_element/2]).
+-export([marshal_field/3, marshal_data_element/2, unmarshal_field/2, unmarshal_data_element/2]).
 
 %%
 %% API Functions
@@ -116,11 +116,11 @@ unmarshal_data_element({b, fixed, Length}, AsciiFields) ->
 %%      of the ISO 8583 specification is used to determine how to
 %%      encode the field value.
 %%
-%% @spec marshal_field(integer(), iso8583field_value()) -> string()
--spec(marshal_field(integer(), iso8583field_value()) -> string()).
+%% @spec marshal_field(integer(), iso8583field_value(), module()) -> string()
+-spec(marshal_field(integer(), iso8583field_value(), module()) -> string()).
 
-marshal_field(FieldId, FieldValue) ->
-	Pattern = erl8583_fields:get_encoding(FieldId),
+marshal_field(FieldId, FieldValue, EncodingRules) ->
+	Pattern = EncodingRules:get_encoding(FieldId),
 	marshal_data_element(Pattern, FieldValue).
 
 %% @doc Extracts a field value from the start of a string.  The field value 

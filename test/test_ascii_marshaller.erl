@@ -12,21 +12,21 @@
 %%
 %% Exported Functions
 %%
--export([marshal_field/2, marshal_bitmap/1]).
+-export([marshal_field/3, marshal_bitmap/1]).
 
 %%
 %% API Functions
 %%
 
 % Self-shunting for marshalling fields in tests.
-marshal_field(3, _Msg) ->
+marshal_field(3, _Msg, _) ->
 	"Field 3";
-marshal_field(4, _Msg) ->
+marshal_field(4, _Msg, _) ->
 	"Field 4";
-marshal_field(0, "0200") ->
+marshal_field(0, "0200", _) ->
 	"X";
-marshal_field(FieldId, Msg) ->
-	erl8583_marshaller_ascii_field:marshal_field(FieldId, Msg).
+marshal_field(FieldId, Msg, Encoding) ->
+	erl8583_marshaller_ascii_field:marshal_field(FieldId, Msg, Encoding).
 
 % Self-shunting for marshalling bit map in tests.
 marshal_bitmap(_Msg) ->
@@ -74,11 +74,11 @@ fields_5_6_7_test() ->
 
 fields_8_9_10_test() ->
 	Msg1 = erl8583_message:new(),
-	Msg2 = erl8583_message:set(0, "1300", Msg1),
+	Msg2 = erl8583_message:set(0, "0300", Msg1),
 	Msg3 = erl8583_message:set(8, "1", Msg2),	
 	Msg4 = erl8583_message:set(9, "2", Msg3),	
 	Msg5 = erl8583_message:set(10, "3", Msg4),	
-	"130001C0000000000000000000010000000200000003" = erl8583_marshaller_ascii:marshal(Msg5).
+	"030001C0000000000000000000010000000200000003" = erl8583_marshaller_ascii:marshal(Msg5).
 
 fields_11_12_13_14_test() ->
 	Msg1 = erl8583_message:new(),
