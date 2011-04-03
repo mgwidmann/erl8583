@@ -4,14 +4,13 @@
 -module(test_marshaller).
 
 %%
-%% Include files
-%%
+%% Include filessh%%
 -include_lib("eunit/include/eunit.hrl").
 
 %%
 %% Exported Functions
 %%
--export([marshal_field/3, marshal_bitmap/1, marshal_wrap/2, unmarshal_field/3, unmarshal_bitmap/1]).
+-export([marshal_field/3, marshal_bitmap/1, marshal_wrapping/2, unmarshal_field/3, unmarshal_bitmap/1, unmarshal_wrapping/2]).
 
 %%
 %% API Functions
@@ -30,8 +29,11 @@ marshal_field(_N, _Value, erl8583_fields_1993) ->
 marshal_bitmap([1, 2, 3]) ->
 	"bitmap = 123".
 
-marshal_wrap(_Message, Marshalled) ->
+marshal_wrapping(_Message, Marshalled) ->
 	"Start" ++ Marshalled ++ "End".
+
+unmarshal_wrapping(Marshalled, Message) ->
+	{lists:sublist(Marshalled, 2, length(Marshalled)-2), Message}.
 
 unmarshal_field(0, [0,2,0,0|Rest], _) ->
 	{"0200", Rest};
@@ -39,7 +41,9 @@ unmarshal_field(_, [H|Rest], _) ->
 	{[H+$0], Rest}.
 
 unmarshal_bitmap([7|T]) ->
-	{[1, 2, 3], T}.
+	{[1, 2, 3], T};
+unmarshal_bitmap([31|T]) ->
+	{[1, 2, 3, 4, 5], T}.
 
 mti_test() ->
 	Message = erl8583_message:set(0, "0200", erl8583_message:new()),
@@ -84,8 +88,17 @@ unmarshal_mti_test() ->
 
 unmarshal_bitmap_test() ->
 	Message = erl8583_marshaller:unmarshal([0, 2, 0, 0, 7, 1, 2, 3], [{field_marshaller, ?MODULE}, {bitmap_marshaller, ?MODULE}]),
-	[0, 1, 2, 3] = erl8583_message:get_fields(Message).
+	[0, 1, 2, 3] = erl8583_message:get_fields(Message),
+	"1" = erl8583_message:get(1, Message).
 	
+unmarshal_wrapping_test() ->
+	Message = erl8583_marshaller:unmarshal([$S, 0, 2, 0, 0, 31, 1, 2, 3, 4, 5, $E], [{field_marshaller, ?MODULE}, 
+																			  {bitmap_marshaller, ?MODULE},
+																			  {wrapping_marshaller, ?MODULE}]),
+	[0, 1, 2, 3, 4, 5] = erl8583_message:get_fields(Message),
+	"0200" = erl8583_message:get(0, Message),
+	"4" = erl8583_message:get(4, Message).
+
 %%
 %% Local Functions
 %%

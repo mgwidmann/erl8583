@@ -32,10 +32,10 @@ marshal(Message, Options) ->
 
 unmarshal(Marshalled, Options) ->
 	OptionsRecord = parse_options(Options, #marshal_options{}),
-	Marshalled1 = Marshalled,
-	{Message, Marshalled2} = decode_mti(OptionsRecord, Marshalled1, erl8583_message:new()),
+	{Marshalled1, Message0} = unwrap_message(OptionsRecord, Marshalled, erl8583_message:new()),
+	{Message1, Marshalled2} = decode_mti(OptionsRecord, Marshalled1, Message0),
 	{FieldIds, Marshalled3} = decode_bitmap(OptionsRecord, Marshalled2),
-	decode_fields(FieldIds, Message, OptionsRecord, Marshalled3).
+	decode_fields(FieldIds, Message1, OptionsRecord, Marshalled3).
 
 %%
 %% Local Functions
@@ -138,7 +138,7 @@ encode([FieldId|Tail], Msg, Result, FieldMarshaller, EncodingRules) ->
 
 %decode_fields(FieldIds, Message, OptionsRecord, Marshalled) ->
 %	Message.
-decode_fields([], Result, _OptionsRecord, _Marshalled) ->
+decode_fields([], Result, _OptionsRecord, []) ->
 	Result;
 decode_fields([FieldId|Tail], Message, Options, Marshalled) ->
 	EncodingRules = get_encoding_rules(Options, Message),
@@ -161,6 +161,15 @@ wrap_message(Options, Message, Marshalled) ->
 		WrapperMarshalModule =:= undefined ->
 			Marshalled;
 		WrapperMarshalModule =/= undefined ->
-			WrapperMarshalModule:marshal_wrap(Message, Marshalled) 
+			WrapperMarshalModule:marshal_wrapping(Message, Marshalled) 
+	end.
+
+unwrap_message(Options, Marshalled, Message) ->
+	WrapperMarshalModule = Options#marshal_options.wrapping_marshaller,
+	if
+		WrapperMarshalModule =:= undefined ->
+			{Marshalled, Message};
+		WrapperMarshalModule =/= undefined ->
+			WrapperMarshalModule:unmarshal_wrapping(Marshalled, Message) 
 	end.
 	
