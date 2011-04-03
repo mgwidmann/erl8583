@@ -12,16 +12,16 @@
 %%
 %% Exported Functions
 %%
--export([unmarshal_field/2, unmarshal_bitmap/1]).
+-export([unmarshal_field/3, unmarshal_bitmap/1]).
 
 %%
 %% API Functions
 %%
-unmarshal_field(3, [3, 0, 4, 0]) ->
+unmarshal_field(3, [3, 0, 4, 0], _EncodingRules) ->
 	{"3", [4, 0]};
-unmarshal_field(4, [4, 0]) ->
+unmarshal_field(4, [4, 0], _EncodingRule) ->
 	{"4", []};
-unmarshal_field(0, Binary) ->
+unmarshal_field(0, Binary, _EncodingRule) ->
 	[255|B] = Binary,
 	{"0200", B}.
 
@@ -52,14 +52,14 @@ field_2_3_test() ->
 	"012345" = erl8583_message:get(?PROC_CODE, Msg1).
 
 field_4_test() ->
-	Msg = erl8583_marshaller_binary:unmarshal([18, 0, 16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 35]),
-	"1200" = erl8583_message:get(0, Msg),
+	Msg = erl8583_marshaller_binary:unmarshal([1, 2, 16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 35]),
+	"0102" = erl8583_message:get(0, Msg),
 	[0, 4] = erl8583_message:get_fields(Msg),
 	"000000000123" = erl8583_message:get(4, Msg).
 
 field_5_test() ->
-	Msg = erl8583_marshaller_binary:unmarshal([18, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 16]),
-	"1200" = erl8583_message:get(0, Msg),
+	Msg = erl8583_marshaller_binary:unmarshal([2, 17, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 16]),
+	"0211" = erl8583_message:get(0, Msg),
 	[0, 5] = erl8583_message:get_fields(Msg),
 	"000000000010" = erl8583_message:get(5, Msg).
 	
