@@ -12,19 +12,19 @@
 %%
 %% Exported Functions
 %%
--export([unmarshal_field/2, unmarshal_bitmap/1]).
+-export([unmarshal_field/3, unmarshal_bitmap/1]).
 
 %%
 %% API Functions
 %%
-unmarshal_field(3, [$3|Tail]) ->
+unmarshal_field(3, [$3|Tail], _Encoder) ->
 	{"Field 3", Tail};
-unmarshal_field(4, [$4|Tail]) ->
+unmarshal_field(4, [$4|Tail], _Encoder) ->
 	{"Field 4", Tail};
-unmarshal_field(0, [$X|Tail]) ->
+unmarshal_field(0, [$X|Tail], _Encoder) ->
 	{"0200", Tail};
-unmarshal_field(Id, Str) ->
-	erl8583_marshaller_ascii_field:unmarshal_field(Id, Str).
+unmarshal_field(Id, Str, Encoder) ->
+	erl8583_marshaller_ascii_field:unmarshal_field(Id, Str, Encoder).
 	
 
 % bit map unmarshaller
@@ -46,8 +46,8 @@ pan_test() ->
 	"5234567890123456" = erl8583_message:get(2, Msg).
 	
 field_8_9_10_test() ->
-	Msg = erl8583_marshaller_ascii:unmarshal("130001C0000000000000000000010000000200000003"),
-	"1300" = erl8583_message:get(0, Msg),
+	Msg = erl8583_marshaller_ascii:unmarshal("030001C0000000000000000000010000000200000003"),
+	"0300" = erl8583_message:get(0, Msg),
 	[0, 8, 9, 10] = erl8583_message:get_fields(Msg),
 	"00000001" = erl8583_message:get(8, Msg),
 	"00000002" = erl8583_message:get(9, Msg),
