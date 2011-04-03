@@ -60,12 +60,8 @@ marshal(Message, FieldMarshaller) ->
 -spec(marshal(iso8583message(), module(), module()) -> binary()).
 
 marshal(Message, FieldMarshaller, BitMapMarshaller) ->
-	Mti = erl8583_message:get(0, Message),
-	MtiBin = FieldMarshaller:marshal_field(?MTI, Mti),
-	[?MTI|Fields] = erl8583_message:get_fields(Message),
-	BitMap = BitMapMarshaller:marshal_bitmap(Fields),
-	EncodedFields = encode(Fields, Message, FieldMarshaller),
-	MtiBin ++ BitMap ++ EncodedFields.
+	erl8583_marshaller:marshal(Message, [{field_marshaller, FieldMarshaller}, 
+												{bitmap_marshaller, BitMapMarshaller}]).
 
 %% @doc Unmarshals a binary into an ISO 8583 message. This function uses
 %%      the erl8583_marshaller_binary_field module to unmarshal the fields.
@@ -104,16 +100,6 @@ unmarshal(BinaryMessage, FieldMarshaller, BitMapMarshaller) ->
 %%
 %% Local Functions
 %%
-encode(Fields, Msg, FieldMarshaller) ->
-	encode(Fields, Msg, [], FieldMarshaller).
-
-encode([], _Msg, Result, _FieldMarshaller) ->
-	lists:reverse(Result);
-encode([FieldId|Tail], Msg, Result, FieldMarshaller) ->
-	Value = erl8583_message:get(FieldId, Msg),
-	EncodedValue = FieldMarshaller:marshal_field(FieldId, Value),
-	encode(Tail, Msg, lists:reverse(EncodedValue) ++ Result, FieldMarshaller).
-
 decode_fields([], [], Result, _FieldMarshaller) ->
 	Result;
 decode_fields([FieldId|Tail], Fields, Result, FieldMarshaller) ->

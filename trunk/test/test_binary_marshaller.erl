@@ -12,19 +12,19 @@
 %%
 %% Exported Functions
 %%
--export([marshal_field/2, marshal_bitmap/1]).
+-export([marshal_field/3, marshal_bitmap/1]).
 
 %%
 %% API Functions
 %%
-marshal_field(3, 3) ->
+marshal_field(3, 3, _EncodingRules) ->
 	[3];
-marshal_field(4, 4) ->
+marshal_field(4, 4, _EncodingRules) ->
 	[4];
-marshal_field(0, "0200") ->
+marshal_field(0, "0200", _EncodingRules) ->
 	[255];
-marshal_field(FieldId, FieldValue) ->
-	erl8583_marshaller_binary_field:marshal_field(FieldId, FieldValue).
+marshal_field(FieldId, FieldValue, EncodingRules) ->
+	erl8583_marshaller_binary_field:marshal_field(FieldId, FieldValue, EncodingRules).
 
 marshal_bitmap(_) ->
 	[254].
@@ -58,16 +58,16 @@ fields_2_3_test() ->
 
 field_4_test() ->
 	Msg1 = erl8583_message:new(),
-	Msg2 = erl8583_message:set(0, "1200", Msg1),
+	Msg2 = erl8583_message:set(0, "0200", Msg1),
 	Msg3 = erl8583_message:set(4, "123", Msg2),
-	[18, 0, 16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 35]
+	[2, 0, 16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 35]
 		= erl8583_marshaller_binary:marshal(Msg3).
 
 field_5_test() ->
 	Msg1 = erl8583_message:new(),
-	Msg2 = erl8583_message:set(0, "1200", Msg1),
+	Msg2 = erl8583_message:set(0, "0210", Msg1),
 	Msg3 = erl8583_message:set(5, "10", Msg2),
-	[18, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 16]
+	[2, 16, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 16]
 		= erl8583_marshaller_binary:marshal(Msg3).
 
 field_6_test() ->
