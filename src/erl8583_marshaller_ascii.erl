@@ -92,18 +92,9 @@ unmarshal(AsciiMessage, FieldMarshaller) ->
 -spec(unmarshal(string(), module(), module()) -> iso8583message()).
 
 unmarshal(AsciiMessage, FieldMarshaller, BitMapMarshaller) ->
-	IsoMsg1 = erl8583_message:new(),
-	{Mti, Rest} = FieldMarshaller:unmarshal_field(0, AsciiMessage),
-	IsoMsg2 = erl8583_message:set(0, Mti, IsoMsg1),
-	{FieldIds, Fields} = BitMapMarshaller:unmarshal_bitmap(Rest),
-	decode_fields(FieldIds, Fields, IsoMsg2, FieldMarshaller).
+	erl8583_marshaller:unmarshal(AsciiMessage, [{field_marshaller, FieldMarshaller}, 
+												{bitmap_marshaller, BitMapMarshaller}]).
 
 %%
 %% Local Functions
 %%
-decode_fields([], [], Result, _FieldMarshaller) ->
-	Result;
-decode_fields([FieldId|Tail], Fields, Result, FieldMarshaller) ->
-	{Value, UpdatedFields} = FieldMarshaller:unmarshal_field(FieldId, Fields),
-	UpdatedResult = erl8583_message:set(FieldId, Value, Result),
-	decode_fields(Tail, UpdatedFields, UpdatedResult, FieldMarshaller).
