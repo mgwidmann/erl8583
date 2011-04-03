@@ -136,10 +136,8 @@ encode([FieldId|Tail], Msg, Result, FieldMarshaller, EncodingRules) ->
 	EncodedValue = FieldMarshaller:marshal_field(FieldId, Value, EncodingRules),
 	encode(Tail, Msg, lists:reverse(EncodedValue) ++ Result, FieldMarshaller, EncodingRules).
 
-%decode_fields(FieldIds, Message, OptionsRecord, Marshalled) ->
-%	Message.
-decode_fields([], Result, _OptionsRecord, []) ->
-	Result;
+decode_fields([], Message, _OptionsRecord, _Marshalled) ->
+	Message;
 decode_fields([FieldId|Tail], Message, Options, Marshalled) ->
 	EncodingRules = get_encoding_rules(Options, Message),
 	FieldMarshalModule = Options#marshal_options.field_marshaller,
