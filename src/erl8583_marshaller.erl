@@ -25,30 +25,9 @@
 %%
 marshal(Message, Options) ->
 	OptionsRecord = parse_options(Options, #marshal_options{}),
-	FieldMarshalModule = OptionsRecord#marshal_options.field_marshaller,
-	EncodingRules = get_encoding_rules(OptionsRecord, Message),
-	if
-		FieldMarshalModule =:= undefined ->
-			Marshalled1 = [];
-		FieldMarshalModule =/= undefined ->
-			Mti = FieldMarshalModule:marshal_field(0, erl8583_message:get(0, Message), EncodingRules),
-			Marshalled1 = Mti
-	end,
-	BitmapMarshalModule = OptionsRecord#marshal_options.bitmap_marshaller,
-	[0|Fields] = erl8583_message:get_fields(Message),
-	if
-		BitmapMarshalModule =:= undefined ->
-			Marshalled2 = Marshalled1;
-		BitmapMarshalModule =/= undefined ->			
-			Bitmap = BitmapMarshalModule:marshal_bitmap(Fields),
-			Marshalled2 = Marshalled1 ++ Bitmap
-	end,
-	if
-		FieldMarshalModule =:= undefined ->
-			Marshalled3 = Marshalled2;
-		FieldMarshalModule =/= undefined ->
-			Marshalled3 = Marshalled2 ++ encode(Fields, Message, FieldMarshalModule, EncodingRules) 
-	end,
+	Marshalled1 = encode_mti(OptionsRecord, Message),
+	Marshalled2 = Marshalled1 ++ encode_bitmap(OptionsRecord, Message),
+	Marshalled3 = Marshalled2 ++ encode_fields(OptionsRecord, Message),
 	WrapperMarshalModule = OptionsRecord#marshal_options.wrapper_marshaller,
 	if
 		WrapperMarshalModule =:= undefined ->
@@ -89,7 +68,36 @@ get_encoding_rules(Options, Message) ->
 			end
 	end.
 
+encode_mti(Options, Message) ->
+	EncodingRules = get_encoding_rules(Options, Message),
+	FieldMarshalModule = Options#marshal_options.field_marshaller,
+	if
+		FieldMarshalModule =:= undefined ->
+			[];
+		FieldMarshalModule =/= undefined ->
+			FieldMarshalModule:marshal_field(0, erl8583_message:get(0, Message), EncodingRules)
+	end.
+	
+encode_bitmap(Options, Message) ->
+	BitmapMarshalModule = Options#marshal_options.bitmap_marshaller,
+	[0|Fields] = erl8583_message:get_fields(Message),
+	if
+		BitmapMarshalModule =:= undefined ->
+			[];
+		BitmapMarshalModule =/= undefined ->			
+			BitmapMarshalModule:marshal_bitmap(Fields)
+	end.
 
+encode_fields(Options, Message) ->
+	[0|Fields] = erl8583_message:get_fields(Message),
+	EncodingRules = get_encoding_rules(Options, Message),
+	FieldMarshalModule = Options#marshal_options.field_marshaller,
+	if
+		FieldMarshalModule =:= undefined ->
+			[];
+		FieldMarshalModule =/= undefined ->
+			encode(Fields, Message, FieldMarshalModule, EncodingRules) 
+	end.
 	
 encode(Fields, Msg, FieldMarshaller, EncodingRules) ->
 	encode(Fields, Msg, [], FieldMarshaller, EncodingRules).
