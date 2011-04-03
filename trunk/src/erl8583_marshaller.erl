@@ -12,7 +12,7 @@
 %%
 -record(marshal_options, {field_marshaller, 
 						  bitmap_marshaller, 
-						  wrapper_marshaller, 
+						  wrapping_marshaller, 
 						  encoding_rules}).
 
 %%
@@ -28,13 +28,7 @@ marshal(Message, Options) ->
 	Marshalled1 = encode_mti(OptionsRecord, Message),
 	Marshalled2 = Marshalled1 ++ encode_bitmap(OptionsRecord, Message),
 	Marshalled3 = Marshalled2 ++ encode_fields(OptionsRecord, Message),
-	WrapperMarshalModule = OptionsRecord#marshal_options.wrapper_marshaller,
-	if
-		WrapperMarshalModule =:= undefined ->
-			Marshalled3;
-		WrapperMarshalModule =/= undefined ->
-			WrapperMarshalModule:marshal_wrap(Message, Marshalled3) 
-	end.
+	wrap_message(OptionsRecord, Message, Marshalled3).
 
 
 %%
@@ -46,8 +40,8 @@ parse_options([{field_marshaller, Marshaller}|Tail], OptionsRecord) ->
 	parse_options(Tail, OptionsRecord#marshal_options{field_marshaller=Marshaller});
 parse_options([{bitmap_marshaller, Marshaller}|Tail], OptionsRecord) ->
 	parse_options(Tail, OptionsRecord#marshal_options{bitmap_marshaller=Marshaller});
-parse_options([{wrapper_marshaller, Marshaller}|Tail], OptionsRecord) ->
-	parse_options(Tail, OptionsRecord#marshal_options{wrapper_marshaller=Marshaller});
+parse_options([{wrapping_marshaller, Marshaller}|Tail], OptionsRecord) ->
+	parse_options(Tail, OptionsRecord#marshal_options{wrapping_marshaller=Marshaller});
 parse_options([{encoding_rules, Rules}|Tail], OptionsRecord) ->
 	parse_options(Tail, OptionsRecord#marshal_options{encoding_rules=Rules}).
 
@@ -108,3 +102,13 @@ encode([FieldId|Tail], Msg, Result, FieldMarshaller, EncodingRules) ->
 	Value = erl8583_message:get(FieldId, Msg),
 	EncodedValue = FieldMarshaller:marshal_field(FieldId, Value, EncodingRules),
 	encode(Tail, Msg, lists:reverse(EncodedValue) ++ Result, FieldMarshaller, EncodingRules).
+
+wrap_message(Options, Message, Marshalled) ->
+	WrapperMarshalModule = Options#marshal_options.wrapping_marshaller,
+	if
+		WrapperMarshalModule =:= undefined ->
+			Marshalled;
+		WrapperMarshalModule =/= undefined ->
+			WrapperMarshalModule:marshal_wrap(Message, Marshalled) 
+	end.
+	

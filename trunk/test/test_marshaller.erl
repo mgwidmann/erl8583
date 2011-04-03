@@ -23,7 +23,9 @@ marshal_field(0, "0100", erl8583_fields) ->
 marshal_field(_N, Value, erl8583_fields) ->
 	Value;
 marshal_field(_N, Value, foo_rules) ->
-	"_" ++ Value.
+	"_" ++ Value;
+marshal_field(_N, _Value, erl8583_fields_1993) ->
+	"1993".
 
 marshal_bitmap([1, 2, 3]) ->
 	"bitmap = 123".
@@ -57,10 +59,16 @@ fields_with_encoding_rules_test() ->
 	Options = [{field_marshaller, ?MODULE}, {encoding_rules, foo_rules}],
 	"_0100_V1_V2_V3" = erl8583_marshaller:marshal(Message3, Options).
 
-field_wrapper_test() ->
+message_wrapping_test() ->
 	Message = erl8583_message:set(0, "0200", erl8583_message:new()),
-	Options = [{field_marshaller, ?MODULE}, {wrapper_marshaller, ?MODULE}],
+	Options = [{field_marshaller, ?MODULE}, {wrapping_marshaller, ?MODULE}],
 	"Start" ++ [0, 2, 0, 0] ++ "End" = erl8583_marshaller:marshal(Message, Options).
+
+encoding_rules_test() ->
+	Options = [{field_marshaller, ?MODULE}],
+	Message0 = erl8583_message:set(0, "1100", erl8583_message:new()),
+	Message1 = erl8583_message:set(1, "V1", Message0),
+	"19931993" = erl8583_marshaller:marshal(Message1, Options).
 	
 %%
 %% Local Functions
