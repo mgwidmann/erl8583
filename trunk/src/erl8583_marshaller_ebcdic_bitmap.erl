@@ -38,7 +38,7 @@
 -spec(marshal_bitmap(list(integer())) -> list(byte())).
 
 marshal_bitmap(FieldIds) ->
-	erl8583_convert:ascii_to_ebcdic(erl8583_marshaller_ascii_bitmap:marshal_bitmap(FieldIds)).
+	erl8583_convert:ascii_to_ebcdic(erl8583_marshaller_ascii:marshal_bitmap(FieldIds)).
 
 
 %%
