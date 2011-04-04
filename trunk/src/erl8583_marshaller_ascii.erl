@@ -27,44 +27,12 @@
 %%
 %% Exported Functions
 %%
--export([unmarshal/1, unmarshal/2, unmarshal/3]).
 -export([marshal_bitmap/1, unmarshal_bitmap/1]).
 -export([marshal_field/3, marshal_data_element/2, unmarshal_field/3, unmarshal_data_element/2]).
 
 %%
 %% API Functions
 %%
-
-%% @doc Unmarshals an ASCII string into an ISO 8583 message. This function
-%%      uses the erl8583_marshaller_ascii_field module to unmarshal the fields
-%%      and the erl8583_marshaller_ascii_bitmap module to unmarshal the bit map.
-%%
-%% @spec unmarshal(string()) -> iso8583message()
--spec(unmarshal(string()) -> iso8583message()).
-
-unmarshal(AsciiMessage) ->
-	unmarshal(AsciiMessage, ?MODULE).
-
-%% @doc Unmarshals an ASCII string into an ISO 8583 message. This function
-%%      uses the specified field marshalling module and the 
-%%      erl8583_marshaller_ascii_bitmap module to unmarshal the bit map.
-%%
-%% @spec unmarshal(string(), module()) -> iso8583message()
--spec(unmarshal(string(), module()) -> iso8583message()).
-
-unmarshal(AsciiMessage, FieldMarshaller) ->
-	unmarshal(AsciiMessage, FieldMarshaller, ?MODULE).
-
-%% @doc Unmarshals an ASCII string into an ISO 8583 message. This function
-%%      uses the specified field marshalling module and the 
-%%      specified module to unmarshal the bit map.
-%%
-%% @spec unmarshal(string(), module(), module()) -> iso8583message()
--spec(unmarshal(string(), module(), module()) -> iso8583message()).
-
-unmarshal(AsciiMessage, FieldMarshaller, BitMapMarshaller) ->
-	erl8583_marshaller:unmarshal(AsciiMessage, [{field_marshaller, FieldMarshaller}, 
-												{bitmap_marshaller, BitMapMarshaller}]).
 
 %% @doc Constructs an ASCII string representation of the
 %%      bitmap for an iso8583message().
