@@ -27,21 +27,11 @@
 %%
 %% Exported Functions
 %%
--export([marshal_field/2, marshal_data_element/2, unmarshal_field/2, unmarshal_data_element/2]).
+-export([marshal_field/2, unmarshal_field/2, unmarshal_data_element/2]).
 
 %%
 %% API Functions
 %%
-
-%% @doc Marshals a data element into an EBCDIC binary given the field encoding
-%%      and the value of the data element.
-%%
-%% @spec marshal_data_element(Encoding::field_encoding(), iso8583field_value()) -> binary()
--spec(marshal_data_element(field_encoding(), iso8583field_value()) -> binary()).
-
-marshal_data_element(Encoding, FieldValue) ->
-	AsciiEnc = erl8583_marshaller_ascii_field:marshal_data_element(Encoding, FieldValue),
-	erl8583_convert:ascii_to_ebcdic(AsciiEnc).
 
 %% @doc Extracts a field value from the start of an EBCDIC binary given how the field
 %%      is encoded.  The field value and the rest of the unmarshalled EBCDIC binary
@@ -61,8 +51,8 @@ unmarshal_data_element(_,_) ->
 -spec(marshal_field(integer(), iso8583field_value()) -> binary()).
 
 marshal_field(FieldId, FieldValue) ->
-	Pattern = erl8583_fields:get_encoding(FieldId),
-	marshal_data_element(Pattern, FieldValue).
+	AsciiEncoding = erl8583_marshaller_ascii_field:marshal_field(FieldId, FieldValue, erl8583_fields),
+	erl8583_convert:ascii_to_ebcdic(AsciiEncoding).
 
 %% @doc Extracts a field value from the start of an EBCDIC binary.  The field value 
 %%      and the rest of the unmarshalled EBCDIC binary are returned as a 2-tuple.
