@@ -233,7 +233,7 @@ field_66_test() ->
 	Msg2 = erl8583_message:set(0, "0200", Msg1),
 	Msg3 = erl8583_message:set(?SETTLE_CODE, "9", Msg2),
 	"0200800000000000000040000000000000009" = erl8583_marshaller:marshal(Msg3, ?MARSHALLER_ASCII),
-	Msg3 = erl8583_marshaller_ascii:unmarshal(erl8583_marshaller:marshal(Msg3, ?MARSHALLER_ASCII)).
+	Msg3 = erl8583_marshaller:unmarshal(erl8583_marshaller:marshal(Msg3, ?MARSHALLER_ASCII), ?MARSHALLER_ASCII).
 	
 fields_67_to_70_test() ->
 	Msg1 = erl8583_message:new(),
