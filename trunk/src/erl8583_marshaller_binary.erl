@@ -27,7 +27,6 @@
 %%
 %% Exported Functions
 %%
--export([unmarshal/1, unmarshal/2, unmarshal/3]).
 -export([marshal_bitmap/1, unmarshal_bitmap/1]).
 -export([marshal_field/3, unmarshal_field/3]).
 
@@ -35,37 +34,6 @@
 %%
 %% API Functions
 %%
-
-%% @doc Unmarshals a binary into an ISO 8583 message. This function uses
-%%      the erl8583_marshaller_binary_field module to unmarshal the fields.
-%%
-%% @spec unmarshal(list(byte())) -> iso8583message()
--spec(unmarshal(list(byte())) -> iso8583message()).
-
-unmarshal(BinaryMessage) ->
-	unmarshal(BinaryMessage, erl8583_marshaller_binary).
-
-%% @doc Unmarshals a binary into an ISO 8583 message. This function uses
-%%      the specified field marshalling module and the
-%%      erl8583_marshaller_binary_bitmap module to unmarshal the
-%%      bit map.
-%%
-%% @spec unmarshal(binary(), module()) -> iso8583message()
--spec(unmarshal(binary(), module()) -> iso8583message()).
-
-unmarshal(BinaryMessage, FieldMarshaller) ->
-	unmarshal(BinaryMessage, FieldMarshaller, erl8583_marshaller_binary).
-
-%% @doc Unmarshals a binary into an ISO 8583 message. This function uses
-%%      the specified field marshalling module and the specified
-%%      bit map unmarshaller.
-%%
-%% @spec unmarshal(binary(), module(), module()) -> iso8583message()
--spec(unmarshal(binary(), module(), module()) -> iso8583message()).
-
-unmarshal(BinaryMessage, FieldMarshaller, BitMapMarshaller) ->
-	erl8583_marshaller:unmarshal(BinaryMessage, [{field_marshaller, FieldMarshaller},
-												 {bitmap_marshaller, BitMapMarshaller}]).
 
 %% @doc Constructs a binary representation of the
 %%      bitmap for an iso8583message().
