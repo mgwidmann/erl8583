@@ -24,7 +24,7 @@ unmarshal_field(4, [$4|Tail], _Encoder) ->
 unmarshal_field(0, [$X|Tail], _Encoder) ->
 	{"0200", Tail};
 unmarshal_field(Id, Str, Encoder) ->
-	erl8583_marshaller_ascii_field:unmarshal_field(Id, Str, Encoder).
+	erl8583_marshaller_ascii:unmarshal_field(Id, Str, Encoder).
 	
 
 % bit map unmarshaller

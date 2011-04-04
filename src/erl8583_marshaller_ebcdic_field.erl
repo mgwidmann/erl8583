@@ -41,7 +41,7 @@
 -spec(marshal_field(integer(), iso8583field_value()) -> binary()).
 
 marshal_field(FieldId, FieldValue) ->
-	AsciiEncoding = erl8583_marshaller_ascii_field:marshal_field(FieldId, FieldValue, erl8583_fields),
+	AsciiEncoding = erl8583_marshaller_ascii:marshal_field(FieldId, FieldValue, erl8583_fields),
 	erl8583_convert:ascii_to_ebcdic(AsciiEncoding).
 
 %%
