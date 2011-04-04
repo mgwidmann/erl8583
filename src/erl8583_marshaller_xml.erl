@@ -29,6 +29,7 @@
 %% Exported Functions
 %%
 -export([marshal/1, marshal/2, unmarshal/1, unmarshal/2]).
+-export([marshal_field/2]).
 
 %%
 %% API Functions
@@ -42,7 +43,7 @@
 -spec(marshal(iso8583message()) -> string()).
 
 marshal(Message) ->
-	marshal(Message, erl8583_marshaller_xml_field).
+	marshal(Message, ?MODULE).
 
 %% @doc Marshals an ISO8583 message into an XML element with
 %%      root tag &lt;iso8583message&gt;. The individual fields
@@ -82,6 +83,33 @@ unmarshal(XmlMessage, FieldMarshaller) ->
 	Msg = unmarshal(ChildNodes, erl8583_message:new(), FieldMarshaller),
 	Attrs = Xml#xmlElement.attributes,
 	erl8583_message:set_attributes(attributes_to_list(Attrs, []), Msg).
+
+%% @doc Marshals a field into an XML element.
+%%
+%% @spec marshal_field(integer(), iso8583field_value()) -> string()
+-spec(marshal_field(integer(), iso8583field_value()) -> string()).
+
+marshal_field(FieldId, FieldValue) when is_list(FieldValue)->
+	Id = integer_to_list(FieldId),
+	"<field id=\"" ++ Id ++ "\" value=\"" ++ FieldValue ++ "\" />";
+marshal_field(FieldId, FieldValue) when is_binary(FieldValue) ->
+	Id = integer_to_list(FieldId),
+	"<field id=\"" ++ 
+		Id ++ 
+		"\" value=\"" ++ 
+		erl8583_convert:binary_to_ascii_hex(FieldValue) ++
+		"\" type=\"binary\" />";
+% if we drop through to here, Value is of type iso8583message().
+marshal_field(FieldId, FieldValue) ->
+	{iso8583_message, _, _} = FieldValue,
+	Id = integer_to_list(FieldId),
+	"<isomsg id=\"" ++ 
+		Id ++ 
+		"\"" ++
+		encode_attributes(erl8583_message:get_attributes(FieldValue)) ++
+		">" ++
+		marshal_fields(erl8583_message:to_list(FieldValue), "") ++ 
+		"</isomsg>".
 
 %%
 %% Local Functions
@@ -124,3 +152,10 @@ get_attribute_value(Key, [{Key, Value} | _Tail]) ->
 	Value;
 get_attribute_value(Key, [_Head|Tail]) ->
 	get_attribute_value(Key, Tail).
+
+marshal_fields([], Result) ->
+	Result;
+marshal_fields([{FieldId, Value}|Tail], Result) ->
+	MarshalledValue = marshal_field(FieldId, Value),
+	marshal_fields(Tail, MarshalledValue ++ Result).
+
