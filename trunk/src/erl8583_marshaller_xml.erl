@@ -15,7 +15,6 @@
 %% @doc This module marshals an iso8583message() 
 %%      into an XML element and can unmarshal an XML element into
 %%      an iso8583message().
-
 -module(erl8583_marshaller_xml).
 
 %%
@@ -28,35 +27,15 @@
 %%
 %% Exported Functions
 %%
--export([marshal/1, marshal/2, unmarshal/1, unmarshal/2]).
--export([marshal_field/2]).
+-export([unmarshal/1, unmarshal/2]).
+-export([marshal_field/3]).
 -export([marshal_wrapping/2]).
+-export([marshal_bitmap/1]).
 
 %%
 %% API Functions
 %%
 
-%% @doc Marshals an ISO8583 message into an XML element with
-%%      root tag &lt;iso8583message&gt;. The individual fields
-%%      are marshalled using the erl8583_marshaller_xml_field module.
-%%
-%% @spec marshal(iso8583message()) -> string()
--spec(marshal(iso8583message()) -> string()).
-
-marshal(Message) ->
-	marshal(Message, ?MODULE).
-
-%% @doc Marshals an ISO8583 message into an XML element with
-%%      root tag &lt;iso8583message&gt;. The individual fields
-%%      are marshalled using the specified marshaller.
-%%
-%% @spec marshal(iso8583message(), module()) -> string()
--spec(marshal(iso8583message(), module()) -> string()).
-
-marshal(Message, FieldMarshaller) ->
-	Marshalled = marshal_fields(erl8583_message:to_list(Message), [], FieldMarshaller),
-	marshal_wrapping(Message, Marshalled).
-	
 %% @doc Unmarshals an XML element with root tag &lt;iso8583message&gt;
 %%      into an ISO 8583 message. The individual fields
 %%      are unmarshalled using the erl8583_marshaller_xml_field module.
@@ -84,13 +63,13 @@ unmarshal(XmlMessage, FieldMarshaller) ->
 
 %% @doc Marshals a field into an XML element.
 %%
-%% @spec marshal_field(integer(), iso8583field_value()) -> string()
--spec(marshal_field(integer(), iso8583field_value()) -> string()).
+%% @spec marshal_field(integer(), iso8583field_value(), module()) -> string()
+-spec(marshal_field(integer(), iso8583field_value(), module()) -> string()).
 
-marshal_field(FieldId, FieldValue) when is_list(FieldValue)->
+marshal_field(FieldId, FieldValue, _EncodingRules) when is_list(FieldValue)->
 	Id = integer_to_list(FieldId),
 	"<field id=\"" ++ Id ++ "\" value=\"" ++ FieldValue ++ "\" />";
-marshal_field(FieldId, FieldValue) when is_binary(FieldValue) ->
+marshal_field(FieldId, FieldValue, _EncodingRules) when is_binary(FieldValue) ->
 	Id = integer_to_list(FieldId),
 	"<field id=\"" ++ 
 		Id ++ 
@@ -98,7 +77,7 @@ marshal_field(FieldId, FieldValue) when is_binary(FieldValue) ->
 		erl8583_convert:binary_to_ascii_hex(FieldValue) ++
 		"\" type=\"binary\" />";
 % if we drop through to here, Value is of type iso8583message().
-marshal_field(FieldId, FieldValue) ->
+marshal_field(FieldId, FieldValue, EncodingRules) ->
 	{iso8583_message, _, _} = FieldValue,
 	Id = integer_to_list(FieldId),
 	"<isomsg id=\"" ++ 
@@ -106,7 +85,7 @@ marshal_field(FieldId, FieldValue) ->
 		"\"" ++
 		encode_attributes(erl8583_message:get_attributes(FieldValue)) ++
 		">" ++
-		marshal_fields(erl8583_message:to_list(FieldValue), "") ++ 
+		marshal_fields(erl8583_message:to_list(FieldValue), [], EncodingRules) ++ 
 		"</isomsg>".
 
 marshal_wrapping(Message, Marshalled) ->
@@ -116,15 +95,12 @@ marshal_wrapping(Message, Marshalled) ->
 		Marshalled ++ 
 		"</isomsg>\n".
 	
+marshal_bitmap(_FieldIds) ->
+	[].
+
 %%
 %% Local Functions
 %%
-marshal_fields([], Result, _FieldMarshaller) ->
-	Result;
-marshal_fields([{FieldId, Value}|Tail], Result, FieldMarshaller) ->
-	MarshalledValue = FieldMarshaller:marshal_field(FieldId, Value),
-	marshal_fields(Tail, MarshalledValue ++ Result, FieldMarshaller).
-	
 encode_attributes(List) ->
 	encode_attributes(List, "").
 
@@ -158,9 +134,8 @@ get_attribute_value(Key, [{Key, Value} | _Tail]) ->
 get_attribute_value(Key, [_Head|Tail]) ->
 	get_attribute_value(Key, Tail).
 
-marshal_fields([], Result) ->
+marshal_fields([], Result, _EncodingRules) ->
 	Result;
-marshal_fields([{FieldId, Value}|Tail], Result) ->
-	MarshalledValue = marshal_field(FieldId, Value),
-	marshal_fields(Tail, MarshalledValue ++ Result).
-
+marshal_fields([{FieldId, Value}|Tail], Result, EncodingRules) ->
+	MarshalledValue = marshal_field(FieldId, Value, EncodingRules),
+	marshal_fields(Tail, MarshalledValue ++ Result, EncodingRules).
