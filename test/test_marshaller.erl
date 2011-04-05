@@ -10,7 +10,7 @@
 %%
 %% Exported Functions
 %%
--export([marshal_mti/1, marshal_field/3, marshal_bitmap/1, marshal_wrapping/2, unmarshal_field/3, unmarshal_bitmap/1, unmarshal_wrapping/2]).
+-export([unmarshal_mti/1, marshal_mti/1, marshal_field/3, marshal_bitmap/1, marshal_wrapping/2, unmarshal_field/3, unmarshal_bitmap/1, unmarshal_wrapping/2]).
 
 %%
 %% API Functions
@@ -47,6 +47,9 @@ unmarshal_bitmap([7|T]) ->
 	{[1, 2, 3], T};
 unmarshal_bitmap([31|T]) ->
 	{[1, 2, 3, 4, 5], T}.
+
+unmarshal_mti(Marshalled) ->
+	unmarshal_field(0, Marshalled, undefined).
 
 mti_test() ->
 	Message = erl8583_message:set(0, "0200", erl8583_message:new()),
@@ -86,16 +89,17 @@ encoding_rules_test() ->
 	"11001993" = erl8583_marshaller:marshal(Message1, Options).
 
 unmarshal_mti_test() ->
-	Message = erl8583_marshaller:unmarshal([0, 2, 0, 0], [{field_marshaller, ?MODULE}]),
+	Message = erl8583_marshaller:unmarshal([0, 2, 0, 0], [{mti_marshaller, ?MODULE}]),
 	[0] = erl8583_message:get_fields(Message).
 
 unmarshal_bitmap_test() ->
-	Message = erl8583_marshaller:unmarshal([0, 2, 0, 0, 7, 1, 2, 3], [{field_marshaller, ?MODULE}, {bitmap_marshaller, ?MODULE}]),
+	Message = erl8583_marshaller:unmarshal([0, 2, 0, 0, 7, 1, 2, 3], [{mti_marshaller, ?MODULE}, {field_marshaller, ?MODULE}, {bitmap_marshaller, ?MODULE}]),
 	[0, 1, 2, 3] = erl8583_message:get_fields(Message),
 	"1" = erl8583_message:get(1, Message).
 	
 unmarshal_wrapping_test() ->
-	Message = erl8583_marshaller:unmarshal([$S, 0, 2, 0, 0, 31, 1, 2, 3, 4, 5, $E], [{field_marshaller, ?MODULE}, 
+	Message = erl8583_marshaller:unmarshal([$S, 0, 2, 0, 0, 31, 1, 2, 3, 4, 5, $E], [{field_marshaller, ?MODULE},
+																			  {mti_marshaller, ?MODULE}, 
 																			  {bitmap_marshaller, ?MODULE},
 																			  {wrapping_marshaller, ?MODULE}]),
 	[0, 1, 2, 3, 4, 5] = erl8583_message:get_fields(Message),

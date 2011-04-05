@@ -29,7 +29,7 @@
 %%
 -export([marshal_bitmap/1, unmarshal_bitmap/1]).
 -export([marshal_field/3, unmarshal_field/3]).
--export([marshal_mti/1]).
+-export([marshal_mti/1, unmarshal_mti/1]).
 
 
 %%
@@ -89,6 +89,9 @@ marshal_mti(Mti) ->
 unmarshal_field(FieldId, BinaryFields, EncodingRules) ->
 	Pattern = EncodingRules:get_encoding(FieldId),
 	unmarshal_data_element(Pattern, BinaryFields).
+
+unmarshal_mti(Marshalled) ->
+	unmarshal_field(0, Marshalled, erl8583_fields).
 
 %%
 %% Local Functions

@@ -13,7 +13,7 @@
 %%
 %% Exported Functions
 %%
--export([unmarshal_field/3, unmarshal_bitmap/1]).
+-export([unmarshal_field/3, unmarshal_bitmap/1, unmarshal_mti/1]).
 
 %%
 %% API Functions
@@ -25,6 +25,9 @@ unmarshal_field(4, [4, 0], _EncodingRule) ->
 unmarshal_field(0, Binary, _EncodingRule) ->
 	[255|B] = Binary,
 	{"0200", B}.
+
+unmarshal_mti(Marshalled) ->
+	unmarshal_field(0, Marshalled, undefined).
 
 unmarshal_bitmap([254, 3, 0, 4, 0]) ->
 	{[3, 4], [3, 0, 4, 0]}.
@@ -185,12 +188,12 @@ field_101_test() ->
 	"FileName" = erl8583_message:get(101, Msg).
 
 custom_marshaller_test() ->
-	Msg = erl8583_marshaller:unmarshal([255, 48, 0, 0, 0, 0, 0, 0, 0, 3, 0, 4, 0], [{field_marshaller, ?MODULE}, {bitmap_marshaller, erl8583_marshaller_binary}]),
+	Msg = erl8583_marshaller:unmarshal([255, 48, 0, 0, 0, 0, 0, 0, 0, 3, 0, 4, 0], [{field_marshaller, ?MODULE}, {bitmap_marshaller, erl8583_marshaller_binary}, {mti_marshaller, ?MODULE}]),
 	"3" = erl8583_message:get(3, Msg),
 	"4" = erl8583_message:get(4, Msg).
 
 custom_bitmap_test() ->
-	Msg = erl8583_marshaller:unmarshal([255, 254, 3, 0, 4, 0], [{bitmap_marshaller, ?MODULE}, {field_marshaller, ?MODULE}]),
+	Msg = erl8583_marshaller:unmarshal([255, 254, 3, 0, 4, 0], [{mti_marshaller, ?MODULE}, {bitmap_marshaller, ?MODULE}, {field_marshaller, ?MODULE}]),
 	"0200" = erl8583_message:get(0, Msg),
 	"3" = erl8583_message:get(3, Msg),
 	"4" = erl8583_message:get(4, Msg).

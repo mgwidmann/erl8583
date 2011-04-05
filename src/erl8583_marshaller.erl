@@ -91,22 +91,14 @@ encode_mti(Options, Message) ->
 	end.
 
 decode_mti(Options, Marshalled, Message) ->
-	Encoding = Options#marshal_options.encoding_rules,
-	case Encoding of
-		undefined ->
-			EncodingRules = erl8583_fields;
-		_ ->
-			EncodingRules = Encoding
-	end,
-	FieldMarshalModule = Options#marshal_options.field_marshaller,
+	MtiMarshalModule = Options#marshal_options.mti_marshaller,
 	if
-		FieldMarshalModule =:= undefined ->
+		MtiMarshalModule =:= undefined ->
 			{Message, Marshalled};
-		FieldMarshalModule =/= undefined ->
-			{FieldValue, Rest} = FieldMarshalModule:unmarshal_field(0, Marshalled, EncodingRules),
+		MtiMarshalModule =/= undefined ->
+			{FieldValue, Rest} = MtiMarshalModule:unmarshal_mti(Marshalled),
 			{erl8583_message:set(0, FieldValue, Message), Rest}
 	end.
-	
 	
 encode_bitmap(Options, Message) ->
 	BitmapMarshalModule = Options#marshal_options.bitmap_marshaller,
@@ -124,7 +116,7 @@ decode_bitmap(Options, Marshalled) ->
 		BitmapMarshalModule =:= undefined ->
 			{[], Marshalled};
 		BitmapMarshalModule =/= undefined ->			
-		BitmapMarshalModule:unmarshal_bitmap(Marshalled)
+			BitmapMarshalModule:unmarshal_bitmap(Marshalled)
 	end.
 
 encode_fields(Options, Message) ->

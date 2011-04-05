@@ -13,7 +13,7 @@
 %%
 %% Exported Functions
 %%
--export([unmarshal_field/3, unmarshal_bitmap/1]).
+-export([unmarshal_field/3, unmarshal_bitmap/1, unmarshal_mti/1]).
 
 %%
 %% API Functions
@@ -27,6 +27,8 @@ unmarshal_field(0, [$X|Tail], _Encoder) ->
 unmarshal_field(Id, Str, Encoder) ->
 	erl8583_marshaller_ascii:unmarshal_field(Id, Str, Encoder).
 	
+unmarshal_mti(Marshalled) ->
+	unmarshal_field(0, Marshalled, erl8583_fields).
 
 % bit map unmarshaller
 unmarshal_bitmap([$B|Rest]) ->
@@ -236,12 +238,12 @@ fields_102_103_104_128_test() ->
 	<<0, 0, 0, 0, 0, 0, 0, 0>> = erl8583_message:get(?MESSAGE_AUTHENTICATION_CODE2, Msg).
 
 custom_marshaller_test() ->
-	Msg = erl8583_marshaller:unmarshal("0200300000000000000034", [{field_marshaller, ?MODULE}, {bitmap_marshaller, erl8583_marshaller_ascii}]),
+	Msg = erl8583_marshaller:unmarshal("0200300000000000000034", [{mti_marshaller, ?MODULE}, {field_marshaller, ?MODULE}, {bitmap_marshaller, erl8583_marshaller_ascii}]),
 	"Field 3" = erl8583_message:get(3, Msg),
 	"Field 4" = erl8583_message:get(4, Msg).
 
 custom_bit_map_test() ->
-	Msg = erl8583_marshaller:unmarshal("XB34", [{bitmap_marshaller, ?MODULE}, {field_marshaller, ?MODULE}]),
+	Msg = erl8583_marshaller:unmarshal("XB34", [{mti_marshaller, ?MODULE}, {bitmap_marshaller, ?MODULE}, {field_marshaller, ?MODULE}]),
 	"Field 3" = erl8583_message:get(3, Msg),
 	"Field 4" = erl8583_message:get(4, Msg).
 	
