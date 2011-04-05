@@ -30,6 +30,7 @@
 %%
 -export([marshal/1, marshal/2, unmarshal/1, unmarshal/2]).
 -export([marshal_field/2]).
+-export([marshal_wrapping/2]).
 
 %%
 %% API Functions
@@ -53,11 +54,8 @@ marshal(Message) ->
 -spec(marshal(iso8583message(), module()) -> string()).
 
 marshal(Message, FieldMarshaller) ->
-	"<isomsg" ++ 
-		encode_attributes(erl8583_message:get_attributes(Message)) ++ 
-		">" ++ 
-		marshal_fields(erl8583_message:to_list(Message), [], FieldMarshaller) ++ 
-		"</isomsg>\n".
+	Marshalled = marshal_fields(erl8583_message:to_list(Message), [], FieldMarshaller),
+	marshal_wrapping(Message, Marshalled).
 	
 %% @doc Unmarshals an XML element with root tag &lt;iso8583message&gt;
 %%      into an ISO 8583 message. The individual fields
@@ -111,6 +109,13 @@ marshal_field(FieldId, FieldValue) ->
 		marshal_fields(erl8583_message:to_list(FieldValue), "") ++ 
 		"</isomsg>".
 
+marshal_wrapping(Message, Marshalled) ->
+	"<isomsg" ++ 
+		encode_attributes(erl8583_message:get_attributes(Message)) ++ 
+		">" ++ 
+		Marshalled ++ 
+		"</isomsg>\n".
+	
 %%
 %% Local Functions
 %%
