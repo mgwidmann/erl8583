@@ -31,6 +31,7 @@
 -export([marshal_field/3]).
 -export([marshal_wrapping/2]).
 -export([marshal_bitmap/1]).
+-export([marshal_mti/1]).
 
 %%
 %% API Functions
@@ -97,6 +98,9 @@ marshal_wrapping(Message, Marshalled) ->
 	
 marshal_bitmap(_FieldIds) ->
 	[].
+
+marshal_mti(Mti) ->
+	marshal_field(0, Mti, erl8583_fields).
 
 %%
 %% Local Functions

@@ -13,7 +13,7 @@
 %%
 %% Exported Functions
 %%
--export([marshal_field/3, marshal_bitmap/1]).
+-export([marshal_field/3, marshal_bitmap/1, marshal_mti/1]).
 
 %%
 %% API Functions
@@ -32,6 +32,9 @@ marshal_field(FieldId, Msg, Encoding) ->
 % Self-shunting for marshalling bit map in tests.
 marshal_bitmap(_Msg) ->
 	"bitmap".
+
+marshal_mti(Value) ->
+	marshal_field(0, Value, undefined).
 
 %% Test that a message with only an MTI can be exported.
 mti_only_test() ->
@@ -299,7 +302,7 @@ custom_marshaller_test() ->
 	Msg3 = erl8583_message:set(3, "1", Msg2),
 	Msg4 = erl8583_message:set(4, "4", Msg3),
 	"X3000000000000000Field 3Field 4" = 
-		erl8583_marshaller:marshal(Msg4, [{field_marshaller, ?MODULE}, {bitmap_marshaller, erl8583_marshaller_ascii}]).
+		erl8583_marshaller:marshal(Msg4, [{mti_marshaller, ?MODULE}, {field_marshaller, ?MODULE}, {bitmap_marshaller, erl8583_marshaller_ascii}]).
 	
 custom_bitmap_test() ->
 	Msg1 = erl8583_message:new(),
@@ -307,7 +310,7 @@ custom_bitmap_test() ->
 	Msg3 = erl8583_message:set(3, "1", Msg2),
 	Msg4 = erl8583_message:set(4, "4", Msg3),
 	"0210bitmapField 3Field 4" = 
-		erl8583_marshaller:marshal(Msg4, [{field_marshaller, ?MODULE}, {bitmap_marshaller, ?MODULE}]).
+		erl8583_marshaller:marshal(Msg4, [{mti_marshaller, erl8583_marshaller_ascii}, {field_marshaller, ?MODULE}, {bitmap_marshaller, ?MODULE}]).
 	
 %%
 %% Local Functions

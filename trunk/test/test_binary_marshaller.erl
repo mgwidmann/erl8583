@@ -13,7 +13,7 @@
 %%
 %% Exported Functions
 %%
--export([marshal_field/3, marshal_bitmap/1]).
+-export([marshal_mti/1, marshal_field/3, marshal_bitmap/1]).
 
 %%
 %% API Functions
@@ -29,6 +29,9 @@ marshal_field(FieldId, FieldValue, EncodingRules) ->
 
 marshal_bitmap(_) ->
 	[254].
+
+marshal_mti(Mti) ->
+	marshal_field(0, Mti, erl8583_fields).
 
 %%
 %% Local Functions
@@ -179,7 +182,7 @@ custom_marshaller_test() ->
 	Msg3 = erl8583_message:set(3, 3, Msg2),
 	Msg4 = erl8583_message:set(4, 4, Msg3),
 	[255, 48, 0, 0, 0, 0, 0, 0, 0, 3, 4] 
-		= erl8583_marshaller:marshal(Msg4, [{field_marshaller, ?MODULE}, {bitmap_marshaller, erl8583_marshaller_binary}]).
+		= erl8583_marshaller:marshal(Msg4, [{mti_marshaller, ?MODULE}, {field_marshaller, ?MODULE}, {bitmap_marshaller, erl8583_marshaller_binary}]).
 
 custom_bitmap_test() ->
 	Msg1 = erl8583_message:new(),
@@ -187,5 +190,5 @@ custom_bitmap_test() ->
 	Msg3 = erl8583_message:set(3, 3, Msg2),
 	Msg4 = erl8583_message:set(4, 4, Msg3),
 	[255, 254, 3, 4] 
-		= erl8583_marshaller:marshal(Msg4, [{field_marshaller, ?MODULE}, {bitmap_marshaller, ?MODULE}]).
+		= erl8583_marshaller:marshal(Msg4, [{mti_marshaller, ?MODULE}, {field_marshaller, ?MODULE}, {bitmap_marshaller, ?MODULE}]).
 	

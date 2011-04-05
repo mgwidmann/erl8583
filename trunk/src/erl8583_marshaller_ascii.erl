@@ -15,7 +15,6 @@
 %% @doc This module marshals an iso8583message() into 
 %%      an ASCII string or unmarshals an ASCII string into an
 %%      iso8583message().
-
 -module(erl8583_marshaller_ascii).
 
 %%
@@ -29,6 +28,7 @@
 %%
 -export([marshal_bitmap/1, unmarshal_bitmap/1]).
 -export([marshal_field/3, unmarshal_field/3]).
+-export([marshal_mti/1]).
 
 %%
 %% API Functions
@@ -74,6 +74,9 @@ unmarshal_bitmap(AsciiMessage) ->
 marshal_field(FieldId, FieldValue, EncodingRules) ->
 	Pattern = EncodingRules:get_encoding(FieldId),
 	marshal_data_element(Pattern, FieldValue).
+
+marshal_mti(Mti) ->
+	marshal_field(0, Mti, erl8583_fields).
 
 %% @doc Extracts a field value from the start of a string.  The field value 
 %%      and the rest of the unmarshalled string is returned as a 2-tuple.
