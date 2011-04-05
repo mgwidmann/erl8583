@@ -149,9 +149,6 @@ decode_fields([FieldId|Tail], Message, Options, Marshalled) ->
 			decode_fields(Tail, erl8583_message:set(FieldId, FieldValue, Message), 
 						  Options, Rest) 
 	end.
-	%{Value, UpdatedFields} = FieldMarshaller:unmarshal_field(FieldId, Fields),
-	%UpdatedResult = erl8583_message:set(FieldId, Value, Result),
-	%decode_fields(Tail, UpdatedFields, UpdatedResult, FieldMarshaller).
 
 wrap_message(Options, Message, Marshalled) ->
 	WrapperMarshalModule = Options#marshal_options.wrapping_marshaller,
@@ -170,4 +167,3 @@ unwrap_message(Options, Marshalled, Message) ->
 		WrapperMarshalModule =/= undefined ->
 			WrapperMarshalModule:unmarshal_wrapping(Marshalled, Message) 
 	end.
-	
