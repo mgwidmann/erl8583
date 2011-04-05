@@ -11,7 +11,8 @@
 %% Records
 %%
 -record(marshal_options, {field_marshaller, 
-						  bitmap_marshaller, 
+						  bitmap_marshaller,
+						  mti_marshaller, 
 						  wrapping_marshaller, 
 						  encoding_rules}).
 
@@ -46,6 +47,8 @@ parse_options([{field_marshaller, Marshaller}|Tail], OptionsRecord) ->
 	parse_options(Tail, OptionsRecord#marshal_options{field_marshaller=Marshaller});
 parse_options([{bitmap_marshaller, Marshaller}|Tail], OptionsRecord) ->
 	parse_options(Tail, OptionsRecord#marshal_options{bitmap_marshaller=Marshaller});
+parse_options([{mti_marshaller, Marshaller}|Tail], OptionsRecord) ->
+	parse_options(Tail, OptionsRecord#marshal_options{mti_marshaller=Marshaller});
 parse_options([{wrapping_marshaller, Marshaller}|Tail], OptionsRecord) ->
 	parse_options(Tail, OptionsRecord#marshal_options{wrapping_marshaller=Marshaller});
 parse_options([{encoding_rules, Rules}|Tail], OptionsRecord) ->
@@ -55,7 +58,7 @@ get_encoding_rules(Options, Message) ->
 	if
 		Options#marshal_options.encoding_rules =/= undefined ->
 			Options#marshal_options.encoding_rules;
-		true ->
+		Options#marshal_options.encoding_rules =:= undefined ->
 			case erl8583_message:get_fields(Message) of
 				[0|_Fields] ->
 					Mti = erl8583_message:get(0, Message),
@@ -74,15 +77,14 @@ get_encoding_rules(Options, Message) ->
 	end.
 
 encode_mti(Options, Message) ->
-	EncodingRules = get_encoding_rules(Options, Message),
-	FieldMarshalModule = Options#marshal_options.field_marshaller,
+	MtiMarshalModule = Options#marshal_options.mti_marshaller,
 	if
-		FieldMarshalModule =:= undefined ->
+		MtiMarshalModule =:= undefined ->
 			[];
-		FieldMarshalModule =/= undefined ->
+		MtiMarshalModule =/= undefined ->
 			case erl8583_message:get_fields(Message) of
 				[0|_Fields] ->
-					FieldMarshalModule:marshal_field(0, erl8583_message:get(0, Message), EncodingRules);
+					MtiMarshalModule:marshal_mti(erl8583_message:get(0,Message));
 				_ ->
 					[]
 			end

@@ -29,6 +29,7 @@
 %%
 -export([marshal_bitmap/1, unmarshal_bitmap/1]).
 -export([marshal_field/3, unmarshal_field/3]).
+-export([marshal_mti/1]).
 
 
 %%
@@ -73,6 +74,9 @@ unmarshal_bitmap(BinaryMessage) ->
 marshal_field(FieldId, FieldValue, EncodingRules) ->
 	Pattern = EncodingRules:get_encoding(FieldId),
 	marshal_data_element(Pattern, FieldValue).
+
+marshal_mti(Mti) ->
+	marshal_field(0, Mti, erl8583_fields).
 
 %% @doc Extracts a field value from the start of a binary.  The field value 
 %%      and the rest of the unmarshalled binary are returned as a 2-tuple.
