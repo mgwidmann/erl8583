@@ -56,15 +56,20 @@ get_encoding_rules(Options, Message) ->
 		Options#marshal_options.encoding_rules =/= undefined ->
 			Options#marshal_options.encoding_rules;
 		true ->
-			Mti = erl8583_message:get(0, Message),
-			[Version|_MtiRest] = Mti,
-			case Version of
-				$0 ->
-					erl8583_fields;
-				$1 ->
-					erl8583_fields_1993;
-				$2 ->
-					erl8583_fields_2003
+			case erl8583_message:get_fields(Message) of
+				[0|_Fields] ->
+					Mti = erl8583_message:get(0, Message),
+					[Version|_MtiRest] = Mti,
+					case Version of
+						$0 ->
+							erl8583_fields;
+						$1 ->
+							erl8583_fields_1993;
+						$2 ->
+							erl8583_fields_2003
+					end;
+				_ ->
+					undefined
 			end
 	end.
 
@@ -75,7 +80,12 @@ encode_mti(Options, Message) ->
 		FieldMarshalModule =:= undefined ->
 			[];
 		FieldMarshalModule =/= undefined ->
-			FieldMarshalModule:marshal_field(0, erl8583_message:get(0, Message), EncodingRules)
+			case erl8583_message:get_fields(Message) of
+				[0|_Fields] ->
+					FieldMarshalModule:marshal_field(0, erl8583_message:get(0, Message), EncodingRules);
+				_ ->
+					[]
+			end
 	end.
 
 decode_mti(Options, Marshalled, Message) ->
@@ -98,7 +108,7 @@ decode_mti(Options, Marshalled, Message) ->
 	
 encode_bitmap(Options, Message) ->
 	BitmapMarshalModule = Options#marshal_options.bitmap_marshaller,
-	[0|Fields] = erl8583_message:get_fields(Message),
+	Fields = erl8583_message:get_fields(Message) -- [0],
 	if
 		BitmapMarshalModule =:= undefined ->
 			[];
@@ -116,7 +126,7 @@ decode_bitmap(Options, Marshalled) ->
 	end.
 
 encode_fields(Options, Message) ->
-	[0|Fields] = erl8583_message:get_fields(Message),
+	Fields = erl8583_message:get_fields(Message) -- [0],
 	EncodingRules = get_encoding_rules(Options, Message),
 	FieldMarshalModule = Options#marshal_options.field_marshaller,
 	if

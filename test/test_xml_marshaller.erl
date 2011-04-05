@@ -18,6 +18,11 @@
 %% API Functions
 %%
 
+empty_message_test() ->
+	IsoMsg = erl8583_message:new(),
+	Marshalled = erl8583_marshaller:marshal(IsoMsg, ?MARSHALLER_XML),
+	IsoMsg = erl8583_marshaller_xml:unmarshal(Marshalled).
+	
 xml_marshal_simple_test() ->
 	IsoMsg1 = erl8583_message:new(),
 	IsoMsg2 = erl8583_message:set(0, "0200", IsoMsg1),
