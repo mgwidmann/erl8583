@@ -32,8 +32,8 @@ marshal_bitmap([1, 2, 3]) ->
 marshal_wrapping(_Message, Marshalled) ->
 	"Start" ++ Marshalled ++ "End".
 
-unmarshal_wrapping(Marshalled, Message) ->
-	{lists:sublist(Marshalled, 2, length(Marshalled)-2), Message}.
+unmarshal_wrapping(Message, Marshalled) ->
+	{Message, lists:sublist(Marshalled, 2, length(Marshalled)-2)}.
 
 unmarshal_field(0, [0,2,0,0|Rest], _) ->
 	{"0200", Rest};

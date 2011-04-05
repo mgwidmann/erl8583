@@ -32,7 +32,7 @@ marshal(Message, Options) ->
 
 unmarshal(Marshalled, Options) ->
 	OptionsRecord = parse_options(Options, #marshal_options{}),
-	{Marshalled1, Message0} = unwrap_message(OptionsRecord, Marshalled, erl8583_message:new()),
+	{Message0, Marshalled1} = unwrap_message(OptionsRecord, erl8583_message:new(), Marshalled),
 	{Message1, Marshalled2} = decode_mti(OptionsRecord, Marshalled1, Message0),
 	{FieldIds, Marshalled3} = decode_bitmap(OptionsRecord, Marshalled2),
 	decode_fields(FieldIds, Message1, OptionsRecord, Marshalled3).
