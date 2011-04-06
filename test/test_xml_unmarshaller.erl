@@ -93,6 +93,10 @@ unmarshal_wrapping_test() ->
 	2 = length(erl8583_message:get_attributes(Message)),
 	[] = erl8583_message:get_attributes(Message) -- [{"foo", "bar"}, {"baz", "2"}].
 
+unmarshal_bitmap_test() ->
+	Marshalled = "<isomsg><field id=\"0\" value=\"3\"/><!-- hello --><field id=\"2\" value=\"3\"/><field id=\"50\" value=\"3\"/></isomsg>",
+	{[2, 50], Marshalled} = erl8583_marshaller_xml:unmarshal_bitmap(Marshalled).
+	
 %%
 %% Local Functions
 %%
