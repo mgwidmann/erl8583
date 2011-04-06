@@ -97,7 +97,12 @@ binary_to_ascii_hex(Bin) ->
 -spec(ascii_hex_to_binary(string()) -> binary()).
 
 ascii_hex_to_binary(List) ->
-	Bytes = ascii_hex_to_bytes(List, []),
+	case length(List) rem 2 of
+		0 ->
+			Bytes = ascii_hex_to_bytes(List, []);
+		1 ->
+			Bytes = ascii_hex_to_bytes([$0|List], [])
+	end,		
 	list_to_binary(Bytes).
 	
 %% @doc Converts an integer to a list of specified length 

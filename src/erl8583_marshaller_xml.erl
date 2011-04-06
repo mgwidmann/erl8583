@@ -28,7 +28,7 @@
 %% Exported Functions
 %%
 -export([unmarshal/1, unmarshal/2]).
--export([marshal_field/3]).
+-export([marshal_field/3, unmarshal_field/3]).
 -export([marshal_wrapping/2, unmarshal_wrapping/2]).
 -export([marshal_bitmap/1, unmarshal_bitmap/1]).
 -export([marshal_mti/1]).
@@ -89,6 +89,12 @@ marshal_field(FieldId, FieldValue, _EncodingRules) ->
 		erl8583_marshaller:marshal(FieldValue, [{field_marshaller, ?MODULE}, {mti_marshaller, ?MODULE}]) ++
 		"</isomsg>".
 
+unmarshal_field(FieldId, Marshalled, _EncodingRule) ->
+	{Xml, []} = xmerl_scan:string(Marshalled),
+	ChildNodes = Xml#xmlElement.content,
+	FieldValue = unmarshal_field(FieldId, ChildNodes),
+	{FieldValue, Marshalled}.
+	
 marshal_wrapping(Message, Marshalled) ->
 	"<isomsg" ++ 
 		encode_attributes(erl8583_message:get_attributes(Message)) ++ 
@@ -161,3 +167,21 @@ extract_ids([Field|Tail], Result) when is_record(Field, xmlElement) ->
 	extract_ids(Tail, [FieldId|Result]);
 extract_ids([_Field|Tail], Result) ->
 	extract_ids(Tail, Result).
+
+unmarshal_field(_FieldId, []) ->
+	undefined;
+unmarshal_field(TargetId, [Field|Tail]) when is_record(Field, xmlElement) ->
+	Attributes = Field#xmlElement.attributes,
+	AttributesList = attributes_to_list(Attributes, []),
+	Id = get_attribute_value("id", AttributesList),
+	FieldId = list_to_integer(Id),
+	case FieldId of
+		TargetId ->
+			erl8583_marshaller_xml_field:unmarshal_field(FieldId, Field);
+		_ ->
+			unmarshal_field(TargetId, Tail)
+	end;
+unmarshal_field(TargetId, [_Field|Tail]) ->
+	unmarshal(TargetId, Tail).
+
+	
