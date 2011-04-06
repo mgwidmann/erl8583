@@ -7,6 +7,7 @@
 %% Include files
 %%
 -include_lib("eunit/include/eunit.hrl").
+-include("erl8583_marshallers.hrl").
 
 %%
 %% Exported Functions
@@ -21,7 +22,7 @@ xml_unmarshal_test() ->
 					 "<field id=\"0\" value=\"0800\"/>" ++
 					 "<field id=\"3\" value=\"333333\"/>" ++
 					 "</isomsg>",
-	Message = erl8583_marshaller_xml:unmarshal(XmlMessage),
+	Message = erl8583_marshaller:unmarshal(XmlMessage, ?MARSHALLER_XML),
 	?assertEqual("0800", erl8583_message:get(0, Message)),
 	?assertEqual("333333", erl8583_message:get(3, Message)),
 	?assertEqual([0, 3], erl8583_message:get_fields(Message)).
@@ -31,7 +32,7 @@ xml_unmarshal_with_text_test() ->
 					 "<field value=\"0800\" id=\"0\">more text</field>" ++
 					 "<field id=\"3\" value=\"333333\"/>" ++
 					 "</isomsg>",
-	Message = erl8583_marshaller_xml:unmarshal(XmlMessage),
+	Message = erl8583_marshaller:unmarshal(XmlMessage, ?MARSHALLER_XML),
 	?assertEqual("0800", erl8583_message:get(0, Message)),
 	?assertEqual("333333", erl8583_message:get(3, Message)),
 	?assertEqual([0, 3], erl8583_message:get_fields(Message)).
@@ -45,7 +46,7 @@ xml_unmarshal_complex_test() ->
         "<field id=\"1\" value=\"hello\"/>" ++
       "</isomsg>" ++
     "</isomsg>",
-	Message = erl8583_marshaller_xml:unmarshal(XmlMessage),
+	Message = erl8583_marshaller:unmarshal(XmlMessage, ?MARSHALLER_XML),
 	?assertEqual("0810", erl8583_message:get(0, Message)),
 	?assertEqual("333333", erl8583_message:get(3, Message)),
 	?assertEqual("00", erl8583_message:get(39, Message)),
@@ -55,17 +56,17 @@ xml_unmarshal_complex_test() ->
 	"hello" = erl8583_message:get(1, BitMap).
 
 xml_unmarshal_with_attributes_test() ->
-	Message = erl8583_marshaller_xml:unmarshal("<isomsg foo=\"bar\"""/>"),
+	Message = erl8583_marshaller:unmarshal("<isomsg foo=\"bar\"""><field id=\"0\" value=\"0100\"/></isomsg>", ?MARSHALLER_XML),
 	[{"foo", "bar"}] = erl8583_message:get_attributes(Message).
 
 xml_unmarshal_with_attributes2_test() ->
-	Message = erl8583_marshaller_xml:unmarshal("<isomsg><isomsg id=\"48\" foo=\"bar\"""/></isomsg>"),
+	Message = erl8583_marshaller:unmarshal("<isomsg><field id=\"0\" value=\"0200\"/><isomsg id=\"48\" foo=\"bar\"""/></isomsg>", ?MARSHALLER_XML),
 	Field = erl8583_message:get(48, Message),
 	[{"foo", "bar"}] = erl8583_message:get_attributes(Field).
 	
 xml_unmarshal_complex2_test() ->
-	Message = erl8583_marshaller_xml:unmarshal("<isomsg><isomsg id=\"48\"><isomsg id=\"105\" baz=\"hello\"""/></isomsg></isomsg>"),
-	[48] = erl8583_message:get_fields(Message),
+	Message = erl8583_marshaller:unmarshal("<isomsg><field id=\"0\" value=\"0100\"/><isomsg id=\"48\"><isomsg id=\"105\" baz=\"hello\"""/></isomsg></isomsg>", ?MARSHALLER_XML),
+	[0, 48] = erl8583_message:get_fields(Message),
 	Message2 = erl8583_message:get(48, Message),
 	[105] = erl8583_message:get_fields(Message2),
 	Message3 = erl8583_message:get(105, Message2),
