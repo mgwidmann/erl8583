@@ -29,7 +29,7 @@
 %%
 -export([unmarshal/1, unmarshal/2]).
 -export([marshal_field/3]).
--export([marshal_wrapping/2]).
+-export([marshal_wrapping/2, unmarshal_wrapping/2]).
 -export([marshal_bitmap/1]).
 -export([marshal_mti/1]).
 
@@ -58,9 +58,9 @@ unmarshal(XmlMessage, FieldMarshaller) ->
 	{Xml, []} = xmerl_scan:string(XmlMessage),
 	isomsg = Xml#xmlElement.name,
 	ChildNodes = Xml#xmlElement.content,
-	Msg = unmarshal(ChildNodes, erl8583_message:new(), FieldMarshaller),
 	Attrs = Xml#xmlElement.attributes,
-	erl8583_message:set_attributes(attributes_to_list(Attrs, []), Msg).
+	Msg = erl8583_message:set_attributes(attributes_to_list(Attrs, []), erl8583_message:new()),
+	unmarshal(ChildNodes, Msg, FieldMarshaller).
 
 %% @doc Marshals a field into an XML element.
 %%
@@ -96,6 +96,13 @@ marshal_wrapping(Message, Marshalled) ->
 		Marshalled ++ 
 		"</isomsg>\n".
 	
+unmarshal_wrapping(Message, Marshalled) ->
+	{Xml, []} = xmerl_scan:string(Marshalled),
+	isomsg = Xml#xmlElement.name,
+	Attrs = Xml#xmlElement.attributes,
+	Msg = erl8583_message:set_attributes(attributes_to_list(Attrs, []), Message),
+	{Msg, Marshalled}.
+
 marshal_bitmap(_FieldIds) ->
 	[].
 

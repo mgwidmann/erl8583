@@ -87,6 +87,12 @@ foo() ->
 	%IsoResp1 = erl8583_marshaller_xml:unmarshal(IsoResp),
 	%erl8583_message:get(39, IsoResp1).	
 
+unmarshal_wrapping_test() ->
+	Marshalled = "<isomsg foo=\"bar\" baz=\"2\"></isomsg>",
+	{Message, Marshalled} = erl8583_marshaller_xml:unmarshal_wrapping(erl8583_message:new(), Marshalled),
+	2 = length(erl8583_message:get_attributes(Message)),
+	[] = erl8583_message:get_attributes(Message) -- [{"foo", "bar"}, {"baz", "2"}].
+
 %%
 %% Local Functions
 %%
