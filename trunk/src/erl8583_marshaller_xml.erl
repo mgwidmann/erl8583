@@ -27,7 +27,6 @@
 %%
 %% Exported Functions
 %%
--export([unmarshal/1, unmarshal/2]).
 -export([marshal_field/3, unmarshal_field/3]).
 -export([marshal_wrapping/2, unmarshal_wrapping/2]).
 -export([marshal_bitmap/1, unmarshal_bitmap/1]).
@@ -36,31 +35,6 @@
 %%
 %% API Functions
 %%
-
-%% @doc Unmarshals an XML element with root tag &lt;iso8583message&gt;
-%%      into an ISO 8583 message. The individual fields
-%%      are unmarshalled using the erl8583_marshaller_xml_field module.
-%%
-%% @spec unmarshal(string()) -> iso8583message()
--spec(unmarshal(string()) -> iso8583message()).
-
-unmarshal(XmlMessage) ->
-	unmarshal(XmlMessage, erl8583_marshaller_xml_field).
-
-%% @doc Unmarshals an XML element with root tag &lt;iso8583message&gt;
-%%      into an ISO 8583 message. The individual fields
-%%      are unmarshalled using the specified marshaller.
-%%
-%% @spec unmarshal(string(), module()) -> iso8583message()
--spec(unmarshal(string(), module()) -> iso8583message()).
-
-unmarshal(XmlMessage, FieldMarshaller) ->
-	{Xml, []} = xmerl_scan:string(XmlMessage),
-	isomsg = Xml#xmlElement.name,
-	ChildNodes = Xml#xmlElement.content,
-	Attrs = Xml#xmlElement.attributes,
-	Msg = erl8583_message:set_attributes(attributes_to_list(Attrs, []), erl8583_message:new()),
-	unmarshal(ChildNodes, Msg, FieldMarshaller).
 
 %% @doc Marshals a field into an XML element.
 %%
@@ -135,19 +109,6 @@ encode_attributes([], Result) ->
 encode_attributes([{Key, Value} | Tail], Result) ->
 	encode_attributes(Tail, " " ++ Key ++ "=\"" ++ Value ++ "\"" ++  Result).
 
-unmarshal([], Iso8583Msg, _FieldMarshaller) ->
-	Iso8583Msg;
-unmarshal([Field|T], Iso8583Msg, FieldMarshaller) when is_record(Field, xmlElement) ->
-	Attributes = Field#xmlElement.attributes,
-	AttributesList = attributes_to_list(Attributes, []),
-	Id = get_attribute_value("id", AttributesList),
-	FieldId = list_to_integer(Id),
-	Value = FieldMarshaller:unmarshal_field(FieldId, Field),
-	UpdatedMsg = erl8583_message:set(FieldId, Value, Iso8583Msg),
-	unmarshal(T, UpdatedMsg, FieldMarshaller);
-unmarshal([_H|T], Iso8583Msg, FieldMarshaller) ->
-	unmarshal(T, Iso8583Msg, FieldMarshaller).
-
 attributes_to_list([], Result) ->
 	Result;
 attributes_to_list([H|T], Result) ->
@@ -183,6 +144,5 @@ unmarshal_field(TargetId, [Field|Tail]) when is_record(Field, xmlElement) ->
 			unmarshal_field(TargetId, Tail)
 	end;
 unmarshal_field(TargetId, [_Field|Tail]) ->
-	unmarshal(TargetId, Tail).
-
+	unmarshal_field(TargetId, Tail).
 	
