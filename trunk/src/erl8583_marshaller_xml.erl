@@ -30,7 +30,7 @@
 -export([unmarshal/1, unmarshal/2]).
 -export([marshal_field/3]).
 -export([marshal_wrapping/2, unmarshal_wrapping/2]).
--export([marshal_bitmap/1]).
+-export([marshal_bitmap/1, unmarshal_bitmap/1]).
 -export([marshal_mti/1]).
 
 %%
@@ -106,6 +106,12 @@ unmarshal_wrapping(Message, Marshalled) ->
 marshal_bitmap(_FieldIds) ->
 	[].
 
+unmarshal_bitmap(Marshalled) ->
+	{Xml, []} = xmerl_scan:string(Marshalled),
+	ChildNodes = Xml#xmlElement.content,
+	FieldIds = extract_ids(ChildNodes, []) -- [0],
+	{lists:sort(FieldIds), Marshalled}.
+
 marshal_mti(Mti) ->
 	marshal_field(0, Mti, erl8583_fields).
 
@@ -144,3 +150,14 @@ get_attribute_value(Key, [{Key, Value} | _Tail]) ->
 	Value;
 get_attribute_value(Key, [_Head|Tail]) ->
 	get_attribute_value(Key, Tail).
+
+extract_ids([], Result) ->
+	Result;
+extract_ids([Field|Tail], Result) when is_record(Field, xmlElement) ->
+	Attributes = Field#xmlElement.attributes,
+	AttributesList = attributes_to_list(Attributes, []),
+	Id = get_attribute_value("id", AttributesList),
+	FieldId = list_to_integer(Id),
+	extract_ids(Tail, [FieldId|Result]);
+extract_ids([_Field|Tail], Result) ->
+	extract_ids(Tail, Result).
