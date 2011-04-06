@@ -139,10 +139,50 @@ unmarshal_field(TargetId, [Field|Tail]) when is_record(Field, xmlElement) ->
 	FieldId = list_to_integer(Id),
 	case FieldId of
 		TargetId ->
-			erl8583_marshaller_xml_field:unmarshal_field(FieldId, Field);
+			unmarshal_field(Field);
 		_ ->
 			unmarshal_field(TargetId, Tail)
 	end;
 unmarshal_field(TargetId, [_Field|Tail]) ->
 	unmarshal_field(TargetId, Tail).
-	
+
+unmarshal_field(FieldElement) ->
+	Attributes = FieldElement#xmlElement.attributes,
+	AttributesList = attributes_to_list(Attributes, []),
+	Id = get_attribute_value("id", AttributesList),
+	case FieldElement#xmlElement.name of
+		field ->
+			ValueStr = get_attribute_value("value", AttributesList),
+			case is_attribute("type", AttributesList) of
+				false ->
+					ValueStr;
+				true ->
+					"binary" = get_attribute_value("type", AttributesList),
+					erl8583_convert:ascii_hex_to_binary(ValueStr)
+			end;
+		isomsg ->
+			AttrsExceptId = AttributesList -- [{"id", Id}],
+			ChildNodes = FieldElement#xmlElement.content,
+			unmarshal_complex(ChildNodes, erl8583_message:new(AttrsExceptId))
+	end.	
+
+unmarshal_complex([], Iso8583Msg) ->
+	Iso8583Msg;
+unmarshal_complex([Field|T], Iso8583Msg) when is_record(Field, xmlElement) ->
+	Attributes = Field#xmlElement.attributes,
+	AttributesList = attributes_to_list(Attributes, []),
+	Id = get_attribute_value("id", AttributesList),
+	FieldId = list_to_integer(Id),
+	Value = unmarshal_field(Field),
+	UpdatedMsg = erl8583_message:set(FieldId, Value, Iso8583Msg),
+	unmarshal_complex(T, UpdatedMsg);
+unmarshal_complex([_H|T], Iso8583Msg) ->
+	unmarshal_complex(T, Iso8583Msg).
+
+is_attribute(_Id, []) ->
+	false;
+is_attribute(Id, [{Id, _}|_Tail]) ->
+	true;
+is_attribute(Id, [_Head|Tail]) ->
+	is_attribute(Id, Tail).
+
