@@ -68,9 +68,15 @@ new(Attributes) ->
 %%      message. If the value for the field is already set, an exception
 %%      is thrown.
 %%
-%% @spec set(integer(), iso8583field_value(), iso8583message()) -> iso8583message()
--spec(set(integer(), iso8583field_value(), iso8583message()) -> iso8583message()).
+%% @spec set(integer()|list(integer()), iso8583field_value(), iso8583message()) -> iso8583message()
+-spec(set(integer()|list(integer()), iso8583field_value(), iso8583message()) -> iso8583message()).
 
+set([FieldId], FieldValue, Message) when is_integer(FieldId) ->
+	set(FieldId, FieldValue, Message);
+set([FieldId|Tail], FieldValue, Message) when is_integer(FieldId) ->
+	Message2 = get(FieldId, Message),
+	Message3 = set(Tail, FieldValue, Message2),
+	update(FieldId, Message3, Message);
 set(FieldId, FieldValue, Message) when is_integer(FieldId) andalso FieldId >= 0 ->
 	{iso8583_message, Attrs, Dict} = Message,
 	false = dict:is_key(FieldId, Dict),
@@ -91,10 +97,15 @@ set(FieldsList, Message) ->
 	
 %% @doc Gets the value of a field from a message given the field ID.
 %%
-%% @spec get(integer(), iso8583message()) -> iso8583field_value()
--spec(get(integer(), iso8583message()) -> iso8583field_value()).
+%% @spec get(integer()|list(integer()), iso8583message()) -> iso8583field_value()
+-spec(get(integer()|list(integer()), iso8583message()) -> iso8583field_value()).
 
-get(FieldId, Message) ->
+get([FieldId], Message) when is_integer(FieldId) ->
+	get(FieldId, Message);
+get([FieldId|Tail], Message)  when is_integer(FieldId) ->
+	Message2 = get(FieldId, Message),
+	get(Tail, Message2);
+get(FieldId, Message) when is_integer(FieldId) ->
 	{iso8583_message, _Attrs, Dict} = Message,
 	dict:fetch(FieldId, Dict).
 
@@ -148,9 +159,15 @@ set_attributes(Attributes, Message) ->
 %% @doc Sets or updates the value of a field in a message and returns an updated
 %%      message. The value for the field need not have been set previously.
 %%
-%% @spec update(integer(), iso8583field_value(), iso8583message()) -> iso8583message()
--spec(update(integer(), iso8583field_value(), iso8583message()) -> iso8583message()).
+%% @spec update(integer()|list(integer()), iso8583field_value(), iso8583message()) -> iso8583message()
+-spec(update(integer()|list(integer()), iso8583field_value(), iso8583message()) -> iso8583message()).
 
+update([FieldId], FieldValue, Message) when is_integer(FieldId) ->
+	update(FieldId, FieldValue, Message);
+update([FieldId|Tail], FieldValue, Message) when is_integer(FieldId) ->
+	Message2 = get(FieldId, Message),
+	Message3 = update(Tail, FieldValue, Message2),
+	update(FieldId, Message3, Message);
 update(FieldId, FieldValue, Message) when is_integer(FieldId) andalso FieldId >= 0 ->
 	{iso8583_message, Attrs, Dict} = Message,
 	{iso8583_message, Attrs, dict:store(FieldId, FieldValue, Dict)}.

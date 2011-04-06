@@ -185,5 +185,42 @@ update_list_test() ->
 	[2, 3, 4, 5] = erl8583_message:get_fields(Message4),
 	"foobar" = erl8583_message:get(2, Message4).
 	
+get_list1_test() ->
+	Message1 = erl8583_message:new(),
+	Message2 = erl8583_message:set(4, "baz", Message1),
+	"baz" = erl8583_message:get([4], Message2),
+	?assertError(_, erl8583_message:get([[4]], Message2)).
 	
-	
+get_list2_test() ->
+	Message1 = erl8583_message:new(),
+	Message2 = erl8583_message:set(4, "baz", erl8583_message:new()),
+	Message3 = erl8583_message:set(2, Message2, Message1),
+	Message2 = erl8583_message:get([2], Message3),
+	"baz" = erl8583_message:get([2, 4], Message3).
+
+set_list1_test() ->
+	Message1 = erl8583_message:new(),
+	Message2 = erl8583_message:set([4], "baz", Message1),
+	"baz" = erl8583_message:get([4], Message2),
+	"baz" = erl8583_message:get(4, Message2).
+
+set_list2_test() ->
+	Message1 = erl8583_message:set(5, erl8583_message:new(), erl8583_message:new()),
+	Message2 = erl8583_message:set([5, 2], "foobar", Message1),
+	"foobar" = erl8583_message:get([5, 2], Message2).
+
+update_list1_test() ->
+	Message1 = erl8583_message:new(),
+	Message2 = erl8583_message:set([4], "baz", Message1),
+	Message3 = erl8583_message:update([4], "foobar", Message2),
+	"foobar" = erl8583_message:get([4], Message3).
+
+update_list2_test() ->
+	Message1 = erl8583_message:set(5, erl8583_message:new(), erl8583_message:new()),
+	Message2 = erl8583_message:set([5, 2], "foobar", Message1),
+	"foobar" = erl8583_message:get([5, 2], Message2),
+	?assertError(_, erl8583_message:set([5, 2], "foobar2", Message2)),
+	Message3 = erl8583_message:update([5, 2], "foobar2", Message2),
+	"foobar2" = erl8583_message:get([5, 2], Message3).
+
+
