@@ -31,7 +31,7 @@
 -export([marshal_field/3, unmarshal_field/3]).
 -export([marshal_wrapping/2, unmarshal_wrapping/2]).
 -export([marshal_bitmap/1, unmarshal_bitmap/1]).
--export([marshal_mti/1]).
+-export([marshal_mti/1, unmarshal_mti/1]).
 
 %%
 %% API Functions
@@ -121,6 +121,9 @@ unmarshal_bitmap(Marshalled) ->
 marshal_mti(Mti) ->
 	marshal_field(0, Mti, erl8583_fields).
 
+unmarshal_mti(Marshalled) ->
+	unmarshal_field(0, Marshalled, erl8583_fields).
+
 %%
 %% Local Functions
 %%
@@ -168,8 +171,6 @@ extract_ids([Field|Tail], Result) when is_record(Field, xmlElement) ->
 extract_ids([_Field|Tail], Result) ->
 	extract_ids(Tail, Result).
 
-unmarshal_field(_FieldId, []) ->
-	undefined;
 unmarshal_field(TargetId, [Field|Tail]) when is_record(Field, xmlElement) ->
 	Attributes = Field#xmlElement.attributes,
 	AttributesList = attributes_to_list(Attributes, []),
