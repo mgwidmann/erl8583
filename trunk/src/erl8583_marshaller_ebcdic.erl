@@ -26,7 +26,6 @@
 %%
 %% Exported Functions
 %%
--export([marshal/1]).
 -export([marshal_field/3, unmarshal_field/3]).
 -export([marshal_mti/1, unmarshal_mti/1]).
 -export([marshal_bitmap/1, unmarshal_bitmap/1]).
@@ -34,25 +33,6 @@
 %%
 %% API Functions
 %%
-%% @doc Marshals an ISO 8583 message into an EBCDIC binary. This function
-%%      uses the erl8583_marshaller_ebcdic_field module to marshal the fields.
-%%
-%% @spec marshal(iso8583message()) -> binary()
--spec(marshal(iso8583message()) -> binary()).
-
-marshal(Message) ->
-	marshal(Message, erl8583_marshaller_ebcdic_field).
-
-%% @doc Marshals an ISO 8583 message into an EBCDIC binary. This function
-%%      uses the specified field marshalling module.
-%%
-%% @spec marshal(iso8583message(), module()) -> binary()
--spec(marshal(iso8583message(), module()) -> binary()).
-
-marshal(Message, FieldMarshaller) ->
-	Mti = erl8583_marshaller_ebcdic_field:marshal_field(0, erl8583_message:get(0, Message)),
-	[0|Fields] = erl8583_message:get_fields(Message),
-	Mti ++ erl8583_marshaller_ebcdic_bitmap:marshal_bitmap(Fields) ++ encode(Fields, Message, FieldMarshaller).
 
 marshal_field(FieldId, FieldValue, EncodingRules) ->
 	Ascii = erl8583_marshaller_ascii:marshal_field(FieldId, FieldValue, EncodingRules),
@@ -82,16 +62,6 @@ unmarshal_bitmap(Marshalled) ->
 
 %% Local Functions
 %%
-encode(Fields, Msg, FieldMarshaller) ->
-	encode(Fields, Msg, [], FieldMarshaller).
-
-encode([], _Msg, Result, _FieldMarshaller) ->
-	lists:reverse(Result);
-encode([FieldId|Tail], Msg, Result, FieldMarshaller) ->
-	Value = erl8583_message:get(FieldId, Msg),
-	EncodedValue = FieldMarshaller:marshal_field(FieldId, Value),
-	encode(Tail, Msg, lists:reverse(EncodedValue) ++ Result, FieldMarshaller).
-
 get_field_length(FieldId, Marshalled, EncodingRules) ->
 	Encoding = EncodingRules:get_encoding(FieldId),
 	case Encoding of
