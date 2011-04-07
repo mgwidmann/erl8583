@@ -99,4 +99,8 @@ unmarshal_field_test() ->
 	Marshalled = MarshalledField2 ++ MarshalledRest,
 	{"370012345612345", MarshalledRest} = erl8583_marshaller_ebcdic:unmarshal_field(2, Marshalled, erl8583_fields).
 
- 
+marshal_mti_test() ->
+	 [240, 242, 240, 240] = erl8583_marshaller_ebcdic:marshal_mti("0200").
+
+unmarshal_mti_test() ->
+	{"0210", []} = erl8583_marshaller_ebcdic:unmarshal_mti([240, 242, 241, 240]).

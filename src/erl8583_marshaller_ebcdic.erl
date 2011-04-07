@@ -28,6 +28,7 @@
 %%
 -export([marshal/1]).
 -export([marshal_field/3, unmarshal_field/3]).
+-export([marshal_mti/1, unmarshal_mti/1]).
 
 %%
 %% API Functions
@@ -63,6 +64,12 @@ unmarshal_field(FieldId, Marshalled, EncodingRules) ->
 	{Field, []} = erl8583_marshaller_ascii:unmarshal_field(FieldId, Ascii, EncodingRules),
 	{Field, Rest}.
 
+marshal_mti(Mti) ->
+	marshal_field(0, Mti, erl8583_fields).
+
+unmarshal_mti(Marshalled) ->
+	unmarshal_field(0, Marshalled, erl8583_fields).
+	
 %%
 %% Local Functions
 %%
