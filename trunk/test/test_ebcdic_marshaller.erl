@@ -104,3 +104,8 @@ marshal_mti_test() ->
 
 unmarshal_mti_test() ->
 	{"0210", []} = erl8583_marshaller_ebcdic:unmarshal_mti([240, 242, 241, 240]).
+
+marshal_bitmap_test() ->
+	[240, 240, 243, 195, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240] = erl8583_marshaller_ebcdic:marshal_bitmap([11, 12, 13, 14]).
+
+	

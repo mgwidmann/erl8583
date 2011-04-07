@@ -29,6 +29,7 @@
 -export([marshal/1]).
 -export([marshal_field/3, unmarshal_field/3]).
 -export([marshal_mti/1, unmarshal_mti/1]).
+-export([marshal_bitmap/1]).
 
 %%
 %% API Functions
@@ -70,6 +71,9 @@ marshal_mti(Mti) ->
 unmarshal_mti(Marshalled) ->
 	unmarshal_field(0, Marshalled, erl8583_fields).
 	
+marshal_bitmap(FieldIds) ->
+	erl8583_convert:ascii_to_ebcdic(erl8583_marshaller_ascii:marshal_bitmap(FieldIds)).
+
 %%
 %% Local Functions
 %%
