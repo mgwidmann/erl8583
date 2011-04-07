@@ -74,7 +74,12 @@ new(Attributes) ->
 set([FieldId], FieldValue, Message) when is_integer(FieldId) ->
 	set(FieldId, FieldValue, Message);
 set([FieldId|Tail], FieldValue, Message) when is_integer(FieldId) ->
-	Message2 = get(FieldId, Message),
+	case lists:member(FieldId, get_fields(Message)) of
+		true ->
+			Message2 = get(FieldId, Message);
+		false ->
+			Message2 = new()
+	end,
 	Message3 = set(Tail, FieldValue, Message2),
 	update(FieldId, Message3, Message);
 set(FieldId, FieldValue, Message) when is_integer(FieldId) andalso FieldId >= 0 ->
@@ -165,7 +170,12 @@ set_attributes(Attributes, Message) ->
 update([FieldId], FieldValue, Message) when is_integer(FieldId) ->
 	update(FieldId, FieldValue, Message);
 update([FieldId|Tail], FieldValue, Message) when is_integer(FieldId) ->
-	Message2 = get(FieldId, Message),
+	case lists:member(FieldId, get_fields(Message)) of
+		true ->
+			Message2 = get(FieldId, Message);
+		false ->
+			Message2 = new()
+	end,
 	Message3 = update(Tail, FieldValue, Message2),
 	update(FieldId, Message3, Message);
 update(FieldId, FieldValue, Message) when is_integer(FieldId) andalso FieldId >= 0 ->

@@ -223,4 +223,20 @@ update_list2_test() ->
 	Message3 = erl8583_message:update([5, 2], "foobar2", Message2),
 	"foobar2" = erl8583_message:get([5, 2], Message3).
 
+set_list3_test() ->
+	Message1 = erl8583_message:new(),
+	Message2 = erl8583_message:set([5, 2], "foo", Message1),
+	Message3 = erl8583_message:set([5, 3, 1], "bar", Message2),
+	SubMessage = erl8583_message:get(5, Message3),
+	[2, 3] = erl8583_message:get_fields(SubMessage),
+	"foo" = erl8583_message:get(2, SubMessage),
+	"bar" = erl8583_message:get([3, 1], SubMessage).
 
+update_list3_test() ->
+	Message1 = erl8583_message:new(),
+	Message2 = erl8583_message:update([5, 2], "foo", Message1),
+	Message3 = erl8583_message:update([5, 3, 1], "bar", Message2),
+	SubMessage = erl8583_message:get(5, Message3),
+	[2, 3] = erl8583_message:get_fields(SubMessage),
+	"foo" = erl8583_message:get(2, SubMessage),
+	"bar" = erl8583_message:get([3, 1], SubMessage).
