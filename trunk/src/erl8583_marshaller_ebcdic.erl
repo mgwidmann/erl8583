@@ -29,7 +29,7 @@
 -export([marshal/1]).
 -export([marshal_field/3, unmarshal_field/3]).
 -export([marshal_mti/1, unmarshal_mti/1]).
--export([marshal_bitmap/1]).
+-export([marshal_bitmap/1, unmarshal_bitmap/1]).
 
 %%
 %% API Functions
@@ -74,7 +74,12 @@ unmarshal_mti(Marshalled) ->
 marshal_bitmap(FieldIds) ->
 	erl8583_convert:ascii_to_ebcdic(erl8583_marshaller_ascii:marshal_bitmap(FieldIds)).
 
-%%
+unmarshal_bitmap(Marshalled) ->
+	Length = get_bitmap_length(Marshalled),
+	{BitmapEbcdic, Rest} = lists:split(Length, Marshalled),
+	{Bitmap, []} = erl8583_marshaller_ascii:unmarshal_bitmap(erl8583_convert:ebcdic_to_ascii(BitmapEbcdic)),
+	{Bitmap, Rest}.
+
 %% Local Functions
 %%
 encode(Fields, Msg, FieldMarshaller) ->
@@ -102,4 +107,17 @@ get_field_length(FieldId, Marshalled, EncodingRules) ->
 			list_to_integer(Nascii) + 3
 	end.
 
-			
+get_bitmap_length(Msg) ->
+	get_bitmap_length(Msg, 16).
+
+get_bitmap_length(Msg, Length) ->
+	[HexDig1, HexDig2|_Tail] = Msg,
+	EbcdicDigits = [HexDig1, HexDig2],
+	<<Byte>> = erl8583_convert:ascii_hex_to_binary(erl8583_convert:ebcdic_to_ascii(EbcdicDigits)),
+	case (Byte band 128) of
+		0 ->
+			Length;
+		_ ->
+			{_Msg1, Msg2} = lists:split(16, Msg),
+			get_bitmap_length(Msg2, Length+16)
+	end.
