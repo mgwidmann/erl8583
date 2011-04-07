@@ -87,3 +87,16 @@ fields_11_12_13_14_test() ->
 	Msg6 = erl8583_message:set(14, "1206", Msg5),
 	[240, 242, 240, 240, 240, 240, 243, 195, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 241, 242, 243, 244, 241, 245, 240, 247, 245, 245, 242, 240, 241, 242, 241, 242, 240, 246]
 		= erl8583_marshaller_ebcdic:marshal(Msg6).
+
+marshal_field_test() ->
+	[241, 245, 243, 247, 240, 240, 241, 242, 243, 244, 245, 246, 241, 242, 243, 244, 245] = 
+		erl8583_marshaller_ebcdic:marshal_field(2, "370012345612345", erl8583_fields),
+	[240, 240, 244, 240, 240, 240] = erl8583_marshaller_ebcdic:marshal_field(3, "004000", erl8583_fields).
+
+unmarshal_field_test() ->
+	MarshalledField2 = [241, 245, 243, 247, 240, 240, 241, 242, 243, 244, 245, 246, 241, 242, 243, 244, 245],
+	MarshalledRest = lists:seq(1, 40), % Non EBCDIC characters.
+	Marshalled = MarshalledField2 ++ MarshalledRest,
+	{"370012345612345", MarshalledRest} = erl8583_marshaller_ebcdic:unmarshal_field(2, Marshalled, erl8583_fields).
+
+ 

@@ -27,6 +27,7 @@
 %% Exported Functions
 %%
 -export([marshal/1]).
+-export([marshal_field/3, unmarshal_field/3]).
 
 %%
 %% API Functions
@@ -50,7 +51,18 @@ marshal(Message, FieldMarshaller) ->
 	Mti = erl8583_marshaller_ebcdic_field:marshal_field(0, erl8583_message:get(0, Message)),
 	[0|Fields] = erl8583_message:get_fields(Message),
 	Mti ++ erl8583_marshaller_ebcdic_bitmap:marshal_bitmap(Fields) ++ encode(Fields, Message, FieldMarshaller).
-	
+
+marshal_field(FieldId, FieldValue, EncodingRules) ->
+	Ascii = erl8583_marshaller_ascii:marshal_field(FieldId, FieldValue, EncodingRules),
+	erl8583_convert:ascii_to_ebcdic(Ascii).
+
+unmarshal_field(FieldId, Marshalled, EncodingRules) ->
+	Length = get_field_length(FieldId, Marshalled, EncodingRules),
+	{Ebcdic, Rest} = lists:split(Length, Marshalled),
+	Ascii = erl8583_convert:ebcdic_to_ascii(Ebcdic),
+	{Field, []} = erl8583_marshaller_ascii:unmarshal_field(FieldId, Ascii, EncodingRules),
+	{Field, Rest}.
+
 %%
 %% Local Functions
 %%
@@ -64,3 +76,19 @@ encode([FieldId|Tail], Msg, Result, FieldMarshaller) ->
 	EncodedValue = FieldMarshaller:marshal_field(FieldId, Value),
 	encode(Tail, Msg, lists:reverse(EncodedValue) ++ Result, FieldMarshaller).
 
+get_field_length(FieldId, Marshalled, EncodingRules) ->
+	Encoding = EncodingRules:get_encoding(FieldId),
+	case Encoding of
+		{_, fixed, N} ->
+			N;
+		{_, llvar, _} ->
+			Nebcdic = lists:sublist(Marshalled, 1, 2),
+			Nascii = erl8583_convert:ebcdic_to_ascii(Nebcdic),
+			list_to_integer(Nascii) + 2;
+		{_, lllvar, _} ->
+			Nebcdic = lists:sublist(Marshalled, 1, 3),
+			Nascii = erl8583_convert:ebcdic_to_ascii(Nebcdic),
+			list_to_integer(Nascii) + 3
+	end.
+
+			
