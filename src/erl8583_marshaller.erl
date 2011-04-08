@@ -12,7 +12,7 @@
 
 %% @author CA Meijer
 %% @copyright 2011 CA Meijer
-%% @doc This module provides a handler for marshalling and unmarshalling
+%% @doc This module provides functions for marshalling and unmarshalling
 %%      ISO 8583 messages into various encodings. To marshal or unmarshal
 %%      a message, one must supply a list of options that specify
 %%      modules that can be called to marshal or unmarshal the MTI, the
