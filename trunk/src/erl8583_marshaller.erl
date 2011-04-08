@@ -1,11 +1,36 @@
-%% Author: carl
-%% Created: 02 Apr 2011
-%% Description: TODO: Add description to erl8583_marshaller
+% Licensed under the Apache License, Version 2.0 (the "License"); you may not
+% use this file except in compliance with the License. You may obtain a copy of
+% the License at
+%
+%   http://www.apache.org/licenses/LICENSE-2.0
+%
+% Unless required by applicable law or agreed to in writing, software
+% distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+% WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+% License for the specific language governing permissions and limitations under
+% the License.
+
+%% @author CA Meijer
+%% @copyright 2011 CA Meijer
+%% @doc This module provides a handler for marshalling and unmarshalling
+%%      ISO 8583 messages into various encodings. To marshal or unmarshal
+%%      a message, one must supply a list of options that specify
+%%      modules that can be called to marshal or unmarshal the MTI, the
+%%      bitmap, the message fields and, optionally, some wrapping in
+%%      which the marshalled message is encapsulated.
+%%
+%%      Optionally, this marshaller can be passed a callback handler that
+%%      specifies how messages are to be encoded (e.g. the 1987, 1993 or
+%%      2003 specification or a proprietary specification). If no specific
+%%      encoding rules are passed, the version indicated by the MTI is
+%%      used.
 -module(erl8583_marshaller).
 
 %%
 %% Include files
 %%
+%% @headerfile "../include/erl8583_types.hrl"
+-include("erl8583_types.hrl").
 
 %%
 %% Records
@@ -16,6 +41,35 @@
 						  wrapping_marshaller, 
 						  encoding_rules}).
 
+%% A module identifier and a module that implements some
+%% marshalling function.
+%%
+%% @type marshal_handler() = {bitmap_marshaller, module()} |
+%%	  {field_marshaller, module()} |
+%%	  {mti_marshaller, module()} |
+%%	  {wrapping_marshaller, module()} |
+%%	  {encoding_rules, module()}. A callback function that implements
+%%    functionality related to marshalling.<br/><br/> 
+%%    A bitmap_marshaller must implement marshal_bitmap/1 and
+%%    unmarshal_bitmap/1 functions.<br/>
+%%    A field_marshaller must implement marshal_field/3 and unmarshal_field/3
+%%    functions.
+%%    An mti_marshaller must implement marshal_mti/1 and unmarshal_mti/1
+%%    functions.<br/>
+%%    A wrapping_marshaller must implement marshal_wrapping/2 and
+%%    unmarshal_wrapping/2 functions.<br/>
+%%    An encoding_rules marshaller must implement the get_encoding/1 function.
+%%    <br/><br/>
+%%    See the erl8583_marshaller_XXX modules for examples of modules that
+%%    implement various marshalling functions.<br/><br/>
+%%    See the erl8583_fields module for an example of an encoding_rules
+%%    handler.
+-type(marshal_handler() :: {bitmap_marshaller, module()} |
+	  {field_marshaller, module()} |
+	  {mti_marshaller, module()} |
+	  {wrapping_marshaller, module()} |
+	  {encoding_rules, module()}).
+
 %%
 %% Exported Functions
 %%
@@ -24,15 +78,25 @@
 %%
 %% API Functions
 %%
-marshal(Message, Options) ->
-	OptionsRecord = parse_options(Options, #marshal_options{}),
+
+%% @doc Marshals an ISO 8583 message into a byte sequence.
+%%
+%% @spec marshal(iso8583message(), list(marshal_handler())) -> list(byte())
+-spec(marshal(iso8583message(), list(marshal_handler())) -> list(byte())).
+
+marshal(Message, MarshalHandlers) ->
+	OptionsRecord = parse_options(MarshalHandlers, #marshal_options{}),
 	Marshalled1 = encode_mti(OptionsRecord, Message),
 	Marshalled2 = Marshalled1 ++ encode_bitmap(OptionsRecord, Message),
 	Marshalled3 = Marshalled2 ++ encode_fields(OptionsRecord, Message),
 	wrap_message(OptionsRecord, Message, Marshalled3).
 
-unmarshal(Marshalled, Options) ->
-	OptionsRecord = parse_options(Options, #marshal_options{}),
+%% @doc Unmarshals a byte sequence into an ISO 8583 message.
+%%
+%% @spec unmarshal(list(byte()), list(marshal_handler())) -> iso8583message()
+-spec(unmarshal(list(byte()), list(marshal_handler())) -> iso8583message()).
+unmarshal(Marshalled, MarshalHandlers) ->
+	OptionsRecord = parse_options(MarshalHandlers, #marshal_options{}),
 	{Message0, Marshalled1} = unwrap_message(OptionsRecord, erl8583_message:new(), Marshalled),
 	{Message1, Marshalled2} = decode_mti(OptionsRecord, Marshalled1, Message0),
 	{FieldIds, Marshalled3} = decode_bitmap(OptionsRecord, Marshalled2),
