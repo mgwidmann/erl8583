@@ -16,12 +16,7 @@
 %%      between representations of data common in ISO 8583.
 %%      Particular data representations are ASCII and EBCDIC strings,
 %%      BCD encoding and the encoding used for track 2 data.
-
 -module(erl8583_convert).
-
-%%
-%% Include files
-%%
 
 %%
 %% Exported Functions
