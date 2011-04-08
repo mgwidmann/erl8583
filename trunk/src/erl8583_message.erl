@@ -12,8 +12,17 @@
 
 %% @author CA Meijer
 %% @copyright 2011 CA Meijer
-%% @doc Functions for constructing and reading ISO 8583 messages. 
-
+%% @doc Functions for constructing, reading and updating ISO 8583 messages.
+%%      This module models an ISO 8583 message as a list of fields. A message
+%%      field is an {identifier, value} pair where the identifier is
+%%      a non-negative integer. The value can be an ASCII string, a binary
+%%      another message. Integer values, e.g. a PAN should be encoded as
+%%      strings.
+%%      <br/>
+%%      The identifier 0 is associated with the MTI of a message.
+%%
+%%      Optionally attributes can be set for a message (e.g. indicating
+%%      whether it's a sent or received message).
 -module(erl8583_message).
 
 %%
@@ -66,7 +75,10 @@ new(Attributes) ->
 	
 %% @doc Sets the value of a field in a message and returns an updated
 %%      message. If the value for the field is already set, an exception
-%%      is thrown.
+%%      is thrown. The field can be specified as an integer or as a
+%%      list of integers.  A list of integers indicates that
+%%      some field is a submessage; e.g. [127, 2] would indicate field 2
+%%      in field 127 of the original message.
 %%
 %% @spec set(integer()|list(integer()), iso8583field_value(), iso8583message()) -> iso8583message()
 -spec(set(integer()|list(integer()), iso8583field_value(), iso8583message()) -> iso8583message()).
@@ -100,7 +112,10 @@ set(FieldsList, Message) ->
 	[{FieldId, FieldValue}|Tail] = FieldsList,
 	set(Tail, set(FieldId, FieldValue, Message)).
 	
-%% @doc Gets the value of a field from a message given the field ID.
+%% @doc Gets the value of a field from a message given a field ID or a list
+%%      of identifiers. A list of integers indicates that
+%%      some field is a submessage; e.g. [127, 2] would indicate field 2
+%%      in field 127 of the original message.
 %%
 %% @spec get(integer()|list(integer()), iso8583message()) -> iso8583field_value()
 -spec(get(integer()|list(integer()), iso8583message()) -> iso8583field_value()).
@@ -114,7 +129,8 @@ get(FieldId, Message) when is_integer(FieldId) ->
 	{iso8583_message, _Attrs, Dict} = Message,
 	dict:fetch(FieldId, Dict).
 
-%% @doc Gets the field IDs from a message.
+%% @doc Gets the field IDs from a message; i.e. what fields exist in
+%%      a message.
 %%
 %% @spec get_fields(iso8583message()) -> list(integer())
 -spec(get_fields(iso8583message()) -> list(integer())).
