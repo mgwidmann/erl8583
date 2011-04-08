@@ -13,9 +13,8 @@
 %% @author CA Meijer
 %% @copyright 2011 CA Meijer
 %% @doc This module provides a function to get how a field is
-%%      encoded according to the 1987 version of the ISO 8583 specification. 
-%% @end
-
+%%      encoded according to the 1987 version of the ISO 8583 
+%%      specification. 
 -module(erl8583_fields).
 
 %%
