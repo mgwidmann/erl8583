@@ -13,7 +13,9 @@
 %% @author CA Meijer
 %% @copyright 2011 CA Meijer
 %% @doc This module provides a number of functions for converting
-%%      between representations of data.
+%%      between representations of data common in ISO 8583.
+%%      Particular data representations are ASCII and EBCDIC strings,
+%%      BCD encoding and the encoding used for track 2 data.
 
 -module(erl8583_convert).
 
@@ -48,7 +50,7 @@
 %%
 
 %% @doc Converts a string() of characters to a list containing
-%%      the ASCII hex equivalents.
+%%      the ASCII hex character codes.
 %%
 %% @spec string_to_ascii_hex(string()) -> string()
 -spec(string_to_ascii_hex(string()) -> string()).
@@ -57,7 +59,7 @@ string_to_ascii_hex(Str) ->
 	string_to_ascii_hex(Str, []).
 
 %% @doc Converts a string() containing ASCII hex characters
-%%      to an equivalent string().
+%%      to an equivalent ASCII string().
 %%
 %% @spec ascii_hex_to_string(string()) -> string()
 -spec(ascii_hex_to_string(string()) -> string()).
@@ -65,7 +67,7 @@ string_to_ascii_hex(Str) ->
 ascii_hex_to_string(HexStr) ->
 	ascii_hex_to_string(HexStr, []).
 
-%% @doc Converts an integer to a string of fixed length with
+%% @doc Converts an integer to an ASCII string of fixed length with
 %%      leading zeroes if necessary.
 %%
 %% @spec integer_to_string(integer(), integer()) -> string()
@@ -74,7 +76,7 @@ ascii_hex_to_string(HexStr) ->
 integer_to_string(Value, Length) ->
 	pad_with_zeroes(Length, integer_to_list(Value)).
 
-%% @doc Pads a string with a number of spaces so that the
+%% @doc Pads an ASCII string with a number of spaces so that the
 %%      resultant string has specified length.
 %%
 %% @spec pad_with_trailing_spaces(string(), integer()) -> string()
@@ -188,7 +190,9 @@ ascii_hex_to_digit([A]) when A >= $a andalso A =< $f ->
 	A - 87.
 
 %% @doc Converts a value in the range 0-15 to a 1 character
-%%      string containing the equivalent hexadecimal digit.
+%%      ASCII string containing the equivalent hexadecimal digit.
+%%      Values 10 - 15 are converted to the upper case letters
+%%      'A' - 'F'.
 %%
 %% @spec digit_to_ascii_hex(integer()) -> string()
 -spec(digit_to_ascii_hex(integer()) -> string()).
@@ -198,7 +202,7 @@ digit_to_ascii_hex(D) when D >= 0 andalso D =< 9 ->
 digit_to_ascii_hex(D) when D >= 10 andalso D =< 15 ->
 	[55+D].
 
-%% @doc Strips trailing spaces from a string.
+%% @doc Strips trailing spaces from an ASCII string.
 %%
 %% @spec strip_trailing_spaces(string()) -> string()
 -spec(strip_trailing_spaces(string()) -> string()).
@@ -206,7 +210,7 @@ digit_to_ascii_hex(D) when D >= 10 andalso D =< 15 ->
 strip_trailing_spaces(Str) ->
 	lists:reverse(strip_leading_spaces(lists:reverse(Str))).
 
-%% @doc Strips leading zeroes from a string.
+%% @doc Strips leading zeroes from an ASCII string.
 %%
 %% @spec strip_leading_zeroes(string()) -> string()
 -spec(strip_leading_zeroes(string()) -> string()).
