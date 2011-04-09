@@ -12,9 +12,16 @@
 
 %% @author CA Meijer
 %% @copyright 2011 CA Meijer
-%% @doc This module marshals an iso8583message() into 
-%%      an ASCII string or unmarshals an ASCII string into an
-%%      iso8583message().
+%% @doc This module provides functions to marshal an iso8583message() 
+%%      into an ASCII string, to unmarshal an ASCII string into an
+%%      iso8583message() and to marshal/unmarshal the MTI, bitmap
+%%      and fields of an ISO 8583 message.<br/>
+%%      <br/>
+%%      When functions are used to unmarshal the MTI, bitmap or a 
+%%      field of a message, the function assumes that the component
+%%      to be unmarshalled is at the start of the string. The
+%%      returned value is a 2-tuple containing the unmarshalled value
+%%      and the remainder of the string that needs to be unmarshalled.
 -module(erl8583_marshaller_ascii).
 
 %%
@@ -40,9 +47,21 @@
 %% API Functions
 %%
 
+%% @doc Constructs an ASCII string representation of
+%%      an iso8583message().
+%%
+%% @spec marshal(iso8583message()) -> string()
+-spec(marshal(iso8583message()) -> string()).
+
 marshal(Message) ->
 	erl8583_marshaller:marshal(Message, ?MARSHALLER_ASCII).
 	
+%% @doc Constructs an iso8583message() from an ASCII string 
+%%      marshalling of the message.
+%%
+%% @spec unmarshal(string()) -> iso8583message()
+-spec(unmarshal(string()) -> iso8583message()).
+
 unmarshal(Marshalled) ->
 	erl8583_marshaller:unmarshal(Marshalled, ?MARSHALLER_ASCII).
 
@@ -76,9 +95,8 @@ unmarshal_bitmap(AsciiMessage) ->
 	BitMap = erl8583_convert:ascii_hex_to_string(AsciiBitMap),
 	extract_fields(BitMap, 0, 8, {[], Fields}).
 
-%% @doc Marshals a field value into an ASCII string. The 1987 version
-%%      of the ISO 8583 specification is used to determine how to
-%%      encode the field value.
+%% @doc Marshals a field value into an ASCII string using a specified
+%%      encoding rules module.
 %%
 %% @spec marshal_field(integer(), iso8583field_value(), module()) -> string()
 -spec(marshal_field(integer(), iso8583field_value(), module()) -> string()).
@@ -87,13 +105,10 @@ marshal_field(FieldId, FieldValue, EncodingRules) ->
 	Pattern = EncodingRules:get_encoding(FieldId),
 	marshal_data_element(Pattern, FieldValue).
 
-marshal_mti(Mti) ->
-	marshal_field(0, Mti, erl8583_fields).
-
 %% @doc Extracts a field value from the start of a string.  The field value 
 %%      and the rest of the unmarshalled string is returned as a 2-tuple.
-%%      The 1987 version of the ISO 8583 specification is used to determine how to
-%%      decode the field value.
+%%      A module that specifies how the field is encoded must be passed
+%%      as an argument.
 %%
 %% @spec unmarshal_field(integer(), string(), module()) -> {iso8583field_value(), string()}
 -spec(unmarshal_field(integer(), string(), module()) -> {iso8583field_value(), string()}).
@@ -101,6 +116,20 @@ marshal_mti(Mti) ->
 unmarshal_field(FieldId, AsciiFields, EncodingRules) ->
 	Pattern = EncodingRules:get_encoding(FieldId),
 	unmarshal_data_element(Pattern, AsciiFields).
+
+%% @doc Marshals the MTI into an ASCII string.
+%%
+%% @spec marshal_mti(string()) -> string()
+-spec(marshal_mti(string()) -> string()).
+
+marshal_mti(Mti) ->
+	marshal_field(0, Mti, erl8583_fields).
+
+%% @doc Extracts the MTI from the start of a string.  The MTI 
+%%      and the rest of the unmarshalled string is returned as a 2-tuple.
+%%
+%% @spec unmarshal_mti(string()) -> {string(), string()}
+-spec(unmarshal_mti(string()) -> {string(), string()}).
 
 unmarshal_mti(Marshalled) ->
 	unmarshal_field(0, Marshalled, erl8583_fields).
