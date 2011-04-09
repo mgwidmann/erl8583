@@ -76,6 +76,14 @@ fields_5_6_7_test() ->
 	Msg5 = erl8583_message:set(7, "0131081200", Msg4),	
 	"02000E000000000000000000000000010000000000020131081200" = erl8583_marshaller:marshal(Msg5, ?MARSHALLER_ASCII).
 
+fields_5_6_7_b_test() ->
+	Msg1 = erl8583_message:new(),
+	Msg2 = erl8583_message:set(0, "0200", Msg1),
+	Msg3 = erl8583_message:set(5, "1", Msg2),	
+	Msg4 = erl8583_message:set(6, "2", Msg3),	
+	Msg5 = erl8583_message:set(7, "0131081200", Msg4),	
+	"02000E000000000000000000000000010000000000020131081200" = erl8583_marshaller_ascii:marshal(Msg5).
+	
 fields_8_9_10_test() ->
 	Msg1 = erl8583_message:new(),
 	Msg2 = erl8583_message:set(0, "0300", Msg1),

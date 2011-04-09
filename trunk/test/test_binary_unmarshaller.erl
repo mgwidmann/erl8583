@@ -55,6 +55,13 @@ field_2_3_test() ->
 	"1234567890123456" = erl8583_message:get(2, Msg1),
 	"012345" = erl8583_message:get(?PROC_CODE, Msg1).
 
+field_2_3_b_test() ->
+	Msg1 = erl8583_marshaller_binary:unmarshal([2, 16, 96, 0, 0, 0, 0, 0, 0, 0, 22, 18, 52, 86, 120, 144, 18, 52, 86, 1, 35, 69]),
+	"0210" = erl8583_message:get(0, Msg1),
+	[0, 2, 3] = erl8583_message:get_fields(Msg1),
+	"1234567890123456" = erl8583_message:get(2, Msg1),
+	"012345" = erl8583_message:get(?PROC_CODE, Msg1).
+
 field_4_test() ->
 	Msg = erl8583_marshaller:unmarshal([1, 2, 16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 35], ?MARSHALLER_BINARY),
 	"0102" = erl8583_message:get(0, Msg),

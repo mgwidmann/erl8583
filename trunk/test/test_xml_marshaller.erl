@@ -46,6 +46,15 @@ xml_marshal_complex_attributes_test() ->
 	[0, 1, 3, 48] = erl8583_message:get_fields(IsoMsg3),
 	BitMap2 = erl8583_message:get(48, IsoMsg3).
 
+xml_marshal_complex_attributes_b_test() ->
+	BitMap = erl8583_message:from_list([{1, "foo"}, {2, "bar"}]),
+	BitMap2 = erl8583_message:set_attributes([{"foo","bar"},{"hello","world"}], BitMap),
+	IsoMsg = erl8583_message:from_list([{1, "0200"}, {3, "333333"}, {48, BitMap2} ]),
+	IsoMsg2 = erl8583_message:set(0, "0110", IsoMsg),
+	Marshalled = erl8583_marshaller_xml:marshal(IsoMsg2),
+	IsoMsg3 = erl8583_marshaller_xml:unmarshal(Marshalled),
+	[0, 1, 3, 48] = erl8583_message:get_fields(IsoMsg3),
+	BitMap2 = erl8583_message:get(48, IsoMsg3).
 
 xml_marshal_binary_test() ->
 	IsoMsg1 = erl8583_message:new(),
