@@ -22,17 +22,29 @@
 %%
 %% @headerfile "../include/erl8583_types.hrl"
 -include("erl8583_types.hrl").
+-include("erl8583_marshallers.hrl").
 
 %%
 %% Exported Functions
 %%
--export([marshal_bitmap/1, unmarshal_bitmap/1]).
--export([marshal_field/3, unmarshal_field/3]).
--export([marshal_mti/1, unmarshal_mti/1]).
+-export([marshal/1,
+		 unmarshal/1,
+		 marshal_bitmap/1,
+		 unmarshal_bitmap/1,
+		 marshal_field/3, 
+		 unmarshal_field/3,
+		 marshal_mti/1, 
+		 unmarshal_mti/1]).
 
 %%
 %% API Functions
 %%
+
+marshal(Message) ->
+	erl8583_marshaller:marshal(Message, ?MARSHALLER_ASCII).
+	
+unmarshal(Marshalled) ->
+	erl8583_marshaller:unmarshal(Marshalled, ?MARSHALLER_ASCII).
 
 %% @doc Constructs an ASCII string representation of the
 %%      bitmap for an iso8583message().

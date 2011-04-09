@@ -105,6 +105,14 @@ fields_28_29_test() ->
 	[2, 33, 0, 0, 0, 24, 0, 0, 0, 0, 67, 0, 0, 0, 1, 68, 0, 0, 0, 34]
 		= erl8583_marshaller:marshal(Msg4, ?MARSHALLER_BINARY).
 
+fields_28_29_b_test() ->
+	Msg1 = erl8583_message:new(),
+	Msg2 = erl8583_message:set(0, "0221", Msg1),
+	Msg3 = erl8583_message:set(28, "C1", Msg2),
+	Msg4 = erl8583_message:set(29, "D22", Msg3),
+	[2, 33, 0, 0, 0, 24, 0, 0, 0, 0, 67, 0, 0, 0, 1, 68, 0, 0, 0, 34]
+		= erl8583_marshaller_binary:marshal(Msg4).
+
 fields_33_34_test() ->
 	Msg1 = erl8583_message:new(),
 	Msg2 = erl8583_message:set(0, "0221", Msg1),

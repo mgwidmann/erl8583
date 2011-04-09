@@ -56,6 +56,14 @@ field_8_9_10_test() ->
 	"00000002" = erl8583_message:get(9, Msg),
 	"00000003" = erl8583_message:get(10, Msg).
 
+field_8_9_10_b_test() ->
+	Msg = erl8583_marshaller_ascii:unmarshal("030001C0000000000000000000010000000200000003"),
+	"0300" = erl8583_message:get(0, Msg),
+	[0, 8, 9, 10] = erl8583_message:get_fields(Msg),
+	"00000001" = erl8583_message:get(8, Msg),
+	"00000002" = erl8583_message:get(9, Msg),
+	"00000003" = erl8583_message:get(10, Msg).
+
 fields_11_12_13_14_test() ->
 	Msg = erl8583_marshaller:unmarshal("0200003C00000000000000123415075520121206", ?MARSHALLER_ASCII),
 	[0, 11, 12, 13, 14] = erl8583_message:get_fields(Msg),
