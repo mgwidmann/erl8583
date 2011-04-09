@@ -13,8 +13,15 @@
 %% @author CA Meijer
 %% @copyright 2011 CA Meijer
 %% @doc This module marshals an iso8583message() 
-%%      into an XML element and can unmarshal an XML element into
-%%      an iso8583message().
+%%      into an XML document and can unmarshal an XML document into
+%%      an iso8583message(). This module also exposes
+%%      functions for explicitly marshalling/unmarshalling
+%%      the MTI, bitmap and fields of a message. This is
+%%      to conform to the design of other marshallers and
+%%      the contract required by the erl8583_marshaller.
+%%
+%%      The structure of the XML messages is intended to be
+%%      compatible with that used by jPOS.
 -module(erl8583_marshaller_xml).
 
 %%
@@ -43,13 +50,26 @@
 %% API Functions
 %%
 
+%% @doc Constructs an XML representation of
+%%      an iso8583message().
+%%
+%% @spec marshal(iso8583message()) -> string()
+-spec(marshal(iso8583message()) -> string()).
+
 marshal(Message) ->
 	erl8583_marshaller:marshal(Message, ?MARSHALLER_XML).
+
+%% @doc Constructs an iso8583message() from an XML document 
+%%      representation of the message.
+%%
+%% @spec unmarshal(string()) -> iso8583message()
+-spec(unmarshal(string()) -> iso8583message()).
 
 unmarshal(Marshalled) ->
 	erl8583_marshaller:unmarshal(Marshalled, ?MARSHALLER_XML).
 
-%% @doc Marshals a field into an XML element.
+%% @doc Marshals a field value into an XML &lt;field&gt; element. The
+%%      encoding rules module argument is ignored.
 %%
 %% @spec marshal_field(integer(), iso8583field_value(), module()) -> string()
 -spec(marshal_field(integer(), iso8583field_value(), module()) -> string()).
@@ -76,12 +96,28 @@ marshal_field(FieldId, FieldValue, _EncodingRules) ->
 		erl8583_marshaller:marshal(FieldValue, [{field_marshaller, ?MODULE}, {mti_marshaller, ?MODULE}]) ++
 		"</isomsg>".
 
+%% @doc Extracts a field value for a specified field from an XML
+%%      document.  The field value and the XML document are 
+%%      returned as a 2-tuple. The argument specifying the
+%%      encoding rules argument is ignored.
+%%
+%% @spec unmarshal_field(integer(), string(), module()) -> {iso8583field_value(), string()}
+-spec(unmarshal_field(integer(), string(), module()) -> {iso8583field_value(), string()}).
+
 unmarshal_field(FieldId, Marshalled, _EncodingRule) ->
 	{Xml, []} = xmerl_scan:string(Marshalled),
 	ChildNodes = Xml#xmlElement.content,
 	FieldValue = unmarshal_field(FieldId, ChildNodes),
 	{FieldValue, Marshalled}.
 	
+%% @doc Wraps XML elements in an &lt;isomsg&gt; XML element and
+%%      returns the resultant XML document. The attributes of
+%%      the original message are attributes of the &lt;isomsg&gt; 
+%%      XML element
+%%
+%% @spec marshal_wrapping(iso8583message(), string()) -> string()
+-spec(marshal_wrapping(iso8583message(), string()) -> string()).
+
 marshal_wrapping(Message, Marshalled) ->
 	"<isomsg" ++ 
 		encode_attributes(erl8583_message:get_attributes(Message)) ++ 
@@ -89,6 +125,13 @@ marshal_wrapping(Message, Marshalled) ->
 		Marshalled ++ 
 		"</isomsg>\n".
 	
+%% @doc Creates an ISO 8583 message by extracting the attributes of an &lt;isomsg&gt; XML 
+%%      element and returns the message and the XML document as 
+%%      a 2-tuple.
+%%
+%% @spec unmarshal_wrapping(string(), string()) -> {iso8583message(), string()}
+-spec(unmarshal_wrapping(string(), string()) -> {iso8583message(), string()}).
+
 unmarshal_wrapping(Message, Marshalled) ->
 	{Xml, []} = xmerl_scan:string(Marshalled),
 	isomsg = Xml#xmlElement.name,
@@ -96,8 +139,20 @@ unmarshal_wrapping(Message, Marshalled) ->
 	Msg = erl8583_message:set_attributes(attributes_to_list(Attrs, []), Message),
 	{Msg, Marshalled}.
 
+%% @doc Returns an empty string.
+%%
+%% @spec marshal_bitmap(list(integer())) -> string()
+-spec(marshal_bitmap(list(integer())) -> string()).
+
 marshal_bitmap(_FieldIds) ->
 	[].
+
+%% @doc Extracts a list of field IDs from an XML 
+%%      representation of an ISO 8583 message. The result is returned
+%%      as a 2-tuple of the field IDs and the XML document.
+%%
+%% @spec unmarshal_bitmap(string()) -> {list(integer()), string()}
+-spec(unmarshal_bitmap(string()) -> {list(integer()), string()}).
 
 unmarshal_bitmap(Marshalled) ->
 	{Xml, []} = xmerl_scan:string(Marshalled),
@@ -105,8 +160,20 @@ unmarshal_bitmap(Marshalled) ->
 	FieldIds = extract_ids(ChildNodes, []) -- [0],
 	{lists:sort(FieldIds), Marshalled}.
 
+%% @doc Marshals the MTI into an XML &lt;field&gt; element.
+%%
+%% @spec marshal_mti(string()) -> string()
+-spec(marshal_mti(string()) -> string()).
+
 marshal_mti(Mti) ->
 	marshal_field(0, Mti, erl8583_fields).
+
+%% @doc Extracts the MTI from an XML
+%%      document.  The MTI and the XML document are 
+%%      returned as a 2-tuple.
+%%
+%% @spec unmarshal_mti(string()) -> {string(), string()}
+-spec(unmarshal_mti(string()) -> {string(), string()}).
 
 unmarshal_mti(Marshalled) ->
 	unmarshal_field(0, Marshalled, erl8583_fields).
