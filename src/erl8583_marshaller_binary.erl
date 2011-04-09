@@ -12,9 +12,16 @@
 
 %% @author CA Meijer
 %% @copyright 2011 CA Meijer
-%% @doc This module marshalls an iso8583message() into 
-%%      a binary.
-
+%% @doc This module provides functions to marshal an iso8583message() 
+%%      into a list of bytes, to unmarshal a list of bytes into an
+%%      iso8583message() and to marshal/unmarshal the MTI, bitmap
+%%      and fields of an ISO 8583 message.
+%%      
+%%      When functions are used to unmarshal the MTI, bitmap or a 
+%%      field of a message, the function assumes that the component
+%%      to be unmarshalled is at the start of the list. The
+%%      returned value is a 2-tuple containing the unmarshalled value
+%%      and the remainder of the list that needs to be unmarshalled.
 -module(erl8583_marshaller_binary).
 
 %%
@@ -41,13 +48,23 @@
 %% API Functions
 %%
 
+%% @doc Marshals an iso8583message() to a list of bytes.
+%%
+%% @spec marshal(iso8583message()) -> list(byte())
+-spec(marshal(iso8583message()) -> list(byte())).
+
 marshal(Message) ->
 	erl8583_marshaller:marshal(Message, ?MARSHALLER_BINARY).
+
+%% @doc Unmarshals a list of bytes to an iso8583message().
+%%
+%% @spec unmarshal(list(byte())) -> iso8583message()
+-spec(unmarshal(list(byte())) -> iso8583message()).
 
 unmarshal(Marshalled) ->
 	erl8583_marshaller:unmarshal(Marshalled, ?MARSHALLER_BINARY).
 	
-%% @doc Constructs a binary representation of the
+%% @doc Constructs a list of bytes representation of the
 %%      bitmap for an iso8583message().
 %%
 %% @spec marshal_bitmap(list(integer())) -> list(byte())
@@ -61,7 +78,7 @@ marshal_bitmap(FieldIds) ->
 	BitMap = lists:duplicate(NumBitMaps * 8, 0),
 	construct_bitmap(lists:sort(ExtensionBits ++ FieldIds), BitMap).
 
-%% @doc Extracts a list of field IDs from a binary representation of 
+%% @doc Extracts a list of field IDs from a list of bytes representation of 
 %%      an ISO 8583 message.  The result is returned as a 2-tuple: a list
 %%      of field IDs and the remainder of the message excluding the bit map.
 %%
@@ -75,31 +92,41 @@ unmarshal_bitmap(BinaryMessage) ->
 	{BitMap, Fields} = lists:split(BitMapLength, BinaryMessage),
 	{extract_fields(BitMap, 0, 8, []), Fields}.
 
-%% @doc Marshals a field value into a binary. The 1987 version
-%%      of the ISO 8583 specification is used to determine how to
-%%      encode the field value.
+%% @doc Marshals a field value into a byte list using a specified
+%%      encoding rules module.
 %%
-%% @spec marshal_field(integer(), iso8583field_value(), module()) -> binary()
--spec(marshal_field(integer(), iso8583field_value(), module()) -> binary()).
+%% @spec marshal_field(integer(), iso8583field_value(), module()) -> list(byte())
+-spec(marshal_field(integer(), iso8583field_value(), module()) -> list(byte())).
 
 marshal_field(FieldId, FieldValue, EncodingRules) ->
 	Pattern = EncodingRules:get_encoding(FieldId),
 	marshal_data_element(Pattern, FieldValue).
 
-marshal_mti(Mti) ->
-	marshal_field(0, Mti, erl8583_fields).
-
-%% @doc Extracts a field value from the start of a binary.  The field value 
-%%      and the rest of the unmarshalled binary are returned as a 2-tuple.
-%%      The 1987 version of the ISO 8583 specification is used to determine how to
-%%      decode the field value.
+%% @doc Extracts a field value from the start of a byte list.  The field value 
+%%      and the rest of the unmarshalled byte list is returned as a 2-tuple.
+%%      A module that specifies how the field is encoded must be passed
+%%      as an argument.
 %%
-%% @spec unmarshal_field(integer(), list(byte()), module()) -> {iso8583field_value(), binary()}
--spec(unmarshal_field(integer(), list(byte()), module()) -> {iso8583field_value(), binary()}).
+%% @spec unmarshal_field(integer(), list(byte()), module()) -> {iso8583field_value(), list(byte())}
+-spec(unmarshal_field(integer(), list(byte()), module()) -> {iso8583field_value(), list(byte())}).
 
 unmarshal_field(FieldId, BinaryFields, EncodingRules) ->
 	Pattern = EncodingRules:get_encoding(FieldId),
 	unmarshal_data_element(Pattern, BinaryFields).
+
+%% @doc Marshals the MTI into a byte list.
+%%
+%% @spec marshal_mti(string()) -> list(byte())
+-spec(marshal_mti(string()) -> list(byte())).
+
+marshal_mti(Mti) ->
+	marshal_field(0, Mti, erl8583_fields).
+
+%% @doc Extracts the MTI from the start of a byte list.  The MTI 
+%%      and the rest of the unmarshalled list is returned as a 2-tuple.
+%%
+%% @spec unmarshal_mti(list(byte())) -> {string(), list(byte())}
+-spec(unmarshal_mti(list(byte())) -> {string(), list(byte())}).
 
 unmarshal_mti(Marshalled) ->
 	unmarshal_field(0, Marshalled, erl8583_fields).

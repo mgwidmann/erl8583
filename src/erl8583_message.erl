@@ -18,7 +18,7 @@
 %%      a non-negative integer. The value can be an ASCII string, a binary
 %%      another message. Integer values, e.g. a PAN should be encoded as
 %%      strings.
-%%      <br/>
+%%      
 %%      The identifier 0 is associated with the MTI of a message.
 %%
 %%      Optionally attributes can be set for a message (e.g. indicating
