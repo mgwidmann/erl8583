@@ -12,9 +12,16 @@
 
 %% @author CA Meijer
 %% @copyright 2011 CA Meijer
-%% @doc This module marshals an iso8583message() into 
-%%      an EBCDIC binary or unmarshals an EBCDIC binary into an
-%%      iso8583message().
+%% @doc This module provides functions to marshal an iso8583message() 
+%%      into an EBCDIC string, to unmarshal an EBCDIC string into an
+%%      iso8583message() and to marshal/unmarshal the MTI, bitmap
+%%      and fields of an ISO 8583 message.
+%%      
+%%      When functions are used to unmarshal the MTI, bitmap or a 
+%%      field of a message, the function assumes that the component
+%%      to be unmarshalled is at the start of the string. The
+%%      returned value is a 2-tuple containing the unmarshalled value
+%%      and the remainder of the string that needs to be unmarshalled.
 -module(erl8583_marshaller_ebcdic).
 
 %%
@@ -41,15 +48,41 @@
 %% API Functions
 %%
 
+%% @doc Constructs an EBCDIC string representation of
+%%      an iso8583message().
+%%
+%% @spec marshal(iso8583message()) -> list(byte())
+-spec(marshal(iso8583message()) -> list(byte())).
+
 marshal(Message) ->
 	erl8583_marshaller:marshal(Message, ?MARSHALLER_EBCDIC).
+
+%% @doc Constructs an iso8583message() from an EBCDIC string 
+%%      marshalling of the message.
+%%
+%% @spec unmarshal(list(byte())) -> iso8583message()
+-spec(unmarshal(list(byte())) -> iso8583message()).
 
 unmarshal(Marshalled) ->
 	erl8583_marshaller:unmarshal(Marshalled, ?MARSHALLER_EBCDIC).
 
+%% @doc Marshals a field value into an EBCDIC string using a specified
+%%      encoding rules module.
+%%
+%% @spec marshal_field(integer(), iso8583field_value(), module()) -> list(byte())
+-spec(marshal_field(integer(), iso8583field_value(), module()) -> list(byte())).
+
 marshal_field(FieldId, FieldValue, EncodingRules) ->
 	Ascii = erl8583_marshaller_ascii:marshal_field(FieldId, FieldValue, EncodingRules),
 	erl8583_convert:ascii_to_ebcdic(Ascii).
+
+%% @doc Extracts a field value from the start of an EBCDIC string.  The field value 
+%%      and the rest of the unmarshalled string is returned as a 2-tuple.
+%%      A module that specifies how the field is encoded must be passed
+%%      as an argument.
+%%
+%% @spec unmarshal_field(integer(), list(byte()), module()) -> {iso8583field_value(), list(byte())}
+-spec(unmarshal_field(integer(), list(byte()), module()) -> {iso8583field_value(), list(byte())}).
 
 unmarshal_field(FieldId, Marshalled, EncodingRules) ->
 	Length = get_field_length(FieldId, Marshalled, EncodingRules),
@@ -58,14 +91,39 @@ unmarshal_field(FieldId, Marshalled, EncodingRules) ->
 	{Field, []} = erl8583_marshaller_ascii:unmarshal_field(FieldId, Ascii, EncodingRules),
 	{Field, Rest}.
 
+%% @doc Marshals the MTI into an EBCDIC string.
+%%
+%% @spec marshal_mti(string()) -> list(byte())
+-spec(marshal_mti(string()) -> list(byte())).
+
 marshal_mti(Mti) ->
 	marshal_field(0, Mti, erl8583_fields).
+
+%% @doc Extracts the MTI from the start of an EBCDIC string.  The MTI 
+%%      and the rest of the unmarshalled string is returned as a 2-tuple.
+%%
+%% @spec unmarshal_mti(list(byte())) -> {string(), list(byte())}
+-spec(unmarshal_mti(list(byte())) -> {string(), list(byte())}).
 
 unmarshal_mti(Marshalled) ->
 	unmarshal_field(0, Marshalled, erl8583_fields).
 	
+%% @doc Constructs an EBCDIC string representation of the
+%%      bitmap for an iso8583message().
+%%
+%% @spec marshal_bitmap(list(integer())) -> list(byte())
+-spec(marshal_bitmap(list(integer())) -> list(byte())).
+
 marshal_bitmap(FieldIds) ->
 	erl8583_convert:ascii_to_ebcdic(erl8583_marshaller_ascii:marshal_bitmap(FieldIds)).
+
+%% @doc Extracts a list of field IDs from an EBCDIC string 
+%%      representation of an ISO 8583 message. The result is returned
+%%      as a 2-tuple of the field IDs and the remainder of the 
+%%      the message (encoding the field values but not the bit map).
+%%
+%% @spec unmarshal_bitmap(list(byte())) -> {list(integer()), string()}
+-spec(unmarshal_bitmap(list(byte())) -> {list(integer()), string()}).
 
 unmarshal_bitmap(Marshalled) ->
 	Length = get_bitmap_length(Marshalled),
