@@ -15,8 +15,8 @@
 %% @doc This module provides functions to marshal an iso8583message() 
 %%      into an ASCII string, to unmarshal an ASCII string into an
 %%      iso8583message() and to marshal/unmarshal the MTI, bitmap
-%%      and fields of an ISO 8583 message.<br/>
-%%      <br/>
+%%      and fields of an ISO 8583 message.
+%%      
 %%      When functions are used to unmarshal the MTI, bitmap or a 
 %%      field of a message, the function assumes that the component
 %%      to be unmarshalled is at the start of the string. The
