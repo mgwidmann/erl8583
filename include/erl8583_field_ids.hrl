@@ -101,8 +101,17 @@
 -define(PERSONAL_ID_NUMBER_DATA, 52).
 -define(SECURITY_RELATED_CONTROL_INFO, 53).
 -define(ADDITIONAL_AMOUNTS, 54).
+
+% 1987 definition for field 55
 -define(RESERVED_ISO1, 55).
+% 1993 definition for field 55
+-define(ICC_SYSTEM_RELATED_DATA, 55).
+
+% 1987 definition for field 56
 -define(RESERVED_ISO2, 56).
+% 1993 definition for field 56
+-define(ORIGINAL_DATA_ELEMENTS_1993, 56).
+
 -define(RESERVED_NATIONAL1, 57).
 -define(RESERVED_NATIONAL2, 58).
 -define(RESERVED_NATIONAL3, 59).

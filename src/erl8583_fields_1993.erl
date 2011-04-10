@@ -57,11 +57,20 @@ get_encoding(?AMOUNT_ORIGINAL) ->
 	{n, fixed, 24};
 get_encoding(?ACQUIRER_REFERENCE_DATA) ->
 	{n, llvar, 48};
+get_encoding(?RESP_CODE) ->
+	{an, fixed, 3};
+get_encoding(?CARD_ACCEPTOR_NAME_LOCATION) ->
+	{an, llvar, 99};
+get_encoding(?SECURITY_RELATED_CONTROL_INFO) ->
+	{an, llvar, 8};
+get_encoding(?ICC_SYSTEM_RELATED_DATA) ->
+	{ans, lllvar, 999};
+get_encoding(?ORIGINAL_DATA_ELEMENTS_1993) ->
+	{an, llvar, 35};
+get_encoding(?MESSAGE_SECURITY_CODE) ->
+	{an, llvar, 18};
 get_encoding(FieldId) ->
 	erl8583_fields:get_encoding(FieldId).
-
-
-
 
 %%
 %% Local Functions
