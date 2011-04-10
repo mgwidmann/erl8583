@@ -106,9 +106,9 @@ fields_21_to_25_test() ->
 	Msg2 = erl8583_message:set(0, "0200", Msg1),
 	Msg3 = erl8583_message:set(?FORWARDING_INST_COUNTRY_CODE, "1", Msg2),	
 	Msg4 = erl8583_message:set(?POS_ENTRY_MODE, "2", Msg3),	
-	Msg5 = erl8583_message:set(?APPLICATION_PAN_NUMBER, "3", Msg4),
+	Msg5 = erl8583_message:set(?CARD_SEQUENCE_NUMBER, "3", Msg4),
 	Msg6 = erl8583_message:set(?POS_CONDITION_CODE, "5", Msg5),
-	Msg7 = erl8583_message:set(?FUNCTION_CODE, "4", Msg6),
+	Msg7 = erl8583_message:set(?NETWORK_INTERNATIONAL_ID, "4", Msg6),
 	"020000000F800000000000100200300405" = erl8583_marshaller:marshal(Msg7, ?MARSHALLER_ASCII).
 	
 fields_27_to_33_test() ->

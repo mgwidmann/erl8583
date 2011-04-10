@@ -36,7 +36,7 @@
 %% @doc Returns how a field is encoded as a triple consisting of the content (e.g. ans, b, z, etc),
 %%      the type (e.g. llvar, lllvar or fixed) and the maximum length.
 %%
-%% @spec get_encoding(integer()) -> field_encoding()
+%% @spec get_encoding(FieldId::integer()) -> field_encoding()
 -spec(get_encoding(integer()) -> field_encoding()).
 
 get_encoding(?MTI) ->
@@ -83,9 +83,9 @@ get_encoding(?FORWARDING_INST_COUNTRY_CODE) ->
 	{n, fixed, 3};
 get_encoding(?POS_ENTRY_MODE) ->
 	{n, fixed, 3};
-get_encoding(?APPLICATION_PAN_NUMBER) ->
+get_encoding(?CARD_SEQUENCE_NUMBER) ->
 	{n, fixed, 3};
-get_encoding(?FUNCTION_CODE) ->
+get_encoding(?NETWORK_INTERNATIONAL_ID) ->
 	{n, fixed, 3};
 get_encoding(?POS_CONDITION_CODE) ->
 	{n, fixed, 2};
