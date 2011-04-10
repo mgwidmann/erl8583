@@ -12,10 +12,10 @@
 
 %% @author CA Meijer
 %% @copyright 2011 CA Meijer
-%% @doc This module provides a function to get how a field is
-%%      encoded according to the 1993 version of the ISO 8583 
+%% @doc This module will provide a function to get how a field is
+%%      encoded according to the 2003 version of the ISO 8583 
 %%      specification. 
--module(erl8583_fields_1993).
+-module(erl8583_fields_2003).
 
 %%
 %% Include files
@@ -39,38 +39,9 @@
 %% @spec get_encoding(integer()) -> field_encoding()
 -spec(get_encoding(integer()) -> field_encoding()).
 
-get_encoding(?DATE_AND_TIME_LOCAL_TRAN) ->
-	{n, fixed, 12};
-get_encoding(?DATE_EFF) ->
-	{n, fixed, 4};
-get_encoding(?DATE_SETTLE) ->
-	{n, fixed, 6};
-get_encoding(?POS_DATA_CODE) ->
-	{an, fixed, 12};
-get_encoding(?FUNCTION_CODE) ->
-	{n, fixed, 3};
-get_encoding(?MESSAGE_REASON_CODE) ->
-	{n, fixed, 4};
-get_encoding(?CARD_ACCEPTOR_BUSINESS_CODE) ->
-	{n, fixed, 4};
-get_encoding(?AMOUNT_ORIGINAL) ->
-	{n, fixed, 24};
-get_encoding(?ACQUIRER_REFERENCE_DATA) ->
-	{n, llvar, 48};
-get_encoding(?RESP_CODE) ->
-	{an, fixed, 3};
-get_encoding(?CARD_ACCEPTOR_NAME_LOCATION) ->
-	{an, llvar, 99};
-get_encoding(?SECURITY_RELATED_CONTROL_INFO) ->
-	{an, llvar, 8};
-get_encoding(?ICC_SYSTEM_RELATED_DATA) ->
-	{ans, lllvar, 999};
-get_encoding(?ORIGINAL_DATA_ELEMENTS_1993) ->
-	{an, llvar, 35};
-get_encoding(?MESSAGE_SECURITY_CODE) ->
-	{an, llvar, 18};
-get_encoding(FieldId) ->
-	erl8583_fields:get_encoding(FieldId).
+get_encoding(_FieldId) ->
+	erlang:error("No support yet for the 2003 version of ISO 8583.").
+
 
 %%
 %% Local Functions
