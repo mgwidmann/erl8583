@@ -12,6 +12,7 @@
 
 %% Defines identifiers for ISO 8583 fields.
 -define(MTI, 0).
+-define(BITMAP_EXTENDED, 1).
 -define(PAN, 2).
 -define(PROC_CODE, 3).
 -define(AMOUNT_TRAN, 4).

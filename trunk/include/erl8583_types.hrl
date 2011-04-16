@@ -15,9 +15,9 @@
 %% @type max_length() = integer(). The maximum length of a field in bytes.
 -type(max_length() :: integer()).
 
-%% @type field_encoding() = {n|b|an|ans|x_n|ns|z, fixed|llvar|lllvar, max_length()}. 
+%% @type field_encoding() = {n|b|an|ans|x_n|ns|z|bitmap, fixed|llvar|lllvar, max_length()}. 
 %% How a field is encoded.
--type(field_encoding() :: {n|b|an|ans|x_n|ns|z, fixed|llvar|lllvar, max_length()}).
+-type(field_encoding() :: {n|b|an|ans|x_n|ns|z|bitmap, fixed|llvar|lllvar, max_length()}).
 
 %% An attribute of an ISO 8583 message is a {Key, Value} pair.
 %%

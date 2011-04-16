@@ -41,6 +41,8 @@
 
 get_encoding(?MTI) ->
 	{n, fixed, 4};
+get_encoding(?BITMAP_EXTENDED) ->
+	{bitmap, fixed, 8};
 get_encoding(?PAN) ->
 	{n, llvar, 19};
 get_encoding(?PROC_CODE) ->
