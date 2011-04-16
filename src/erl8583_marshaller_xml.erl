@@ -165,8 +165,9 @@ unmarshal_bitmap(Marshalled) ->
 %% @spec marshal_mti(string()) -> string()
 -spec(marshal_mti(string()) -> string()).
 
-marshal_mti(Mti) ->
-	marshal_field(0, Mti, erl8583_fields).
+marshal_mti({Message, Fields, Marshalled}) ->
+	Mti = erl8583_message:get(0, Message),
+	{Message, Fields -- [0], Marshalled ++ marshal_field(0, Mti, erl8583_fields)}.
 
 %% @doc Extracts the MTI from an XML
 %%      document.  The MTI and the XML document are 
