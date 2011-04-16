@@ -33,9 +33,8 @@ marshal_field(FieldId, Msg, Encoding) ->
 marshal_bitmap(_Msg) ->
 	"bitmap".
 
-marshal_mti({Message, Fields, Marshalled}) ->
-	Value = erl8583_message:get(0, Message),
-	{Message, Fields, Marshalled ++ marshal_field(0, Value, undefined)}.
+marshal_mti(Value) ->
+	marshal_field(0, Value, undefined).
 
 %% Test that a message with only an MTI can be exported.
 mti_only_test() ->
