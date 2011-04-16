@@ -119,8 +119,9 @@ unmarshal_field(FieldId, BinaryFields, EncodingRules) ->
 %% @spec marshal_mti(string()) -> list(byte())
 -spec(marshal_mti(string()) -> list(byte())).
 
-marshal_mti(Mti) ->
-	marshal_field(0, Mti, erl8583_fields).
+marshal_mti({Message, Fields, Marshalled}) ->
+	Mti = erl8583_message:get(0, Message),
+	{Message, Fields, Marshalled ++ marshal_field(0, Mti, erl8583_fields)}.
 
 %% @doc Extracts the MTI from the start of a byte list.  The MTI 
 %%      and the rest of the unmarshalled list is returned as a 2-tuple.

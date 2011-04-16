@@ -86,10 +86,11 @@
 
 marshal(Message, MarshalHandlers) ->
 	OptionsRecord = parse_options(MarshalHandlers, #marshal_options{}),
-	Marshalled1 = encode_mti(OptionsRecord, Message),
-	Marshalled2 = Marshalled1 ++ encode_bitmap(OptionsRecord, Message),
-	Marshalled3 = Marshalled2 ++ encode_fields(OptionsRecord, Message),
-	wrap_message(OptionsRecord, Message, Marshalled3).
+	Fields = erl8583_message:get_fields(Message),
+	{Message1, _Fields1, Marshalled1} = encode_mti(OptionsRecord, {Message, Fields, []}),
+	Marshalled2 = Marshalled1 ++ encode_bitmap(OptionsRecord, Message1),
+	Marshalled3 = Marshalled2 ++ encode_fields(OptionsRecord, Message1),
+	wrap_message(OptionsRecord, Message1, Marshalled3).
 
 %% @doc Unmarshals a byte sequence into an ISO 8583 message.
 %%
@@ -140,17 +141,18 @@ get_encoding_rules(Options, Message) ->
 			end
 	end.
 
-encode_mti(Options, Message) ->
+encode_mti(Options, MarshalStruct) ->
 	MtiMarshalModule = Options#marshal_options.mti_marshaller,
 	if
 		MtiMarshalModule =:= undefined ->
-			[];
+			MarshalStruct;
 		MtiMarshalModule =/= undefined ->
-			case erl8583_message:get_fields(Message) of
-				[0|_Fields] ->
-					MtiMarshalModule:marshal_mti(erl8583_message:get(0,Message));
+			{_Message, Fields, _Marshalled} = MarshalStruct,
+			case Fields of
+				[0|_Tail] ->
+					MtiMarshalModule:marshal_mti(MarshalStruct);
 				_ ->
-					[]
+					MarshalStruct
 			end
 	end.
 
