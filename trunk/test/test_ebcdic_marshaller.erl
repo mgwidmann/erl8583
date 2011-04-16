@@ -114,10 +114,7 @@ unmarshal_field_test() ->
 	{"370012345612345", MarshalledRest} = erl8583_marshaller_ebcdic:unmarshal_field(2, Marshalled, erl8583_fields).
 
 marshal_mti_test() ->
-	Message = erl8583_message:new(),
-	MessageMti = erl8583_message:set(0, "0200", Message),
-	{MessageMti, [], [240, 242, 240, 240]} = 
-		erl8583_marshaller_ebcdic:marshal_mti({MessageMti, [0], []}).
+	 [240, 242, 240, 240] = erl8583_marshaller_ebcdic:marshal_mti("0200").
 
 unmarshal_mti_test() ->
 	{"0210", []} = erl8583_marshaller_ebcdic:unmarshal_mti([240, 242, 241, 240]).

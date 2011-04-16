@@ -30,9 +30,8 @@ marshal_field(FieldId, FieldValue, EncodingRules) ->
 marshal_bitmap(_) ->
 	[254].
 
-marshal_mti({Message, Fields, Marshalled}) ->
-	Mti = erl8583_message:get(0, Message),
-	{Message, Fields, Marshalled ++ marshal_field(0, Mti, erl8583_fields)}.
+marshal_mti(Mti) ->
+	marshal_field(0, Mti, erl8583_fields).
 
 %%
 %% Local Functions
