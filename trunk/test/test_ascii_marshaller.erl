@@ -36,14 +36,6 @@ marshal_bitmap(Msg) ->
 marshal_mti(Value) ->
 	marshal_field(0, Value, undefined).
 
-%% Test that a message with only an MTI can be exported.
-mti_only_test() ->
-	Msg1 = erl8583_message:new(),
-	Msg2 = erl8583_message:set(0, "0200", Msg1),
-	"0200" ++ X = erl8583_marshaller:marshal(Msg2, ?MARSHALLER_ASCII),
-	Msg3 = erl8583_message:set(0, "0210", Msg1),
-	"0210" ++ X = erl8583_marshaller:marshal(Msg3, ?MARSHALLER_ASCII).
-
 pan_test() ->
 	Msg1 = erl8583_message:new(),
 	Msg2 = erl8583_message:set(0, "0200", Msg1),
