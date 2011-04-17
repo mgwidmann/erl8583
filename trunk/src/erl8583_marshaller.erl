@@ -87,9 +87,10 @@
 marshal(Message, MarshalHandlers) ->
 	OptionsRecord = parse_options(MarshalHandlers, #marshal_options{}),
 	Marshalled1 = encode_mti(OptionsRecord, Message),
-	Marshalled2 = Marshalled1 ++ encode_bitmap(OptionsRecord, Message),
-	Marshalled3 = Marshalled2 ++ encode_fields(OptionsRecord, Message),
-	wrap_message(OptionsRecord, Message, Marshalled3).
+	{MarshalledBitmap, UpdatedMessage} = encode_bitmap(OptionsRecord, Message),
+	Marshalled2 = Marshalled1 ++ MarshalledBitmap,
+	Marshalled3 = Marshalled2 ++ encode_fields(OptionsRecord, UpdatedMessage),
+	wrap_message(OptionsRecord, UpdatedMessage, Marshalled3).
 
 %% @doc Unmarshals a byte sequence into an ISO 8583 message.
 %%
@@ -166,12 +167,11 @@ decode_mti(Options, Marshalled, Message) ->
 	
 encode_bitmap(Options, Message) ->
 	BitmapMarshalModule = Options#marshal_options.bitmap_marshaller,
-	Fields = erl8583_message:get_fields(Message) -- [0],
 	if
 		BitmapMarshalModule =:= undefined ->
-			[];
+			{[], Message};
 		BitmapMarshalModule =/= undefined ->			
-			BitmapMarshalModule:marshal_bitmap(Fields)
+			BitmapMarshalModule:marshal_bitmap(Message)
 	end.
 
 decode_bitmap(Options, Marshalled) ->

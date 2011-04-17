@@ -71,13 +71,17 @@ unmarshal(Marshalled) ->
 %% @spec marshal_bitmap(list(integer())) -> string()
 -spec(marshal_bitmap(list(integer())) -> string()).
 
-marshal_bitmap([]) ->
-	[];
-marshal_bitmap(FieldIds) ->
-	NumBitMaps = (lists:max(FieldIds) + 63) div 64,
-	ExtensionBits = [Bit * 64 - 127 || Bit <- lists:seq(2, NumBitMaps)],
-	BitMap = lists:duplicate(NumBitMaps * 8, 0),
-	erl8583_convert:string_to_ascii_hex(construct_bitmap(lists:sort(ExtensionBits ++ FieldIds), BitMap)).
+marshal_bitmap(Message) ->
+	FieldIds = erl8583_message:get_fields(Message) -- [0],
+	case FieldIds of
+		[] ->
+			{[], Message};
+		_ ->
+			NumBitMaps = (lists:max(FieldIds) + 63) div 64,
+			ExtensionBits = [Bit * 64 - 127 || Bit <- lists:seq(2, NumBitMaps)],
+			BitMap = lists:duplicate(NumBitMaps * 8, 0),
+			{erl8583_convert:string_to_ascii_hex(construct_bitmap(lists:sort(ExtensionBits ++ FieldIds), BitMap)), Message}
+	end.
 
 %% @doc Extracts a list of field IDs from an ASCII string 
 %%      representation of an ISO 8583 message. The result is returned

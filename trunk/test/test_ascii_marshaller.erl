@@ -30,8 +30,8 @@ marshal_field(FieldId, Msg, Encoding) ->
 	erl8583_marshaller_ascii:marshal_field(FieldId, Msg, Encoding).
 
 % Self-shunting for marshalling bit map in tests.
-marshal_bitmap(_Msg) ->
-	"bitmap".
+marshal_bitmap(Msg) ->
+	{"bitmap", Msg}.
 
 marshal_mti(Value) ->
 	marshal_field(0, Value, undefined).
