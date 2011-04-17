@@ -37,14 +37,6 @@ marshal_mti(Mti) ->
 %% Local Functions
 %%
 
-%% Test that a message with only an MTI can be exported.
-mti_only_test() ->
-	Msg1 = erl8583_message:new(),
-	Msg2 = erl8583_message:set(0, "0200", Msg1),
-	[2, 0] = erl8583_marshaller:marshal(Msg2, ?MARSHALLER_BINARY),
-	Msg3 = erl8583_message:set(0, "0210", Msg1),
-	[2, 16] = erl8583_marshaller:marshal(Msg3, ?MARSHALLER_BINARY).
-
 field_2_test() ->
 	Msg1 = erl8583_message:new(),
 	Msg2 = erl8583_message:set(0, "0210", Msg1),
