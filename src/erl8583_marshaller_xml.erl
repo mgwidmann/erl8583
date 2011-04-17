@@ -144,8 +144,8 @@ unmarshal_wrapping(Message, Marshalled) ->
 %% @spec marshal_bitmap(list(integer())) -> string()
 -spec(marshal_bitmap(list(integer())) -> string()).
 
-marshal_bitmap(_FieldIds) ->
-	[].
+marshal_bitmap(Message) ->
+	{[], Message}.
 
 %% @doc Extracts a list of field IDs from an XML 
 %%      representation of an ISO 8583 message. The result is returned

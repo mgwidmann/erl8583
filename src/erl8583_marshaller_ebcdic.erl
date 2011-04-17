@@ -114,8 +114,9 @@ unmarshal_mti(Marshalled) ->
 %% @spec marshal_bitmap(list(integer())) -> list(byte())
 -spec(marshal_bitmap(list(integer())) -> list(byte())).
 
-marshal_bitmap(FieldIds) ->
-	erl8583_convert:ascii_to_ebcdic(erl8583_marshaller_ascii:marshal_bitmap(FieldIds)).
+marshal_bitmap(Message) ->
+	{AsciiBitmap, UpdatedMessage} = erl8583_marshaller_ascii:marshal_bitmap(Message),
+	{erl8583_convert:ascii_to_ebcdic(AsciiBitmap), UpdatedMessage}.
 
 %% @doc Extracts a list of field IDs from an EBCDIC string 
 %%      representation of an ISO 8583 message. The result is returned

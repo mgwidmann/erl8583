@@ -27,8 +27,8 @@ marshal_field(0, "0200", _EncodingRules) ->
 marshal_field(FieldId, FieldValue, EncodingRules) ->
 	erl8583_marshaller_binary:marshal_field(FieldId, FieldValue, EncodingRules).
 
-marshal_bitmap(_) ->
-	[254].
+marshal_bitmap(Message) ->
+	{[254], Message}.
 
 marshal_mti(Mti) ->
 	marshal_field(0, Mti, erl8583_fields).

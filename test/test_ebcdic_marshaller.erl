@@ -120,7 +120,12 @@ unmarshal_mti_test() ->
 	{"0210", []} = erl8583_marshaller_ebcdic:unmarshal_mti([240, 242, 241, 240]).
 
 marshal_bitmap_test() ->
-	[240, 240, 243, 195, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240] = erl8583_marshaller_ebcdic:marshal_bitmap([11, 12, 13, 14]).
+	Msg1 = erl8583_message:new(),	Msg2 = erl8583_message:set(11, "FieldValue", Msg1),
+	Msg2 = erl8583_message:set(11, "FieldValue", Msg1),
+	Msg3 = erl8583_message:set(12, "FieldValue", Msg2),
+	Msg4 = erl8583_message:set(13, "FieldValue", Msg3),
+	Msg5 = erl8583_message:set(14, "FieldValue", Msg4),
+	{[240, 240, 243, 195, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240], Msg5} = erl8583_marshaller_ebcdic:marshal_bitmap(Msg5).
 
 unmarshal_bitmap_test() ->
 	{[11, 12, 13, 14], [1]} = erl8583_marshaller_ebcdic:unmarshal_bitmap([240, 240, 243, 195, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 1]).
