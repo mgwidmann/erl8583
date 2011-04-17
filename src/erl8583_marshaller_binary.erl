@@ -72,15 +72,18 @@ unmarshal(Marshalled) ->
 
 marshal_bitmap(Message) ->
 	FieldIds = erl8583_message:get_fields(Message) -- [0],
-	case FieldIds of
-		[] ->
-			{[], Message};
-		_ ->
-			NumBitMaps = (lists:max(FieldIds) + 63) div 64,
-			ExtensionBits = [Bit * 64 - 127 || Bit <- lists:seq(2, NumBitMaps)],
-			BitMap = lists:duplicate(NumBitMaps * 8, 0),
-			{construct_bitmap(lists:sort(ExtensionBits ++ FieldIds), BitMap), Message}
-	end.
+	FieldIds = erl8583_message:get_fields(Message) -- [0],
+	case lists:max(FieldIds) > 64 of
+		true ->
+			PrimaryFields = [1] ++ [Field || Field <- FieldIds, Field =< 64],
+			SecondaryFields = [Field-64 || Field <- FieldIds, Field > 64],
+			SecondaryBitmap = construct_bitmap(SecondaryFields),
+			UpdatedMessage = erl8583_message:set(1, SecondaryBitmap, Message);
+		false ->
+			PrimaryFields = FieldIds,
+			UpdatedMessage = Message
+	end,
+	{construct_bitmap(PrimaryFields), UpdatedMessage}.
 
 %% @doc Extracts a list of field IDs from a list of bytes representation of 
 %%      an ISO 8583 message.  The result is returned as a 2-tuple: a list
@@ -138,6 +141,9 @@ unmarshal_mti(Marshalled) ->
 %%
 %% Local Functions
 %%
+construct_bitmap(Fields) ->
+	construct_bitmap(Fields, lists:duplicate(8, 0)).
+
 construct_bitmap([], Result) ->
 	Result;
 construct_bitmap([Field|Tail], Result) when Field > 0 ->
@@ -206,7 +212,9 @@ marshal_data_element({x_n, fixed, Length}, [Head | FieldValue]) when Head =:= $C
 	IntValue = list_to_integer(FieldValue),
 	[Head|erl8583_convert:integer_to_bcd(IntValue, Length)];
 marshal_data_element({b, fixed, Length}, FieldValue) when size(FieldValue) =:= Length ->
-	binary_to_list(FieldValue).
+	binary_to_list(FieldValue);
+marshal_data_element({bitmap, fixed, Length}, FieldValue) when length(FieldValue) =:= Length ->
+	FieldValue.
 
 unmarshal_data_element({n, llvar, _MaxLength}, BinaryFields) ->
 	[NBin|RestBin] = BinaryFields,
