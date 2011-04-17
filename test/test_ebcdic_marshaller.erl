@@ -25,14 +25,6 @@
 %% Local Functions
 %%
 
-%% Test that a message with only an MTI can be exported.
-mti_only_test() ->
-	Msg1 = erl8583_message:new(),
-	Msg2 = erl8583_message:set(0, "0200", Msg1),
-	[240, 242, 240, 240] = erl8583_marshaller:marshal(Msg2, ?MARSHALLER_EBCDIC),
-	Msg3 = erl8583_message:set(0, "0210", Msg1),
-	[240, 242, 241, 240] = erl8583_marshaller:marshal(Msg3, ?MARSHALLER_EBCDIC).
-
 pan_test() ->
 	Msg1 = erl8583_message:new(),
 	Msg2 = erl8583_message:set(0, "0200", Msg1),
