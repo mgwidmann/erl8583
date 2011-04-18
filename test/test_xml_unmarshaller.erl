@@ -109,9 +109,9 @@ unmarshal_field_test() ->
       "</isomsg>" ++
     "</isomsg>",
 	?assertError(_, erl8583_marshaller_xml:unmarshal_field(7, Marshalled, undefined)),
-	{"0810", Marshalled} = erl8583_marshaller_xml:unmarshal_field(0, Marshalled, undefined),
-	{<<1, 42, 127>>, Marshalled} = erl8583_marshaller_xml:unmarshal_field(40, Marshalled, undefined),
-	{Msg, Marshalled} = erl8583_marshaller_xml:unmarshal_field(48, Marshalled, undefined),
+	{"0810", Marshalled, []} = erl8583_marshaller_xml:unmarshal_field(0, Marshalled, undefined),
+	{<<1, 42, 127>>, Marshalled, []} = erl8583_marshaller_xml:unmarshal_field(40, Marshalled, undefined),
+	{Msg, Marshalled, []} = erl8583_marshaller_xml:unmarshal_field(48, Marshalled, undefined),
 	[1] = erl8583_message:get_fields(Msg),
 	"hello" = erl8583_message:get(1, Msg).
 

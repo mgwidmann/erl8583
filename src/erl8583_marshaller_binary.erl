@@ -119,7 +119,10 @@ marshal_field(FieldId, FieldValue, EncodingRules) ->
 
 unmarshal_field(FieldId, BinaryFields, EncodingRules) ->
 	Pattern = EncodingRules:get_encoding(FieldId),
-	unmarshal_data_element(Pattern, BinaryFields).
+	case unmarshal_data_element(Pattern, BinaryFields) of
+		{Value, Rest} ->
+			{Value, Rest, []}
+	end.
 
 %% @doc Marshals the MTI into a byte list.
 %%
@@ -136,7 +139,9 @@ marshal_mti(Mti) ->
 -spec(unmarshal_mti(list(byte())) -> {string(), list(byte())}).
 
 unmarshal_mti(Marshalled) ->
-	unmarshal_field(0, Marshalled, erl8583_fields).
+	{Value, Rest, []} = unmarshal_field(0, Marshalled, erl8583_fields),
+	{Value, Rest}.
+
 
 %%
 %% Local Functions

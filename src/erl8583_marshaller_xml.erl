@@ -108,7 +108,7 @@ unmarshal_field(FieldId, Marshalled, _EncodingRule) ->
 	{Xml, []} = xmerl_scan:string(Marshalled),
 	ChildNodes = Xml#xmlElement.content,
 	FieldValue = unmarshal_field(FieldId, ChildNodes),
-	{FieldValue, Marshalled}.
+	{FieldValue, Marshalled, []}.
 	
 %% @doc Wraps XML elements in an &lt;isomsg&gt; XML element and
 %%      returns the resultant XML document. The attributes of
@@ -176,7 +176,8 @@ marshal_mti(Mti) ->
 -spec(unmarshal_mti(string()) -> {string(), string()}).
 
 unmarshal_mti(Marshalled) ->
-	unmarshal_field(0, Marshalled, erl8583_fields).
+	{Mti, Rest, []} = unmarshal_field(0, Marshalled, erl8583_fields),
+	{Mti, Rest}.
 
 %%
 %% Local Functions

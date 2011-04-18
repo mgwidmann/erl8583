@@ -88,8 +88,8 @@ unmarshal_field(FieldId, Marshalled, EncodingRules) ->
 	Length = get_field_length(FieldId, Marshalled, EncodingRules),
 	{Ebcdic, Rest} = lists:split(Length, Marshalled),
 	Ascii = erl8583_convert:ebcdic_to_ascii(Ebcdic),
-	{Field, []} = erl8583_marshaller_ascii:unmarshal_field(FieldId, Ascii, EncodingRules),
-	{Field, Rest}.
+	{Field, [], Ids} = erl8583_marshaller_ascii:unmarshal_field(FieldId, Ascii, EncodingRules),
+	{Field, Rest, Ids}.
 
 %% @doc Marshals the MTI into an EBCDIC string.
 %%
@@ -106,7 +106,8 @@ marshal_mti(Mti) ->
 -spec(unmarshal_mti(list(byte())) -> {string(), list(byte())}).
 
 unmarshal_mti(Marshalled) ->
-	unmarshal_field(0, Marshalled, erl8583_fields).
+	{Mti, Rest, []} = unmarshal_field(0, Marshalled, erl8583_fields),
+	{Mti, Rest}.
 	
 %% @doc Constructs an EBCDIC string representation of the
 %%      bitmap for an iso8583message().

@@ -19,15 +19,16 @@
 %% API Functions
 %%
 unmarshal_field(3, [3, 0, 4, 0], _EncodingRules) ->
-	{"3", [4, 0]};
+	{"3", [4, 0], []};
 unmarshal_field(4, [4, 0], _EncodingRule) ->
-	{"4", []};
+	{"4", [], []};
 unmarshal_field(0, Binary, _EncodingRule) ->
 	[255|B] = Binary,
-	{"0200", B}.
+	{"0200", B, []}.
 
 unmarshal_mti(Marshalled) ->
-	unmarshal_field(0, Marshalled, undefined).
+	{X, Y, []} = unmarshal_field(0, Marshalled, undefined),
+	{X, Y}.
 
 unmarshal_bitmap([254, 3, 0, 4, 0]) ->
 	{[3, 4], [3, 0, 4, 0]}.

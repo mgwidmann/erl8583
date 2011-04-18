@@ -121,7 +121,10 @@ marshal_field(FieldId, FieldValue, EncodingRules) ->
 
 unmarshal_field(FieldId, AsciiFields, EncodingRules) ->
 	Pattern = EncodingRules:get_encoding(FieldId),
-	unmarshal_data_element(Pattern, AsciiFields).
+	case unmarshal_data_element(Pattern, AsciiFields) of
+		{FieldValue, MarshalledRest} ->
+			{FieldValue, MarshalledRest, []}
+	end.
 
 %% @doc Marshals the MTI into an ASCII string.
 %%
@@ -138,7 +141,8 @@ marshal_mti(Mti) ->
 -spec(unmarshal_mti(string()) -> {string(), string()}).
 
 unmarshal_mti(Marshalled) ->
-	unmarshal_field(0, Marshalled, erl8583_fields).
+	{Mti, Rest, []} = unmarshal_field(0, Marshalled, erl8583_fields),
+	{Mti, Rest}.
 
 %%
 %% Local Functions
