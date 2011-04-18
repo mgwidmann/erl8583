@@ -103,7 +103,7 @@ unmarshal_field_test() ->
 	MarshalledField2 = [241, 245, 243, 247, 240, 240, 241, 242, 243, 244, 245, 246, 241, 242, 243, 244, 245],
 	MarshalledRest = lists:seq(1, 40), % Non EBCDIC characters.
 	Marshalled = MarshalledField2 ++ MarshalledRest,
-	{"370012345612345", MarshalledRest} = erl8583_marshaller_ebcdic:unmarshal_field(2, Marshalled, erl8583_fields).
+	{"370012345612345", MarshalledRest, []} = erl8583_marshaller_ebcdic:unmarshal_field(2, Marshalled, erl8583_fields).
 
 marshal_mti_test() ->
 	 [240, 242, 240, 240] = erl8583_marshaller_ebcdic:marshal_mti("0200").

@@ -40,17 +40,27 @@ unmarshal_wrapping(Message, Marshalled) ->
 	{Message, lists:sublist(Marshalled, 2, length(Marshalled)-2)}.
 
 unmarshal_field(0, [0,2,0,0|Rest], _) ->
-	{"0200", Rest};
+	{"0200", Rest, []};
+unmarshal_field(10, [10|Tail], _) ->
+	{[10], Tail, []};
+unmarshal_field(20, [20|Tail], _) ->
+	{[20], Tail, [30]};
+unmarshal_field(30, [30|Tail], _) ->
+	{[30], Tail, []};
 unmarshal_field(_, [H|Rest], _) ->
-	{[H+$0], Rest}.
+	{[H+$0], Rest, []}.
 
 unmarshal_bitmap([7|T]) ->
 	{[1, 2, 3], T};
 unmarshal_bitmap([31|T]) ->
-	{[1, 2, 3, 4, 5], T}.
+	{[1, 2, 3, 4, 5], T};
+unmarshal_bitmap([30|T]) ->
+	{[10, 20], T}.
+
 
 unmarshal_mti(Marshalled) ->
-	unmarshal_field(0, Marshalled, undefined).
+	{FieldValue, Rest, _Fields} = unmarshal_field(0, Marshalled, undefined),
+	{FieldValue, Rest}.
 
 mti_test() ->
 	Message = erl8583_message:set(0, "0200", erl8583_message:new()),
@@ -106,6 +116,13 @@ unmarshal_wrapping_test() ->
 	"0200" = erl8583_message:get(0, Message),
 	"4" = erl8583_message:get(4, Message).
 
+unmarshal_additional_fields_test() ->
+	Message = erl8583_marshaller:unmarshal([0, 2, 0, 0, 30, 10, 20, 30], [{mti_marshaller, ?MODULE}, {field_marshaller, ?MODULE}, {bitmap_marshaller, ?MODULE}]),
+	[0, 10, 20, 30] = erl8583_message:get_fields(Message),
+	[10] = erl8583_message:get(10, Message),
+	[20] = erl8583_message:get(20, Message),
+	[30] = erl8583_message:get(30, Message).
+	
 %%
 %% Local Functions
 %%

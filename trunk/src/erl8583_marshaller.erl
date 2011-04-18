@@ -213,8 +213,8 @@ decode_fields([FieldId|Tail], Message, Options, Marshalled) ->
 		FieldMarshalModule =:= undefined ->
 			Message;
 		FieldMarshalModule =/= undefined ->
-			{FieldValue, Rest} = FieldMarshalModule:unmarshal_field(FieldId, Marshalled, EncodingRules),
-			decode_fields(Tail, erl8583_message:set(FieldId, FieldValue, Message), 
+			{FieldValue, Rest, FieldsToUnmarshal} = FieldMarshalModule:unmarshal_field(FieldId, Marshalled, EncodingRules),
+			decode_fields(Tail ++ FieldsToUnmarshal, erl8583_message:set(FieldId, FieldValue, Message), 
 						  Options, Rest) 
 	end.
 

@@ -19,16 +19,17 @@
 %% API Functions
 %%
 unmarshal_field(3, [$3|Tail], _Encoder) ->
-	{"Field 3", Tail};
+	{"Field 3", Tail, []};
 unmarshal_field(4, [$4|Tail], _Encoder) ->
-	{"Field 4", Tail};
+	{"Field 4", Tail, []};
 unmarshal_field(0, [$X|Tail], _Encoder) ->
-	{"0200", Tail};
+	{"0200", Tail, []};
 unmarshal_field(Id, Str, Encoder) ->
 	erl8583_marshaller_ascii:unmarshal_field(Id, Str, Encoder).
 	
 unmarshal_mti(Marshalled) ->
-	unmarshal_field(0, Marshalled, erl8583_fields).
+	{X, Y, []} = unmarshal_field(0, Marshalled, erl8583_fields),
+	{X, Y}.
 
 % bit map unmarshaller
 unmarshal_bitmap([$B|Rest]) ->
