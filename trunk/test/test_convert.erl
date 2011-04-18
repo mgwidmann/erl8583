@@ -202,3 +202,10 @@ ascii_to_ebcdic_sanity_test() ->
 					lists:seq(226, 233) ++ lists:seq(240, 249),
 	Ascii = erl8583_convert:ebcdic_to_ascii(Ebcdic),
 	Ebcdic = erl8583_convert:ascii_to_ebcdic(Ascii).
+
+list_to_bitmap_test() ->
+	<<128, 0, 0, 0, 0, 0, 0, 0>> = erl8583_convert:list_to_bitmap([1]),
+	<<0, 0, 0, 0, 0, 0, 0, 1>> = erl8583_convert:list_to_bitmap([64]),
+	<<128, 0, 0, 0, 0, 0, 0, 1>> = erl8583_convert:list_to_bitmap([1, 64]),
+	<<128, 0, 0, 0, 0, 0, 0, 1>> = erl8583_convert:list_to_bitmap([1, 64, 1]),
+	<<128, 0, 0, 0, 0, 0, 0, 1>> = erl8583_convert:list_to_bitmap([1, 1, 64, 64, 1]).
