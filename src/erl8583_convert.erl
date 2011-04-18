@@ -39,7 +39,8 @@
 		 strip_leading_zeroes/1,
 		 ascii_to_ebcdic/1,
 		 ebcdic_to_ascii/1,
-		 list_to_bitmap/1]).
+		 list_to_bitmap/1,
+		 bitmap_to_list/1]).
 
 %%
 %% API Functions
@@ -234,6 +235,12 @@ ebcdic_to_ascii(EbcdicStr) ->
 
 list_to_bitmap(Ids) ->
 	list_to_bitmap(Ids, array:from_list(lists:duplicate(8, 0))).
+
+bitmap_to_list(Bitmap) when size(Bitmap) =:= 8 ->
+	L = binary_to_list(Bitmap),
+	F = fun(X, Acc) -> Acc bsl 8 + X end,
+	BitmapInt = lists:foldl(F, 0, L),
+	bitmap_to_list(BitmapInt, 64, []).
 
 %%
 %% Local Functions
@@ -495,3 +502,14 @@ list_to_bitmap([Id|Tail], Result) when Id >= 1 andalso Id =< 64 ->
 	CurValue = array:get(Index, Result),
 	NewValue = CurValue bor (1 bsl BitNum),
 	list_to_bitmap(Tail, array:set(Index, NewValue, Result)).
+
+bitmap_to_list(_Value, 0, Result) ->
+	lists:reverse(Result);
+bitmap_to_list(Value, N, Result) ->
+	case Value band (1 bsl (N-1)) of
+		0 ->
+			bitmap_to_list(Value, N-1, Result);
+		_ ->
+			bitmap_to_list(Value, N-1, [65-N|Result])
+	end.
+
