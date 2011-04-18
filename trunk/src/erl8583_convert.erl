@@ -240,7 +240,7 @@ bitmap_to_list(Bitmap) when size(Bitmap) =:= 8 ->
 	L = binary_to_list(Bitmap),
 	F = fun(X, Acc) -> Acc bsl 8 + X end,
 	BitmapInt = lists:foldl(F, 0, L),
-	bitmap_to_list(BitmapInt, 64, []).
+	bitmap_to_list(BitmapInt, 0, []).
 
 %%
 %% Local Functions
@@ -503,13 +503,13 @@ list_to_bitmap([Id|Tail], Result) when Id >= 1 andalso Id =< 64 ->
 	NewValue = CurValue bor (1 bsl BitNum),
 	list_to_bitmap(Tail, array:set(Index, NewValue, Result)).
 
-bitmap_to_list(_Value, 0, Result) ->
+bitmap_to_list(_Value, 64, Result) ->
 	lists:reverse(Result);
 bitmap_to_list(Value, N, Result) ->
-	case Value band (1 bsl (N-1)) of
+	case Value band (1 bsl N) of
 		0 ->
-			bitmap_to_list(Value, N-1, Result);
+			bitmap_to_list(Value, N+1, Result);
 		_ ->
-			bitmap_to_list(Value, N-1, [65-N|Result])
+			bitmap_to_list(Value, N+1, [64-N|Result])
 	end.
 
