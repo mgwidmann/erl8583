@@ -211,4 +211,5 @@ list_to_bitmap_test() ->
 	<<128, 0, 0, 0, 0, 0, 0, 1>> = erl8583_convert:list_to_bitmap([1, 1, 64, 64, 1]).
 
 bitmap_to_list_test() ->
-	[1] = erl8583_convert:bitmap_to_list(<<128, 0, 0, 0, 0, 0, 0, 0>>).
+	[1] = erl8583_convert:bitmap_to_list(<<128, 0, 0, 0, 0, 0, 0, 0>>),
+	[1, 2, 64] = erl8583_convert:bitmap_to_list(<<192, 0, 0, 0, 0, 0, 0, 1>>).
