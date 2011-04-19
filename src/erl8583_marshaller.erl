@@ -225,7 +225,14 @@ encode(Fields, Msg, Result, FieldMarshaller, EncodingRules, FieldArranger) ->
 
 decode_fields([], Message, _OptionsRecord, _Marshalled) ->
 	Message;
-decode_fields([FieldId|Tail], Message, Options, Marshalled) ->
+decode_fields(Fields, Message, Options, Marshalled) ->
+	FieldArranger = Options#marshal_options.field_arranger,
+	if
+		FieldArranger =:= undefined ->
+			[FieldId|Tail] = Fields;
+		FieldArranger =/= undefined ->
+			[FieldId|Tail] = FieldArranger:arrange_fields(Fields)
+	end,
 	EncodingRules = get_encoding_rules(Options, Message),
 	FieldMarshalModule = Options#marshal_options.field_marshaller,
 	if
