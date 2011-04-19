@@ -504,7 +504,7 @@ list_to_bitmap([Id|Tail], Result) when Id >= 1 andalso Id =< 64 ->
 	list_to_bitmap(Tail, array:set(Index, NewValue, Result)).
 
 bitmap_to_list(_Value, 64, Result) ->
-	lists:reverse(Result);
+	Result;
 bitmap_to_list(Value, N, Result) ->
 	case Value band (1 bsl N) of
 		0 ->
