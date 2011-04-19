@@ -39,7 +39,8 @@
 		 unmarshal/1,
 		 marshal_field/3, 
 		 unmarshal_field/3,
-		 marshal_end/2, 
+		 marshal_end/2,
+		 marshal_init/1, 
 		 unmarshal_init/2,
 		 marshal_bitmap/1, 
 		 unmarshal_bitmap/1,
@@ -109,7 +110,10 @@ unmarshal_field(FieldId, Marshalled, _EncodingRule) ->
 	ChildNodes = Xml#xmlElement.content,
 	FieldValue = unmarshal_field(FieldId, ChildNodes),
 	{FieldValue, Marshalled, []}.
-	
+
+marshal_init(Message) ->
+	Message.
+
 %% @doc Wraps XML elements in an &lt;isomsg&gt; XML element and
 %%      returns the resultant XML document. The attributes of
 %%      the original message are attributes of the &lt;isomsg&gt; 
