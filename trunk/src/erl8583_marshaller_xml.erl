@@ -39,8 +39,8 @@
 		 unmarshal/1,
 		 marshal_field/3, 
 		 unmarshal_field/3,
-		 marshal_wrapping/2, 
-		 unmarshal_wrapping/2,
+		 marshal_end/2, 
+		 unmarshal_init/2,
 		 marshal_bitmap/1, 
 		 unmarshal_bitmap/1,
 		 marshal_mti/1, 
@@ -115,10 +115,10 @@ unmarshal_field(FieldId, Marshalled, _EncodingRule) ->
 %%      the original message are attributes of the &lt;isomsg&gt; 
 %%      XML element
 %%
-%% @spec marshal_wrapping(iso8583message(), string()) -> string()
--spec(marshal_wrapping(iso8583message(), string()) -> string()).
+%% @spec marshal_end(iso8583message(), string()) -> string()
+-spec(marshal_end(iso8583message(), string()) -> string()).
 
-marshal_wrapping(Message, Marshalled) ->
+marshal_end(Message, Marshalled) ->
 	"<isomsg" ++ 
 		encode_attributes(erl8583_message:get_attributes(Message)) ++ 
 		">" ++ 
@@ -129,10 +129,10 @@ marshal_wrapping(Message, Marshalled) ->
 %%      element and returns the message and the XML document as 
 %%      a 2-tuple.
 %%
-%% @spec unmarshal_wrapping(string(), string()) -> {iso8583message(), string()}
--spec(unmarshal_wrapping(string(), string()) -> {iso8583message(), string()}).
+%% @spec unmarshal_init(string(), string()) -> {iso8583message(), string()}
+-spec(unmarshal_init(string(), string()) -> {iso8583message(), string()}).
 
-unmarshal_wrapping(Message, Marshalled) ->
+unmarshal_init(Message, Marshalled) ->
 	{Xml, []} = xmerl_scan:string(Marshalled),
 	isomsg = Xml#xmlElement.name,
 	Attrs = Xml#xmlElement.attributes,

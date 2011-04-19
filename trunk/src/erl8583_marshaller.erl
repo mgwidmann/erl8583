@@ -37,8 +37,9 @@
 %%
 -record(marshal_options, {field_marshaller, 
 						  bitmap_marshaller,
-						  mti_marshaller, 
-						  wrapping_marshaller, 
+						  mti_marshaller,
+						  init_marshaller, 
+						  end_marshaller, 
 						  encoding_rules}).
 
 %% A module identifier and a module that implements some
@@ -47,7 +48,8 @@
 %% @type marshal_handler() = {bitmap_marshaller, module()} |
 %%	  {field_marshaller, module()} |
 %%	  {mti_marshaller, module()} |
-%%	  {wrapping_marshaller, module()} |
+%%	  {init_marshaller, module()} |
+%%	  {end_marshaller, module()} |
 %%	  {encoding_rules, module()}. A callback function that implements
 %%    functionality related to marshalling.<br/><br/> 
 %%    A bitmap_marshaller must implement marshal_bitmap/1 and
@@ -67,7 +69,8 @@
 -type(marshal_handler() :: {bitmap_marshaller, module()} |
 	  {field_marshaller, module()} |
 	  {mti_marshaller, module()} |
-	  {wrapping_marshaller, module()} |
+	  {init_marshaller, module()} |
+	  {end_marshaller, module()} |
 	  {encoding_rules, module()}).
 
 %%
@@ -90,7 +93,7 @@ marshal(Message, MarshalHandlers) ->
 	{MarshalledBitmap, UpdatedMessage} = encode_bitmap(OptionsRecord, Message),
 	Marshalled2 = Marshalled1 ++ MarshalledBitmap,
 	Marshalled3 = Marshalled2 ++ encode_fields(OptionsRecord, UpdatedMessage),
-	wrap_message(OptionsRecord, UpdatedMessage, Marshalled3).
+	end_marshalling(OptionsRecord, UpdatedMessage, Marshalled3).
 
 %% @doc Unmarshals a byte sequence into an ISO 8583 message.
 %%
@@ -98,7 +101,7 @@ marshal(Message, MarshalHandlers) ->
 -spec(unmarshal(list(byte()), list(marshal_handler())) -> iso8583message()).
 unmarshal(Marshalled, MarshalHandlers) ->
 	OptionsRecord = parse_options(MarshalHandlers, #marshal_options{}),
-	{Message0, Marshalled1} = unwrap_message(OptionsRecord, erl8583_message:new(), Marshalled),
+	{Message0, Marshalled1} = init_unmarshalling(OptionsRecord, erl8583_message:new(), Marshalled),
 	{Message1, Marshalled2} = decode_mti(OptionsRecord, Marshalled1, Message0),
 	{FieldIds, Marshalled3} = decode_bitmap(OptionsRecord, Marshalled2),
 	decode_fields(FieldIds, Message1, OptionsRecord, Marshalled3).
@@ -114,8 +117,10 @@ parse_options([{bitmap_marshaller, Marshaller}|Tail], OptionsRecord) ->
 	parse_options(Tail, OptionsRecord#marshal_options{bitmap_marshaller=Marshaller});
 parse_options([{mti_marshaller, Marshaller}|Tail], OptionsRecord) ->
 	parse_options(Tail, OptionsRecord#marshal_options{mti_marshaller=Marshaller});
-parse_options([{wrapping_marshaller, Marshaller}|Tail], OptionsRecord) ->
-	parse_options(Tail, OptionsRecord#marshal_options{wrapping_marshaller=Marshaller});
+parse_options([{init_marshaller, Marshaller}|Tail], OptionsRecord) ->
+	parse_options(Tail, OptionsRecord#marshal_options{init_marshaller=Marshaller});
+parse_options([{end_marshaller, Marshaller}|Tail], OptionsRecord) ->
+	parse_options(Tail, OptionsRecord#marshal_options{end_marshaller=Marshaller});
 parse_options([{encoding_rules, Rules}|Tail], OptionsRecord) ->
 	parse_options(Tail, OptionsRecord#marshal_options{encoding_rules=Rules}).
 
@@ -218,20 +223,20 @@ decode_fields([FieldId|Tail], Message, Options, Marshalled) ->
 						  Options, Rest) 
 	end.
 
-wrap_message(Options, Message, Marshalled) ->
-	WrapperMarshalModule = Options#marshal_options.wrapping_marshaller,
+end_marshalling(Options, Message, Marshalled) ->
+	WrapperMarshalModule = Options#marshal_options.end_marshaller,
 	if
 		WrapperMarshalModule =:= undefined ->
 			Marshalled;
 		WrapperMarshalModule =/= undefined ->
-			WrapperMarshalModule:marshal_wrapping(Message, Marshalled) 
+			WrapperMarshalModule:marshal_end(Message, Marshalled) 
 	end.
 
-unwrap_message(Options, Marshalled, Message) ->
-	WrapperMarshalModule = Options#marshal_options.wrapping_marshaller,
+init_unmarshalling(Options, Marshalled, Message) ->
+	WrapperMarshalModule = Options#marshal_options.init_marshaller,
 	if
 		WrapperMarshalModule =:= undefined ->
 			{Marshalled, Message};
 		WrapperMarshalModule =/= undefined ->
-			WrapperMarshalModule:unmarshal_wrapping(Marshalled, Message) 
+			WrapperMarshalModule:unmarshal_init(Marshalled, Message) 
 	end.
