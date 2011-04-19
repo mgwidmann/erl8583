@@ -13,7 +13,7 @@
 -export([unmarshal_mti/1, marshal_mti/1, marshal_field/3, 
 		 marshal_bitmap/1, marshal_end/2, unmarshal_end/1, 
 		 unmarshal_field/3, unmarshal_bitmap/1, unmarshal_init/2, 
-		 marshal_init/1]).
+		 marshal_init/1, arrange_fields/1]).
 
 %%
 %% API Functions
@@ -65,6 +65,11 @@ unmarshal_bitmap([31|T]) ->
 	{[1, 2, 3, 4, 5], T};
 unmarshal_bitmap([30|T]) ->
 	{[10, 20], T}.
+
+arrange_fields([1, 2, 3]) ->
+	[2, 1, 3];
+arrange_fields(Fields) ->
+	Fields.
 
 
 unmarshal_mti(Marshalled) ->
@@ -148,6 +153,13 @@ unmarshal_end_test() ->
 	[0, 2, 3, 4, 5] = erl8583_message:get_fields(Message),
 	"0200" = erl8583_message:get(0, Message),
 	"4" = erl8583_message:get(4, Message).
+	
+marshal_field_arranger_test() ->
+	Message0 = erl8583_message:set(0, "0100", erl8583_message:new()),
+	Message1 = erl8583_message:set(1, "V1", Message0),
+	Message2 = erl8583_message:set(2, "V2", Message1),	
+	Message3 = erl8583_message:set(3, "V3", Message2),
+	"0100V2V1V3" = erl8583_marshaller:marshal(Message3, [{field_arranger, ?MODULE}, {field_marshaller, ?MODULE}, {mti_marshaller, ?MODULE}]).
 	
 %%
 %% Local Functions
