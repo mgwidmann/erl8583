@@ -77,13 +77,13 @@ marshal_bitmap(Message) ->
 		true ->
 			PrimaryFields = [1] ++ [Field || Field <- FieldIds, Field =< 64],
 			SecondaryFields = [Field-64 || Field <- FieldIds, Field > 64],
-			SecondaryBitmap = construct_bitmap(SecondaryFields),
+			SecondaryBitmap = erl8583_convert:list_to_bitmap(SecondaryFields),
 			UpdatedMessage = erl8583_message:set(1, SecondaryBitmap, Message);
 		false ->
 			PrimaryFields = FieldIds,
 			UpdatedMessage = Message
 	end,
-	{erl8583_convert:string_to_ascii_hex(construct_bitmap(PrimaryFields)), UpdatedMessage}.
+	{erl8583_convert:binary_to_ascii_hex(erl8583_convert:list_to_bitmap(PrimaryFields)), UpdatedMessage}.
 
 %% @doc Extracts a list of field IDs from an ASCII string 
 %%      representation of an ISO 8583 message. The result is returned
@@ -147,18 +147,6 @@ unmarshal_mti(Marshalled) ->
 %%
 %% Local Functions
 %%
-construct_bitmap(Fields) ->
-	construct_bitmap(Fields, lists:duplicate(8, 0)).
-
-construct_bitmap([], Result) ->
-	Result;
-construct_bitmap([Field|Tail], Result) when Field > 0 ->
-	ByteNum = (Field - 1) div 8,
-	BitNum = 7 - ((Field - 1) rem 8),
-	{Left, Right} = lists:split(ByteNum, Result),
-	[ToUpdate | RightRest] = Right,
-	construct_bitmap(Tail, Left ++ ([ToUpdate + (1 bsl BitNum)]) ++ RightRest).
-
 get_bit_map_length(Msg) ->
 	get_bit_map_length(Msg, 16).
 
