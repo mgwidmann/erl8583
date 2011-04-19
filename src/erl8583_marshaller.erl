@@ -105,7 +105,8 @@ unmarshal(Marshalled, MarshalHandlers) ->
 	{Message0, Marshalled1} = init_unmarshalling(OptionsRecord, erl8583_message:new(), Marshalled),
 	{Message1, Marshalled2} = decode_mti(OptionsRecord, Marshalled1, Message0),
 	{FieldIds, Marshalled3} = decode_bitmap(OptionsRecord, Marshalled2),
-	decode_fields(FieldIds, Message1, OptionsRecord, Marshalled3).
+	Message2 = decode_fields(FieldIds, Message1, OptionsRecord, Marshalled3),
+	end_unmarshalling(OptionsRecord, Message2).
 
 %%
 %% Local Functions
@@ -233,6 +234,15 @@ end_marshalling(Options, Message, Marshalled) ->
 			EndMarshalModule:marshal_end(Message, Marshalled) 
 	end.
 
+end_unmarshalling(Options, Message) ->
+	EndMarshalModule = Options#marshal_options.end_marshaller,
+	if
+		EndMarshalModule =:= undefined ->
+			Message;
+		EndMarshalModule =/= undefined ->
+			EndMarshalModule:unmarshal_end(Message) 
+	end.
+	
 init_marshalling(Options, Message) ->
 	InitMarshalModule = Options#marshal_options.init_marshaller,
 	if

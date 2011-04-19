@@ -40,6 +40,7 @@
 		 marshal_field/3, 
 		 unmarshal_field/3,
 		 marshal_end/2,
+		 unmarshal_end/1,
 		 marshal_init/1, 
 		 unmarshal_init/2,
 		 marshal_bitmap/1, 
@@ -111,9 +112,6 @@ unmarshal_field(FieldId, Marshalled, _EncodingRule) ->
 	FieldValue = unmarshal_field(FieldId, ChildNodes),
 	{FieldValue, Marshalled, []}.
 
-marshal_init(Message) ->
-	Message.
-
 %% @doc Wraps XML elements in an &lt;isomsg&gt; XML element and
 %%      returns the resultant XML document. The attributes of
 %%      the original message are attributes of the &lt;isomsg&gt; 
@@ -129,6 +127,12 @@ marshal_end(Message, Marshalled) ->
 		Marshalled ++ 
 		"</isomsg>\n".
 	
+unmarshal_end(Message) ->
+	Message.
+
+marshal_init(Message) ->
+	Message.
+
 %% @doc Creates an ISO 8583 message by extracting the attributes of an &lt;isomsg&gt; XML 
 %%      element and returns the message and the XML document as 
 %%      a 2-tuple.
