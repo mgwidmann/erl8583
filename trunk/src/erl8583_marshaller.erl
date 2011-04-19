@@ -40,6 +40,7 @@
 						  mti_marshaller,
 						  init_marshaller, 
 						  end_marshaller, 
+						  field_arranger,
 						  encoding_rules}).
 
 %% A module identifier and a module that implements some
@@ -50,6 +51,7 @@
 %%	  {mti_marshaller, module()} |
 %%	  {init_marshaller, module()} |
 %%	  {end_marshaller, module()} |
+%%    {field_arranger, module()} |
 %%	  {encoding_rules, module()}. A callback function that implements
 %%    functionality related to marshalling.<br/><br/> 
 %%    A bitmap_marshaller must implement marshal_bitmap/1 and
@@ -71,6 +73,7 @@
 	  {mti_marshaller, module()} |
 	  {init_marshaller, module()} |
 	  {end_marshaller, module()} |
+	  {field_arranger, module()} |
 	  {encoding_rules, module()}).
 
 %%
@@ -124,7 +127,9 @@ parse_options([{init_marshaller, Marshaller}|Tail], OptionsRecord) ->
 parse_options([{end_marshaller, Marshaller}|Tail], OptionsRecord) ->
 	parse_options(Tail, OptionsRecord#marshal_options{end_marshaller=Marshaller});
 parse_options([{encoding_rules, Rules}|Tail], OptionsRecord) ->
-	parse_options(Tail, OptionsRecord#marshal_options{encoding_rules=Rules}).
+	parse_options(Tail, OptionsRecord#marshal_options{encoding_rules=Rules});
+parse_options([{field_arranger, Arranger}|Tail], OptionsRecord) ->
+	parse_options(Tail, OptionsRecord#marshal_options{field_arranger=Arranger}).
 
 get_encoding_rules(Options, Message) ->
 	if
@@ -194,22 +199,29 @@ encode_fields(Options, Message) ->
 	Fields = erl8583_message:get_fields(Message) -- [0],
 	EncodingRules = get_encoding_rules(Options, Message),
 	FieldMarshalModule = Options#marshal_options.field_marshaller,
+	FieldArranger = Options#marshal_options.field_arranger,
 	if
 		FieldMarshalModule =:= undefined ->
 			[];
 		FieldMarshalModule =/= undefined ->
-			encode(Fields, Message, FieldMarshalModule, EncodingRules) 
+			encode(Fields, Message, FieldMarshalModule, EncodingRules, FieldArranger) 
 	end.
 	
-encode(Fields, Msg, FieldMarshaller, EncodingRules) ->
-	encode(Fields, Msg, [], FieldMarshaller, EncodingRules).
+encode(Fields, Msg, FieldMarshaller, EncodingRules, FieldArranger) ->
+	encode(Fields, Msg, [], FieldMarshaller, EncodingRules, FieldArranger).
 
-encode([], _Msg, Result, _FieldMarshaller, _EncodingRules) ->
+encode([], _Msg, Result, _FieldMarshaller, _EncodingRules, _FieldArranger) ->
 	lists:reverse(Result);
-encode([FieldId|Tail], Msg, Result, FieldMarshaller, EncodingRules) ->
+encode(Fields, Msg, Result, FieldMarshaller, EncodingRules, FieldArranger) ->
+	if
+		FieldArranger =:= undefined ->
+			[FieldId|Tail] = Fields;
+		true ->
+			[FieldId|Tail] = FieldArranger:arrange_fields(Fields)
+	end,	
 	Value = erl8583_message:get(FieldId, Msg),
 	EncodedValue = FieldMarshaller:marshal_field(FieldId, Value, EncodingRules),
-	encode(Tail, Msg, lists:reverse(EncodedValue) ++ Result, FieldMarshaller, EncodingRules).
+	encode(Tail, Msg, lists:reverse(EncodedValue) ++ Result, FieldMarshaller, EncodingRules, undefined).
 
 decode_fields([], Message, _OptionsRecord, _Marshalled) ->
 	Message;
