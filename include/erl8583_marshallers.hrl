@@ -14,4 +14,5 @@
 -define(MARSHALLER_XML, [{field_marshaller, erl8583_marshaller_xml}, 
 						 {bitmap_marshaller, erl8583_marshaller_xml},
 						 {mti_marshaller, erl8583_marshaller_xml},
-						 {wrapping_marshaller, erl8583_marshaller_xml}]).
+						 {init_marshaller, erl8583_marshaller_xml},
+						 {end_marshaller, erl8583_marshaller_xml}]).
