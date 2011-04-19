@@ -11,8 +11,9 @@
 %% Exported Functions
 %%
 -export([unmarshal_mti/1, marshal_mti/1, marshal_field/3, 
-		 marshal_bitmap/1, marshal_end/2, unmarshal_field/3, 
-		 unmarshal_bitmap/1, unmarshal_init/2, marshal_init/1]).
+		 marshal_bitmap/1, marshal_end/2, unmarshal_end/1, 
+		 unmarshal_field/3, unmarshal_bitmap/1, unmarshal_init/2, 
+		 marshal_init/1]).
 
 %%
 %% API Functions
@@ -37,6 +38,9 @@ marshal_bitmap(Message) ->
 
 marshal_end(_Message, Marshalled) ->
 	"Start" ++ Marshalled ++ "End".
+
+unmarshal_end(Message) ->
+	erl8583_message:remove_fields([1], Message).
 
 marshal_init(Message) ->
 	erl8583_message:update(0, "0110", Message).
@@ -135,6 +139,16 @@ marshal_init_test() ->
 	Message3 = erl8583_message:set(3, "V3", Message2),
 	"0110V1V2V3" = erl8583_marshaller:marshal(Message3, [{init_marshaller, ?MODULE}, {field_marshaller, ?MODULE}, {mti_marshaller, ?MODULE}]).
 
+unmarshal_end_test() ->
+	Message = erl8583_marshaller:unmarshal([$S, 0, 2, 0, 0, 31, 1, 2, 3, 4, 5, $E], [{field_marshaller, ?MODULE},
+																			  {mti_marshaller, ?MODULE}, 
+																			  {bitmap_marshaller, ?MODULE},
+																			  {init_marshaller, ?MODULE},
+																			  {end_marshaller, ?MODULE}]),
+	[0, 2, 3, 4, 5] = erl8583_message:get_fields(Message),
+	"0200" = erl8583_message:get(0, Message),
+	"4" = erl8583_message:get(4, Message).
+	
 %%
 %% Local Functions
 %%
