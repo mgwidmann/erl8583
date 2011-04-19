@@ -68,9 +68,10 @@ unmarshal_bitmap([30|T]) ->
 
 arrange_fields([1, 2, 3]) ->
 	[2, 1, 3];
+arrange_fields([10, 20]) ->
+	[20, 10];
 arrange_fields(Fields) ->
 	Fields.
-
 
 unmarshal_mti(Marshalled) ->
 	{FieldValue, Rest, _Fields} = unmarshal_field(0, Marshalled, undefined),
@@ -101,7 +102,7 @@ fields_with_encoding_rules_test() ->
 	Options = [{field_marshaller, ?MODULE}, {encoding_rules, foo_rules}, {mti_marshaller, ?MODULE}],
 	"0100_V1_V2_V3" = erl8583_marshaller:marshal(Message3, Options).
 
-message_wrapping_test() ->
+marshal_end_test() ->
 	Message = erl8583_message:set(0, "0200", erl8583_message:new()),
 	Options = [{field_marshaller, ?MODULE}, {end_marshaller, ?MODULE}, {mti_marshaller, ?MODULE}],
 	"Start" ++ [0, 2, 0, 0] ++ "End" = erl8583_marshaller:marshal(Message, Options).
@@ -121,7 +122,7 @@ unmarshal_bitmap_test() ->
 	[0, 1, 2, 3] = erl8583_message:get_fields(Message),
 	"1" = erl8583_message:get(1, Message).
 	
-unmarshal_wrapping_test() ->
+unmarshal_init_test() ->
 	Message = erl8583_marshaller:unmarshal([$S, 0, 2, 0, 0, 31, 1, 2, 3, 4, 5, $E], [{field_marshaller, ?MODULE},
 																			  {mti_marshaller, ?MODULE}, 
 																			  {bitmap_marshaller, ?MODULE},
@@ -160,7 +161,15 @@ marshal_field_arranger_test() ->
 	Message2 = erl8583_message:set(2, "V2", Message1),	
 	Message3 = erl8583_message:set(3, "V3", Message2),
 	"0100V2V1V3" = erl8583_marshaller:marshal(Message3, [{field_arranger, ?MODULE}, {field_marshaller, ?MODULE}, {mti_marshaller, ?MODULE}]).
-	
+
+unmarshal_field_arranger_test() ->
+	Message = erl8583_marshaller:unmarshal([0, 2, 0, 0, 30, 20, 10, 30], [{field_arranger, ?MODULE}, {mti_marshaller, ?MODULE}, {field_marshaller, ?MODULE}, {bitmap_marshaller, ?MODULE}]),
+	[0, 10, 20, 30] = erl8583_message:get_fields(Message),
+	[10] = erl8583_message:get(10, Message),
+	[20] = erl8583_message:get(20, Message),
+	[30] = erl8583_message:get(30, Message).
+
+
 %%
 %% Local Functions
 %%
