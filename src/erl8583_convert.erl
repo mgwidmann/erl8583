@@ -234,8 +234,7 @@ ebcdic_to_ascii(EbcdicStr) ->
 	ebcdic_to_ascii(EbcdicStr, []).
 
 list_to_bitmap(Ids, Offset) ->
-	FieldIds = [Id-Offset || Id <- Ids, Id > Offset, Id =< Offset+64],
-	list_to_bitmap(FieldIds, Offset, array:from_list(lists:duplicate(8, 0))).
+	list_to_bitmap(Ids, Offset, array:from_list(lists:duplicate(8, 0))).
 
 bitmap_to_list(Bitmap) when size(Bitmap) =:= 8 ->
 	L = binary_to_list(Bitmap),
@@ -496,13 +495,15 @@ ebcdic_to_ascii([224|Tail], Result) ->
 
 list_to_bitmap([], _Offset, Result) ->
 	list_to_binary(array:to_list(Result));
-list_to_bitmap([Id|Tail], Offset, Result) when Id >= 1 andalso Id =< 64 ->
-	Id2 = Id - 1,
+list_to_bitmap([Id|Tail], Offset, Result) when Id > Offset andalso Id =< Offset+64 ->
+	Id2 = Id - Offset - 1,
 	Index = Id2 div 8,
 	BitNum = 7 - (Id2 rem 8),
 	CurValue = array:get(Index, Result),
 	NewValue = CurValue bor (1 bsl BitNum),
-	list_to_bitmap(Tail, Offset, array:set(Index, NewValue, Result)).
+	list_to_bitmap(Tail, Offset, array:set(Index, NewValue, Result));
+list_to_bitmap([_Id|Tail], Offset, Result) ->
+	list_to_bitmap(Tail, Offset, Result).
 
 bitmap_to_list(_Value, 64, Result) ->
 	Result;
