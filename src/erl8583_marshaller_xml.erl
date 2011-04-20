@@ -40,7 +40,7 @@
 		 marshal_field/3, 
 		 unmarshal_field/3,
 		 marshal_end/2,
-		 unmarshal_end/1,
+		 unmarshal_end/2,
 		 marshal_init/1, 
 		 unmarshal_init/2,
 		 marshal_bitmap/1, 
@@ -127,7 +127,7 @@ marshal_end(Message, Marshalled) ->
 		Marshalled ++ 
 		"</isomsg>\n".
 	
-unmarshal_end(Message) ->
+unmarshal_end(Message, _Marshalled) ->
 	Message.
 
 marshal_init(Message) ->
