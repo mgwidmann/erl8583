@@ -41,7 +41,9 @@
 		 marshal_field/3, 
 		 unmarshal_field/3,
 		 marshal_mti/1, 
-		 unmarshal_mti/1]).
+		 unmarshal_mti/1,
+		 marshal_end/2,
+		 unmarshal_end/1]).
 
 
 %%
@@ -115,6 +117,9 @@ marshal_field(FieldId, FieldValue, EncodingRules) ->
 %% @spec unmarshal_field(integer(), list(byte()), module()) -> {iso8583field_value(), list(byte())}
 -spec(unmarshal_field(integer(), list(byte()), module()) -> {iso8583field_value(), list(byte())}).
 
+unmarshal_field(1, BinaryFields, _EncodingRules) ->
+	{Value, Rest} = unmarshal_data_element({b, fixed, 8}, BinaryFields),
+	{Value, Rest, erl8583_convert:bitmap_to_list(Value, 64)};
 unmarshal_field(FieldId, BinaryFields, EncodingRules) ->
 	Pattern = EncodingRules:get_encoding(FieldId),
 	case unmarshal_data_element(Pattern, BinaryFields) of
@@ -140,23 +145,20 @@ unmarshal_mti(Marshalled) ->
 	{Value, Rest, []} = unmarshal_field(0, Marshalled, erl8583_fields),
 	{Value, Rest}.
 
+marshal_end(_Message, Marshalled) ->
+	Marshalled.
+
+unmarshal_end(Message) ->
+	erl8583_message:remove_fields([1, 65], Message).
 
 %%
 %% Local Functions
 %%
-get_bit_map_length(Message) ->
-	[Head|_Tail] = Message,
-	case Head >= 128 of
-		false ->
-			8;
-		true ->
-			{_, Rest} = lists:split(8, Message),
-			8 + get_bit_map_length(Rest)
-	end.
+get_bit_map_length(_Message) ->
+	8.
 
 extract_fields([], _Offset, _Index, FieldIds) ->
-	Ids = lists:sort(FieldIds),
-	[Id || Id <- Ids, Id rem 64 =/= 1];
+	lists:sort(FieldIds);
 extract_fields([_Head|Tail], Offset, 0, FieldIds) ->
 	extract_fields(Tail, Offset+1, 8, FieldIds);
 extract_fields([Head|Tail], Offset, Index, FieldIds) ->
