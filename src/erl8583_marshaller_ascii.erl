@@ -94,12 +94,10 @@ marshal_bitmap(Message) ->
 %% @spec unmarshal_bitmap(string()) -> {list(integer()), string()}
 -spec(unmarshal_bitmap(string()) -> {list(integer()), string()}).
 
-unmarshal_bitmap([]) ->
-	{[], []};
 unmarshal_bitmap(AsciiMessage) ->
-	{AsciiBitMap, Fields} = lists:split(16, AsciiMessage),
-	BitMap = erl8583_convert:ascii_hex_to_string(AsciiBitMap),
-	extract_fields(BitMap, 0, 8, {[], Fields}).
+	{AsciiBitmap, Fields} = lists:split(16, AsciiMessage),
+	Bitmap = erl8583_convert:ascii_hex_to_binary(AsciiBitmap),
+	{erl8583_convert:bitmap_to_list(Bitmap, 0), Fields}.
 
 %% @doc Marshals a field value into an ASCII string using a specified
 %%      encoding rules module.
@@ -154,18 +152,6 @@ unmarshal_end(Message) ->
 %%
 %% Local Functions
 %%
-extract_fields([], _Offset, _Index, {FieldIds, Fields}) ->
-	{lists:sort(FieldIds), Fields};
-extract_fields([_Head|Tail], Offset, 0, {FieldIds, Fields}) ->
-	extract_fields(Tail, Offset+1, 8, {FieldIds, Fields});
-extract_fields([Head|Tail], Offset, Index, {FieldIds, Fields}) ->
-	case Head band (1 bsl (Index-1)) of
-		0 ->
-			extract_fields([Head|Tail], Offset, Index-1, {FieldIds, Fields});
-		_ ->
-			extract_fields([Head|Tail], Offset, Index-1, {[Offset*8+9-Index|FieldIds], Fields})
-	end.
-
 marshal_data_element({n, llvar, Length}, FieldValue) when length(FieldValue) =< Length ->
 	erl8583_convert:integer_to_string(length(FieldValue), 2) ++ FieldValue;
 marshal_data_element({n, lllvar, Length}, FieldValue) when length(FieldValue) =< Length ->
