@@ -38,11 +38,6 @@ unmarshal_bitmap([$B|Rest]) ->
 %%
 %% Local Functions
 %%
-unmarshall_mti_test() ->
-	Msg = erl8583_marshaller:unmarshal("0210", ?MARSHALLER_ASCII),
-	"0210" = erl8583_message:get(0, Msg),
-	[0] = erl8583_message:get_fields(Msg).
-
 pan_test() ->
 	Msg = erl8583_marshaller:unmarshal("02004000000000000000165234567890123456", ?MARSHALLER_ASCII),
 	"0200" = erl8583_message:get(0, Msg),
