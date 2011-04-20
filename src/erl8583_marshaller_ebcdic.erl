@@ -42,7 +42,9 @@
 		 marshal_mti/1, 
 		 unmarshal_mti/1,
 		 marshal_bitmap/1, 
-		 unmarshal_bitmap/1]).
+		 unmarshal_bitmap/1,
+		 marshal_end/2,
+		 unmarshal_end/1]).
 
 %%
 %% API Functions
@@ -132,6 +134,12 @@ unmarshal_bitmap(Marshalled) ->
 	{BitmapEbcdic, Rest} = lists:split(Length, Marshalled),
 	{Bitmap, []} = erl8583_marshaller_ascii:unmarshal_bitmap(erl8583_convert:ebcdic_to_ascii(BitmapEbcdic)),
 	{Bitmap, Rest}.
+
+marshal_end(_Message, Marshalled) ->
+	Marshalled.
+
+unmarshal_end(Message) ->
+	erl8583_message:remove_fields([1, 65], Message).
 
 %% Local Functions
 %%
