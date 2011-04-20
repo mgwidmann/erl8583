@@ -43,7 +43,7 @@
 		 marshal_mti/1, 
 		 unmarshal_mti/1,
 		 marshal_end/2,
-		 unmarshal_end/1]).
+		 unmarshal_end/2]).
 
 %%
 %% API Functions
@@ -146,7 +146,7 @@ unmarshal_mti(Marshalled) ->
 marshal_end(_Message, Marshalled) ->
 	Marshalled.
 
-unmarshal_end(Message) ->
+unmarshal_end(Message, []) ->
 	erl8583_message:remove_fields([1, 65], Message).
 
 %%

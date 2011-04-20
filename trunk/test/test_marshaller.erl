@@ -11,7 +11,7 @@
 %% Exported Functions
 %%
 -export([unmarshal_mti/1, marshal_mti/1, marshal_field/3, 
-		 marshal_bitmap/1, marshal_end/2, unmarshal_end/1, 
+		 marshal_bitmap/1, marshal_end/2, unmarshal_end/2, 
 		 unmarshal_field/3, unmarshal_bitmap/1, unmarshal_init/2, 
 		 marshal_init/1, arrange_fields/1]).
 
@@ -39,7 +39,7 @@ marshal_bitmap(Message) ->
 marshal_end(_Message, Marshalled) ->
 	"Start" ++ Marshalled ++ "End".
 
-unmarshal_end(Message) ->
+unmarshal_end(Message, _Marshalled) ->
 	erl8583_message:remove_fields([1], Message).
 
 marshal_init(Message) ->
