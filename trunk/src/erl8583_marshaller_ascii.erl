@@ -41,7 +41,9 @@
 		 marshal_field/3, 
 		 unmarshal_field/3,
 		 marshal_mti/1, 
-		 unmarshal_mti/1]).
+		 unmarshal_mti/1,
+		 marshal_end/2,
+		 unmarshal_end/1]).
 
 %%
 %% API Functions
@@ -95,8 +97,7 @@ marshal_bitmap(Message) ->
 unmarshal_bitmap([]) ->
 	{[], []};
 unmarshal_bitmap(AsciiMessage) ->
-	BitMapLength = get_bit_map_length(AsciiMessage),
-	{AsciiBitMap, Fields} = lists:split(BitMapLength, AsciiMessage),
+	{AsciiBitMap, Fields} = lists:split(16, AsciiMessage),
 	BitMap = erl8583_convert:ascii_hex_to_string(AsciiBitMap),
 	extract_fields(BitMap, 0, 8, {[], Fields}).
 
@@ -118,12 +119,13 @@ marshal_field(FieldId, FieldValue, EncodingRules) ->
 %% @spec unmarshal_field(integer(), string(), module()) -> {iso8583field_value(), string()}
 -spec(unmarshal_field(integer(), string(), module()) -> {iso8583field_value(), string()}).
 
+unmarshal_field(1, AsciiFields, _EncodingRules) ->
+	{Value, Rest} = unmarshal_data_element({b, fixed, 8}, AsciiFields),
+	{Value, Rest, erl8583_convert:bitmap_to_list(Value, 64)};
 unmarshal_field(FieldId, AsciiFields, EncodingRules) ->
 	Pattern = EncodingRules:get_encoding(FieldId),
-	case unmarshal_data_element(Pattern, AsciiFields) of
-		{FieldValue, MarshalledRest} ->
-			{FieldValue, MarshalledRest, []}
-	end.
+	{FieldValue, MarshalledRest} = unmarshal_data_element(Pattern, AsciiFields),
+	{FieldValue, MarshalledRest, []}.
 
 %% @doc Marshals the MTI into an ASCII string.
 %%
@@ -143,26 +145,17 @@ unmarshal_mti(Marshalled) ->
 	{Mti, Rest, []} = unmarshal_field(0, Marshalled, erl8583_fields),
 	{Mti, Rest}.
 
+marshal_end(_Message, Marshalled) ->
+	Marshalled.
+
+unmarshal_end(Message) ->
+	erl8583_message:remove_fields([1, 65], Message).
+
 %%
 %% Local Functions
 %%
-get_bit_map_length(Msg) ->
-	get_bit_map_length(Msg, 16).
-
-get_bit_map_length(Msg, Length) ->
-	[HexDig1, HexDig2|_Tail] = Msg,
-	<<Byte>> = erl8583_convert:ascii_hex_to_binary([HexDig1, HexDig2]),
-	case (Byte band 128) of
-		0 ->
-			Length;
-		_ ->
-			{_Msg1, Msg2} = lists:split(16, Msg),
-			get_bit_map_length(Msg2, Length+16)
-	end.
-
 extract_fields([], _Offset, _Index, {FieldIds, Fields}) ->
-	Ids = lists:sort(FieldIds),
-	{[Id || Id <- Ids, Id rem 64 =/= 1], Fields};
+	{lists:sort(FieldIds), Fields};
 extract_fields([_Head|Tail], Offset, 0, {FieldIds, Fields}) ->
 	extract_fields(Tail, Offset+1, 8, {FieldIds, Fields});
 extract_fields([Head|Tail], Offset, Index, {FieldIds, Fields}) ->
