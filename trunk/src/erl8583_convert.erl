@@ -233,8 +233,22 @@ ascii_to_ebcdic(Str) ->
 ebcdic_to_ascii(EbcdicStr) ->
 	ebcdic_to_ascii(EbcdicStr, []).
 
-list_to_bitmap(Ids, Offset) ->
-	list_to_bitmap(Ids, Offset, array:from_list(lists:duplicate(8, 0))).
+%% @doc Converts a list of integer IDs to a 64-bit bitmap.
+%%      Values in the range [Offset+1, Offset+64] are
+%%      encoded. Values outside the specified range are
+%%      ignored.
+%%
+%% @spec list_to_bitmap(list(integer()), integer()) -> binary()
+-spec(list_to_bitmap(list(integer()), integer()) -> binary()).
+
+list_to_bitmap(FieldIds, Offset) ->
+	list_to_bitmap(FieldIds, Offset, array:from_list(lists:duplicate(8, 0))).
+
+%% @doc Converts a 64-bit bitmap to a list of integers
+%%      starting at a specified offset.
+%%
+%% @spec bitmap_to_list(binary(), integer()) -> list(integer())
+-spec(bitmap_to_list(binary(), integer()) -> list(integer())).
 
 bitmap_to_list(Bitmap, Offset) when size(Bitmap) =:= 8 ->
 	L = binary_to_list(Bitmap),
