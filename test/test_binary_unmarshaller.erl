@@ -36,13 +36,6 @@ unmarshal_bitmap([254, 3, 0, 4, 0]) ->
 %%
 %% Local Functions
 %%
-unmarshall_mti_test() ->
-	Msg1 = erl8583_marshaller:unmarshal([2, 16], ?MARSHALLER_BINARY),
-	"0210" = erl8583_message:get(0, Msg1),
-	[0] = erl8583_message:get_fields(Msg1),
-	Msg2 = erl8583_marshaller:unmarshal([2, 0], ?MARSHALLER_BINARY),
-	"0200" = erl8583_message:get(0, Msg2).
-	
 field_2_test() ->
 	Msg1 = erl8583_marshaller:unmarshal([2, 16, 64, 0, 0, 0, 0, 0, 0, 0, 23, 21, 35, 69, 103, 137, 1, 35, 69, 96], ?MARSHALLER_BINARY),
 	"0210" = erl8583_message:get(0, Msg1),

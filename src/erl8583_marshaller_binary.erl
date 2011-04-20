@@ -92,12 +92,9 @@ marshal_bitmap(Message) ->
 %% @spec unmarshal_bitmap(list(byte())) -> {list(integer()), list(byte())}
 -spec(unmarshal_bitmap(list(byte())) -> {list(integer()), list(byte())}).
 
-unmarshal_bitmap([]) ->
-	{[], []};
 unmarshal_bitmap(BinaryMessage) ->
-	BitMapLength = get_bit_map_length(BinaryMessage),
-	{BitMap, Fields} = lists:split(BitMapLength, BinaryMessage),
-	{extract_fields(BitMap, 0, 8, []), Fields}.
+	{Bitmap, Fields} = lists:split(8, BinaryMessage),
+	{erl8583_convert:bitmap_to_list(list_to_binary(Bitmap), 0), Fields}.
 
 %% @doc Marshals a field value into a byte list using a specified
 %%      encoding rules module.
@@ -154,21 +151,6 @@ unmarshal_end(Message) ->
 %%
 %% Local Functions
 %%
-get_bit_map_length(_Message) ->
-	8.
-
-extract_fields([], _Offset, _Index, FieldIds) ->
-	lists:sort(FieldIds);
-extract_fields([_Head|Tail], Offset, 0, FieldIds) ->
-	extract_fields(Tail, Offset+1, 8, FieldIds);
-extract_fields([Head|Tail], Offset, Index, FieldIds) ->
-	case Head band (1 bsl (Index-1)) of
-		0 ->
-			extract_fields([Head|Tail], Offset, Index-1, FieldIds);
-		_ ->
-			extract_fields([Head|Tail], Offset, Index-1, [Offset*8+9-Index|FieldIds])
-	end.
-
 marshal_data_element({n, llvar, Length}, FieldValue) when length(FieldValue) =< Length ->
 	LField = erl8583_convert:integer_to_bcd(length(FieldValue), 2),
 	VField = erl8583_convert:ascii_hex_to_bcd(FieldValue, "0"),
