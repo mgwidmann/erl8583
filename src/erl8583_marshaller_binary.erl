@@ -72,18 +72,16 @@ unmarshal(Marshalled) ->
 
 marshal_bitmap(Message) ->
 	FieldIds = erl8583_message:get_fields(Message) -- [0],
-	FieldIds = erl8583_message:get_fields(Message) -- [0],
 	case lists:max(FieldIds) > 64 of
 		true ->
-			PrimaryFields = [1] ++ [Field || Field <- FieldIds, Field =< 64],
-			SecondaryFields = [Field-64 || Field <- FieldIds, Field > 64],
-			SecondaryBitmap = erl8583_convert:list_to_bitmap(SecondaryFields),
+			Fields = [1] ++ FieldIds,
+			SecondaryBitmap = erl8583_convert:list_to_bitmap(Fields, 64),
 			UpdatedMessage = erl8583_message:set(1, SecondaryBitmap, Message);
 		false ->
-			PrimaryFields = FieldIds,
+			Fields = FieldIds,
 			UpdatedMessage = Message
 	end,
-	{binary_to_list(erl8583_convert:list_to_bitmap(PrimaryFields)), UpdatedMessage}.
+	{binary_to_list(erl8583_convert:list_to_bitmap(Fields, 0)), UpdatedMessage}.
 
 %% @doc Extracts a list of field IDs from a list of bytes representation of 
 %%      an ISO 8583 message.  The result is returned as a 2-tuple: a list
