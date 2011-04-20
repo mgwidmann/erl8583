@@ -43,7 +43,7 @@ unmarshal_end(Message, _Marshalled) ->
 	erl8583_message:remove_fields([1], Message).
 
 marshal_init(Message) ->
-	erl8583_message:update(0, "0110", Message).
+	{"X", erl8583_message:update(0, "0110", Message)}.
 
 unmarshal_init(Message, Marshalled) ->
 	{Message, lists:sublist(Marshalled, 2, length(Marshalled)-2)}.
@@ -143,7 +143,7 @@ marshal_init_test() ->
 	Message1 = erl8583_message:set(1, "V1", Message0),
 	Message2 = erl8583_message:set(2, "V2", Message1),	
 	Message3 = erl8583_message:set(3, "V3", Message2),
-	"0110V1V2V3" = erl8583_marshaller:marshal(Message3, [{init_marshaller, ?MODULE}, {field_marshaller, ?MODULE}, {mti_marshaller, ?MODULE}]).
+	"X0110V1V2V3" = erl8583_marshaller:marshal(Message3, [{init_marshaller, ?MODULE}, {field_marshaller, ?MODULE}, {mti_marshaller, ?MODULE}]).
 
 unmarshal_end_test() ->
 	Message = erl8583_marshaller:unmarshal([$S, 0, 2, 0, 0, 31, 1, 2, 3, 4, 5, $E], [{field_marshaller, ?MODULE},

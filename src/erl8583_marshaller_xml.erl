@@ -131,7 +131,7 @@ unmarshal_end(Message, _Marshalled) ->
 	Message.
 
 marshal_init(Message) ->
-	Message.
+	{[], Message}.
 
 %% @doc Creates an ISO 8583 message by extracting the attributes of an &lt;isomsg&gt; XML 
 %%      element and returns the message and the XML document as 
