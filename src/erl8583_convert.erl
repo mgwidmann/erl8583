@@ -46,7 +46,7 @@
 %% API Functions
 %%
 
-%% @doc Converts a string() of characters to a list containing
+%% @doc Converts a string of characters to a list containing
 %%      the ASCII hex character codes.
 %%
 %% @spec string_to_ascii_hex(string()) -> string()
@@ -55,7 +55,7 @@
 string_to_ascii_hex(Str) ->
 	string_to_ascii_hex(Str, []).
 
-%% @doc Converts a string() containing ASCII hex characters
+%% @doc Converts a string containing ASCII hex characters
 %%      to an equivalent ASCII string().
 %%
 %% @spec ascii_hex_to_string(string()) -> string()
@@ -114,8 +114,8 @@ integer_to_bcd(Value, Length) ->
 	integer_to_bcd(Value, Length, []).
 
 %% @doc Converts an ASCII hex encoded string to a list of BCD
-%%      encoded bytes padded with a specified padding character
-%%      if the string has odd length.
+%%      encoded bytes ()padded with a specified padding character
+%%      if the string has odd length).
 %%
 %% @spec ascii_hex_to_bcd(string(), char()) -> list(byte())
 -spec(ascii_hex_to_bcd(string(), char()) -> list(byte())).
@@ -138,8 +138,8 @@ bcd_to_integer(Bcd) ->
 		end,
 	lists:foldl(F, 0, Bcd).
 
-%% @doc Converts a BCD encoding of a value of specified length, possibly
-%%      padded with a padding character, to an ASCII hex string.
+%% @doc Converts a BCD encoding of a value of specified length (possibly
+%%      padded with a padding character) to an ASCII hex string.
 %%
 %% @spec bcd_to_ascii_hex(list(byte()), integer(), char()) -> string()
 -spec(bcd_to_ascii_hex(list(byte()), integer(), char()) -> string()).
@@ -174,7 +174,9 @@ string_to_track2(Data) ->
 	string_to_track2(Data, [], 0, true).
 
 %% @doc Converts a string containing 1 ASCII hex character
-%%      to its value.
+%%      to its value. The ASCII hex digits A-F can be encoded
+%%      as upper-case ("A" - "F") or lower-case ("a" - "f")
+%%      characters.
 %%
 %% @spec ascii_hex_to_digit(string()) -> integer()
 -spec(ascii_hex_to_digit(string()) -> integer()).
@@ -188,8 +190,8 @@ ascii_hex_to_digit([A]) when A >= $a andalso A =< $f ->
 
 %% @doc Converts a value in the range 0-15 to a 1 character
 %%      ASCII string containing the equivalent hexadecimal digit.
-%%      Values 10 - 15 are converted to the upper case letters
-%%      'A' - 'F'.
+%%      Values 10 - 15 are converted to the upper case strings
+%%      "A" - "F".
 %%
 %% @spec digit_to_ascii_hex(integer()) -> string()
 -spec(digit_to_ascii_hex(integer()) -> string()).
@@ -225,7 +227,7 @@ strip_leading_zeroes(Str) ->
 ascii_to_ebcdic(Str) ->
 	ascii_to_ebcdic(Str, []).
 
-%% @doc Converts an EBCDIC binary to an ASCII string.
+%% @doc Converts an EBCDIC string to an ASCII string.
 %%
 %% @spec ebcdic_to_ascii(list(byte())) -> string()
 -spec(ebcdic_to_ascii(list(byte())) -> string()).
