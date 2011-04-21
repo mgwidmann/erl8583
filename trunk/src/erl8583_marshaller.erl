@@ -16,14 +16,22 @@
 %%      ISO 8583 messages into various encodings. To marshal or unmarshal
 %%      a message, one must supply a list of options that specify
 %%      modules that can be called to marshal or unmarshal the MTI, the
-%%      bitmap, the message fields and, optionally, some wrapping in
-%%      which the marshalled message is encapsulated.
+%%      bitmap, the message fields and, optionally, modules that should be
+%%      invoked before (un)marshalling starts (e.g. to strip wrapping from
+%%      a marshalled message) and after (un)marshalling ends (e.g. to wrap a 
+%%      marshalled message with some padding).
 %%
 %%      Optionally, this marshaller can be passed a callback handler that
 %%      specifies how messages are to be encoded (e.g. the 1987, 1993 or
 %%      2003 specification or a proprietary specification). If no specific
 %%      encoding rules are passed, the version indicated by the MTI is
 %%      used.
+%%
+%%      A module can also be specified that reorders the message IDs prior
+%%      to marshalling a field. By default, field IDs are marshalled in increasing
+%%      order. In some cases though, the default ordering might not be appropriate;
+%%      for example, one might want to marshal the tertiary bitmap field (filed 65)
+%%      immediately after the secondary bitmap field.
 -module(erl8583_marshaller).
 
 %%
@@ -54,15 +62,19 @@
 %%    {field_arranger, module()} |
 %%	  {encoding_rules, module()}. A callback function that implements
 %%    functionality related to marshalling.<br/><br/> 
+%%    An mti_marshaller must implement marshal_mti/1 and unmarshal_mti/1
+%%    functions.<br/>
 %%    A bitmap_marshaller must implement marshal_bitmap/1 and
 %%    unmarshal_bitmap/1 functions.<br/>
 %%    A field_marshaller must implement marshal_field/3 and unmarshal_field/3
-%%    functions.
-%%    An mti_marshaller must implement marshal_mti/1 and unmarshal_mti/1
 %%    functions.<br/>
-%%    A wrapping_marshaller must implement marshal_wrapping/2 and
-%%    unmarshal_wrapping/2 functions.<br/>
-%%    An encoding_rules marshaller must implement the get_encoding/1 function.
+%%    An init_marshaller must implement marshal_init/1 and
+%%    unmarshal_init/2 functions.<br/>
+%%    An end_marshaller must implement marshal_end/2 and
+%%    unmarshal_end/2 functions.<br/>
+%%    An encoding_rules module must implement the get_encoding/1 function.
+%%    <br/>
+%%    A field_arranger module must implement the arrange_fields/1 function.
 %%    <br/><br/>
 %%    See the erl8583_marshaller_XXX modules for examples of modules that
 %%    implement various marshalling functions.<br/><br/>
