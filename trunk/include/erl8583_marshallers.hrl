@@ -18,8 +18,8 @@
 
 -define(MARSHALLER_BINARY, [{field_marshaller, erl8583_marshaller_binary}, 
 						    {bitmap_marshaller, erl8583_marshaller_binary},
-							{mti_marshaller, erl8583_marshaller_binary},
-							{end_marshaller, erl8583_marshaller_binary}]).
+						    {mti_marshaller, erl8583_marshaller_binary},
+						    {end_marshaller, erl8583_marshaller_binary}]).
 
 
 -define(MARSHALLER_EBCDIC, [{field_marshaller, erl8583_marshaller_ebcdic},
