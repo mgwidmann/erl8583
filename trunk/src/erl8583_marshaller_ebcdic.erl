@@ -135,8 +135,20 @@ unmarshal_bitmap(Marshalled) ->
 	{Bitmap, []} = erl8583_marshaller_ascii:unmarshal_bitmap(erl8583_convert:ebcdic_to_ascii(BitmapEbcdic)),
 	{Bitmap, Rest}.
 
+%% @doc Completes the marshalling of a message and returns the marshalled
+%%      form.
+%%
+%% @spec marshal_end(iso8583message(), list(byte())) -> list(byte())
+-spec(marshal_end(iso8583message(), list(byte())) -> list(byte())).
+
 marshal_end(_Message, Marshalled) ->
 	Marshalled.
+
+%% @doc Completes the unmarshalling of a message and returns the
+%%      message.
+%%
+%% @spec unmarshal_end(iso8583message(), Marshalled::list(byte())) -> iso8583message()
+-spec(unmarshal_end(iso8583message(), Marshalled::list(byte())) -> iso8583message()).
 
 unmarshal_end(Message, []) ->
 	erl8583_marshaller_ascii:unmarshal_end(Message, []).
