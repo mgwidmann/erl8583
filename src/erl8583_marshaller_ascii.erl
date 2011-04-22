@@ -143,8 +143,20 @@ unmarshal_mti(Marshalled) ->
 	{Mti, Rest, []} = unmarshal_field(0, Marshalled, erl8583_fields),
 	{Mti, Rest}.
 
+%% @doc Completes the marshalling of a message and returns the marshalled
+%%      form.
+%%
+%% @spec marshal_end(iso8583message(), string()) -> string()
+-spec(marshal_end(iso8583message(), string()) -> string()).
+
 marshal_end(_Message, Marshalled) ->
 	Marshalled.
+
+%% @doc Completes the unmarshalling of a message and returns the
+%%      message.
+%%
+%% @spec unmarshal_end(iso8583message(), Marshalled::string()) -> iso8583message()
+-spec(unmarshal_end(iso8583message(), Marshalled::string()) -> iso8583message()).
 
 unmarshal_end(Message, []) ->
 	erl8583_message:remove_fields([1], Message).
