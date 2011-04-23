@@ -115,7 +115,7 @@ unmarshal_field(FieldId, Marshalled, _EncodingRule) ->
 %% @doc Wraps XML elements in an &lt;isomsg&gt; XML element and
 %%      returns the resultant XML document. The attributes of
 %%      the original message are attributes of the &lt;isomsg&gt; 
-%%      XML element
+%%      XML element.
 %%
 %% @spec marshal_end(iso8583message(), string()) -> string()
 -spec(marshal_end(iso8583message(), string()) -> string()).
@@ -127,8 +127,20 @@ marshal_end(Message, Marshalled) ->
 		Marshalled ++ 
 		"</isomsg>\n".
 	
+%% @doc Finishes the unmarshalling of a message and returns the
+%%      message.
+%%
+%% @spec unmarshal_end(iso8583message(), string()) -> iso8583message()
+-spec(unmarshal_end(iso8583message(), string()) -> iso8583message()).
+
 unmarshal_end(Message, _Marshalled) ->
 	Message.
+
+%% @doc Starts the marshalling of a message and returns the
+%%      initial marshalled data and message as a 2-tuple.
+%%
+%% @spec marshal_init(iso8583message()) -> {string(), iso8583message()}
+-spec(marshal_init(iso8583message()) -> {string(), iso8583message()}).
 
 marshal_init(Message) ->
 	{[], Message}.
