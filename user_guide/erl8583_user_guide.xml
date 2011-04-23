@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<article>
+  <articleinfo>
+    <title>Erl8583 - Getting Started</title>
+
+    <author>
+      <firstname>CA</firstname>
+
+      <surname>Meijer</surname>
+
+      <affiliation>
+        <orgname>hammingweight@gmail.com</orgname>
+      </affiliation>
+    </author>
+
+    <pubdate>May 2011</pubdate>
+  </articleinfo>
+
+  <section>
+    <title>Introduction</title>
+
+    <para>Erl8583 is an Erlang library for generating and parsing ISO 8583
+    messages. </para>
+
+    <para></para>
+  </section>
+
+  <section>
+    <title>ISO 8583</title>
+
+    <para>hjhjh</para>
+
+    <para></para>
+  </section>
+
+  <section>
+    <title>Foo</title>
+    <para></para>
+  </section>
+</article>
