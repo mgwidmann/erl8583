@@ -147,7 +147,8 @@ marshal_init(Message) ->
 
 %% @doc Creates an ISO 8583 message by extracting the attributes of an &lt;isomsg&gt; XML 
 %%      element and returns the message and the XML document as 
-%%      a 2-tuple.
+%%      a 2-tuple. No fields of the message are populated by this function; only
+%%      the attributes of the message are set.
 %%
 %% @spec unmarshal_init(string(), string()) -> {iso8583message(), string()}
 -spec(unmarshal_init(string(), string()) -> {iso8583message(), string()}).

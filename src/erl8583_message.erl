@@ -80,8 +80,8 @@ new(Attributes) ->
 %%      some field is a submessage; e.g. [127, 2] would indicate field 2
 %%      in field 127 of the original message.
 %%
-%% @spec set(integer()|list(integer()), iso8583field_value(), iso8583message()) -> iso8583message()
--spec(set(integer()|list(integer()), iso8583field_value(), iso8583message()) -> iso8583message()).
+%% @spec set(FieldId::integer()|list(integer()), iso8583field_value(), iso8583message()) -> iso8583message()
+-spec(set(FieldId::integer()|list(integer()), iso8583field_value(), iso8583message()) -> iso8583message()).
 
 set([FieldId], FieldValue, Message) when is_integer(FieldId) ->
 	set(FieldId, FieldValue, Message);
@@ -117,8 +117,8 @@ set(FieldsList, Message) ->
 %%      some field is a submessage; e.g. [127, 2] would indicate field 2
 %%      in field 127 of the original message.
 %%
-%% @spec get(integer()|list(integer()), iso8583message()) -> iso8583field_value()
--spec(get(integer()|list(integer()), iso8583message()) -> iso8583field_value()).
+%% @spec get(FieldId::integer()|list(integer()), iso8583message()) -> iso8583field_value()
+-spec(get(FieldId::integer()|list(integer()), iso8583message()) -> iso8583field_value()).
 
 get([FieldId], Message) when is_integer(FieldId) ->
 	get(FieldId, Message);
@@ -180,8 +180,8 @@ set_attributes(Attributes, Message) ->
 %% @doc Sets or updates the value of a field in a message and returns an updated
 %%      message. The value for the field need not have been set previously.
 %%
-%% @spec update(integer()|list(integer()), iso8583field_value(), iso8583message()) -> iso8583message()
--spec(update(integer()|list(integer()), iso8583field_value(), iso8583message()) -> iso8583message()).
+%% @spec update(FieldId::integer()|list(integer()), iso8583field_value(), iso8583message()) -> iso8583message()
+-spec(update(FieldId::integer()|list(integer()), iso8583field_value(), iso8583message()) -> iso8583message()).
 
 update([FieldId], FieldValue, Message) when is_integer(FieldId) ->
 	update(FieldId, FieldValue, Message);
