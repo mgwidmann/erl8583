@@ -22,21 +22,78 @@
     <title>Introduction</title>
 
     <para>Erl8583 is an Erlang library for generating and parsing ISO 8583
-    messages. </para>
-
-    <para></para>
+    messages.</para>
   </section>
 
   <section>
     <title>ISO 8583</title>
 
-    <para>hjhjh</para>
+    <para>ISO 8583 is a standard that defines message types and content for
+    electronic transactions using payment cards like credit and debit cards.
+    There are three versions of the standard from 1987, from 1993 and from
+    2003. The 1987 standard is the most widely adopted. An ISO 8583 message
+    consists of three parts:</para>
+
+    <para><itemizedlist>
+        <listitem>
+          <para>A message type identifier (MTI)</para>
+        </listitem>
+
+        <listitem>
+          <para>One or more bitmaps that indicate what data elements are
+          present in the message</para>
+        </listitem>
+
+        <listitem>
+          <para>Data elements that contain values relevant to the transaction,
+          e.g. the transaction date and amount</para>
+        </listitem>
+      </itemizedlist></para>
 
     <para></para>
+
+    <section>
+      <title>Message Type Identifier (MTI)</title>
+
+      <para>The MTI is a 4 (decimai) digit number that encodes:</para>
+
+      <para><itemizedlist>
+          <listitem>
+            <para>The version of the standard. The first digit of the MTI can
+            have the value '0', '1' or '2' indicating that the 1987, 1993 or
+            2003 version is used.</para>
+          </listitem>
+
+          <listitem>
+            <para>The message class. The second digit specifies the purpose of
+            the message, e.g. '1' denotes an authorization message, '2'
+            indicates a financial message and '8' specifies a network
+            administration message. See the ISO specifcation for the full list
+            of message classes.</para>
+          </listitem>
+
+          <listitem>
+            <para>The message function. The third digit indicates whether the
+            message is a request ('0'), a response ('1'), an advice ('2'),
+            etc.</para>
+          </listitem>
+
+          <listitem>
+            <para>The message origin. The fourth digit indicates where the
+            message originated and whether the message is a repeat, e.g. '0'
+            indicates that the message originated from an acquiring
+            institution while '1' denotes that the message is a repeat from an
+            acquiring institution. </para>
+          </listitem>
+        </itemizedlist></para>
+
+      <para></para>
+    </section>
   </section>
 
   <section>
     <title>Foo</title>
+
     <para></para>
   </section>
 </article>
