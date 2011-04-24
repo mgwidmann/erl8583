@@ -83,9 +83,35 @@
             message originated and whether the message is a repeat, e.g. '0'
             indicates that the message originated from an acquiring
             institution while '1' denotes that the message is a repeat from an
-            acquiring institution. </para>
+            acquiring institution.</para>
           </listitem>
         </itemizedlist></para>
+
+      <para></para>
+    </section>
+
+    <section>
+      <title>Bitmap</title>
+
+      <para>The 1987 specification of ISO 8583 defines 128 data elements that
+      may be present in a message. The 1993 and 2003 versions defines 192
+      fields that can exist in a message. Each data element is identified by
+      an integer value in the range 1-128 for the 1987 specification or 1-192
+      for the later specifications. The sender indicates which data elements
+      are present in a message by one or more bitmaps. A bitmap is a
+      collection of 64 bits; if a bit is set in the bitmap it indicates that a
+      corresponding data element is present.</para>
+
+      <para>The primary bitmap is used to indicate the presence or absence of
+      data elements 1-64. The secondary bitmap is used for fields 65-128. If
+      no data elements with identifier 65 or greater is present, there is no
+      need for the secondary bitmap. The secondary bitmap is actually data
+      element 1, so if bit 1 is set in the primary bitmap it indicates that
+      the message contains the secondary bitmap.</para>
+
+      <para>The tertiary bitmap is used for fields 129-192. The tertiary
+      bitmap is data element 65, so if bit 65 of the secondary bitmap is set
+      it indicates that the tertiary bitmap is used.</para>
 
       <para></para>
     </section>
