@@ -142,11 +142,9 @@
           <listitem>
             <para>Field 98, the payee</para>
           </listitem>
-        </itemizedlist>
-      </para>
-      <para>
-      The fields listed above contain quite different
-      data:
+        </itemizedlist></para>
+
+      <para>The fields listed above contain quite different data:
       <itemizedlist>
           <listitem>
             <para>Field 1 is binary data containing a sequence of bits</para>
@@ -164,6 +162,13 @@
             <para>Field 98 contains a string with alphabetic characters</para>
           </listitem>
         </itemizedlist></para>
+
+      <para>ISO 8583 provides a format for describing acceptable contents for
+      a field and for whether the field has fixed length or variable. If the
+      field is of variable length, the field value is preceded by a length
+      value encoded as either 2 or 3 decimal digits depending on the maximum
+      permissible length for the field.</para>
+
       <para></para>
     </section>
   </section>
