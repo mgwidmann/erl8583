@@ -115,10 +115,61 @@
 
       <para></para>
     </section>
+
+    <section>
+      <title>Data Elements</title>
+
+      <para>An ISO 8583 message contains fields that carry the transaction
+      information. Specific examples of data elements that might exist in a
+      message are (from the 1987 specification): <itemizedlist>
+          <listitem>
+            <para>Field 1, the secondary bitmap</para>
+          </listitem>
+
+          <listitem>
+            <para>Field 2, the primary account number (PAN)</para>
+          </listitem>
+
+          <listitem>
+            <para>Field 4, the transaction amount</para>
+          </listitem>
+
+          <listitem>
+            <para>Field 35, track 2 data (data read from a card's magnetic
+            stripe)</para>
+          </listitem>
+
+          <listitem>
+            <para>Field 98, the payee</para>
+          </listitem>
+        </itemizedlist>
+      </para>
+      <para>
+      The fields listed above contain quite different
+      data:
+      <itemizedlist>
+          <listitem>
+            <para>Field 1 is binary data containing a sequence of bits</para>
+          </listitem>
+
+          <listitem>
+            <para>Fields 2 and 4 contain numeric amounts</para>
+          </listitem>
+
+          <listitem>
+            <para>Field 35 is encoded in a 4-bit format</para>
+          </listitem>
+
+          <listitem>
+            <para>Field 98 contains a string with alphabetic characters</para>
+          </listitem>
+        </itemizedlist></para>
+      <para></para>
+    </section>
   </section>
 
   <section>
-    <title>Foo</title>
+    <title>Erl8583</title>
 
     <para></para>
   </section>
