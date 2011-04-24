@@ -51,7 +51,9 @@
 		 clone_fields/2,
 		 response/1,
 		 response/2,
-		 remove_fields/2]).
+		 remove_fields/2,
+		 set_mti/2,
+		 get_mti/1]).
 
 %%
 %% API Functions
@@ -274,6 +276,24 @@ remove_fields(FieldIds, Message) ->
 	UpdatedDict = remove_fields_from_dict(FieldIds, Dict),
 	{iso8583_message, Attributes, UpdatedDict}.
 	
+%% @doc A convenience method for setting the message type identifier (MTI)
+%%      of a message.
+%%
+%% @spec set_mti(string(), iso8583message()) -> iso8583message()
+-spec(set_mti(string(), iso8583message()) -> iso8583message()).
+
+set_mti(Mti, Message) ->
+	set(0, Mti, Message).
+
+%% @doc A convenience method for getting the message type identifier (MTI)
+%%      of a message.
+%%
+%% @spec get_mti(iso8583message()) -> string()
+-spec(get_mti(iso8583message()) -> string()).
+
+get_mti(Message) ->
+	get(0, Message).
+
 %%
 %% Local Functions
 %%
