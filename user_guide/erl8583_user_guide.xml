@@ -164,10 +164,22 @@
         </itemizedlist></para>
 
       <para>ISO 8583 provides a format for describing acceptable contents for
-      a field and for whether the field has fixed length or variable. If the
-      field is of variable length, the field value is preceded by a length
-      value encoded as either 2 or 3 decimal digits depending on the maximum
-      permissible length for the field.</para>
+      a field and for whether the field has fixed length or variable. The
+      following abbreviations are used to describe the contents of
+      fields:<itemizedlist>
+          <listitem>
+            <para><emphasis>b</emphasis> for binary data</para>
+          </listitem>
+          <listitem>
+            <para><emphasis>n</emphasis> for numeric data</para>
+          </listitem>
+          <listitem>
+            <para><emphasis>a</emphasis>, <emphasis>an</emphasis> and <emphasis>ans</emphasis> for various forms of strings</para>
+          </listitem>
+          <listitem>
+            <para><emphasis>z</emphasis> for track 2 data</para>
+          </listitem>
+        </itemizedlist></para>
 
       <para></para>
     </section>
