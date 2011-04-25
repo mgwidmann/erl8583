@@ -223,58 +223,147 @@
             <thead>
               <row>
                 <entry>Field</entry>
+
                 <entry>Name</entry>
+
                 <entry>Format</entry>
+
                 <entry>Content</entry>
+
                 <entry>(Maximum) Length</entry>
               </row>
             </thead>
+
             <tbody>
               <row>
                 <entry>2</entry>
+
                 <entry>Primary Account Number</entry>
+
                 <entry>LLVAR</entry>
-                <entry>n</entry>
+
+                <entry><emphasis>n</emphasis></entry>
+
                 <entry>19</entry>
               </row>
+
               <row>
                 <entry>3</entry>
+
                 <entry>Processing Code</entry>
+
                 <entry>Fixed</entry>
-                <entry>n</entry>
+
+                <entry><emphasis>n</emphasis></entry>
+
                 <entry>6</entry>
               </row>
+
               <row>
                 <entry>35</entry>
+
                 <entry>Track 2 Data</entry>
+
                 <entry>LLVAR</entry>
-                <entry>z</entry>
+
+                <entry><emphasis>z</emphasis></entry>
+
                 <entry>37</entry>
               </row>
-               <row>
+
+              <row>
                 <entry>42</entry>
+
                 <entry>Card Acceptor Identification Code</entry>
+
                 <entry>Fixed</entry>
-                <entry>ans</entry>
+
+                <entry><emphasis>ans</emphasis></entry>
+
                 <entry>15</entry>
               </row>
-             <row>
+
+              <row>
                 <entry>63</entry>
+
                 <entry>Reserved Private</entry>
+
                 <entry>LLLVAR</entry>
-                <entry>ans</entry>
+
+                <entry><emphasis>ans</emphasis></entry>
+
                 <entry>999</entry>
               </row>
+
               <row>
                 <entry>64</entry>
+
                 <entry>Message Authentication Code</entry>
+
                 <entry>Fixed</entry>
-                <entry>b</entry>
+
+                <entry><emphasis>b</emphasis></entry>
+
                 <entry>64</entry>
               </row>
             </tbody>
           </tgroup>
         </table></para>
+
+      <para></para>
+
+      <para>The lengths of a field in Table 1 are expressed in terms of the
+      field content and not in bytes. For example, a<emphasis> <emphasis>field
+      of length 15 containing alphabetic characters might be encoded as 15
+      bytes if the string contains ASCII characters but a binary field of
+      length 64 might be encoded as 8 bytes if all 8 bits are used in each
+      byte.</emphasis></emphasis></para>
+
+      <para>It may happen that the contents of a fixed length field is less
+      than the prescribed length in the ISO 8583 standard. In such cases:
+      <itemizedlist>
+          <listitem>
+            <para>The contents must be padded with trailing spaces for fields
+            that contain strings, e.g. for field 42 in Table 1.</para>
+          </listitem>
+
+          <listitem>
+            <para>The contents must be padded with leading zeroes for numeric
+            fields, e.g. for field 3 in Table 1.</para>
+
+            <para></para>
+          </listitem>
+        </itemizedlist></para>
+    </section>
+
+    <section>
+      <title>Encoding ISO 8583 Messages</title>
+
+      <para>ISO 8583 defines the acceptable content for the fields of an ISO
+      8583 message; it does not describe how the fields must be encoded. This
+      has led to different implementations of ISO 8583 adopting incompatible
+      encodings. Here are some examples:<itemizedlist>
+          <listitem>
+            <para>A numeric (<emphasis>n</emphasis>) field of length 6 might
+            be encoded as 6 BCD digits in 3 bytes or in 6 bytes as a string of
+            6 characters.</para>
+          </listitem>
+          <listitem>
+            <para>A string field might use the ASCII character set or EBCDIC characters.</para>
+          </listitem>
+          <listitem>
+            <para>A binary (<emphasis>b</emphasis>) field might encode 8 bits of the value in 8 bits or the value
+might be converted to a hexadecimal string in which case the resultant encoding needs twice as many
+bytes as the original value.</para>
+          </listitem>
+          <listitem>
+            <para>While ISO 8583 specifies that a message consists of an MTI, a bitmap and data elements, some implementations precede the
+message with a length field containing the length of the message. Other implementations append padding characters to the end of the
+message so that all messages have the same length.</para>
+          </listitem>
+        </itemizedlist></para>
+        <para>One of the goals of erl8583 is to make it simple to encode ISO 8583 messages irrespective of how some other party expects messages to be encoded.
+        </para>
     </section>
   </section>
 
