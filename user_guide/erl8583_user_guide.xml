@@ -31,8 +31,9 @@
     <para>ISO 8583 is a standard that defines message types and content for
     electronic transactions using payment cards like credit and debit cards.
     There are three versions of the standard from 1987, from 1993 and from
-    2003. The 1987 standard is the most widely adopted. An ISO 8583 message
-    consists of three parts:</para>
+    2003. The 1987 standard is the most widely adopted.</para>
+
+    <para>An ISO 8583 message consists of three parts:</para>
 
     <para><itemizedlist>
         <listitem>
@@ -49,6 +50,8 @@
           e.g. the transaction date and amount</para>
         </listitem>
       </itemizedlist></para>
+
+    <para>The next three sections cover the parts in a little detail.</para>
 
     <para></para>
 
@@ -94,7 +97,7 @@
       <title>Bitmap</title>
 
       <para>The 1987 specification of ISO 8583 defines 128 data elements that
-      may be present in a message. The 1993 and 2003 versions defines 192
+      may be present in a message. The 1993 and 2003 versions define 192
       fields that can exist in a message. Each data element is identified by
       an integer value in the range 1-128 for the 1987 specification or 1-192
       for the later specifications. The sender indicates which data elements
@@ -144,6 +147,8 @@
           </listitem>
         </itemizedlist></para>
 
+      <para></para>
+
       <para>The fields listed above contain quite different data:
       <itemizedlist>
           <listitem>
@@ -162,6 +167,8 @@
             <para>Field 98 contains a string with alphabetic characters</para>
           </listitem>
         </itemizedlist></para>
+
+      <para></para>
 
       <para>ISO 8583 provides a format for describing acceptable contents for
       a field and for whether the field has fixed length or variable. The
@@ -185,6 +192,8 @@
           </listitem>
         </itemizedlist></para>
 
+      <para></para>
+
       <para>To describe whether the field is of fixed or of variable length,
       the following descriptors are used:</para>
 
@@ -193,14 +202,79 @@
           <para>LLVAR, the field is of variable length and the length can be
           encoded in two decimal digits</para>
         </listitem>
+
         <listitem>
           <para>LLLVAR, the field is of variable length and the length can be
           encoded in three decimal digits</para>
         </listitem>
+
         <listitem>
           <para>fixed, the field length is fixed</para>
         </listitem>
       </itemizedlist>
+
+      <para></para>
+
+      <para>The table below shows the permitted content for some fields from
+      the 1987 specification.<table>
+          <title>Formats for some ISO 8583 data elements</title>
+
+          <tgroup cols="5">
+            <thead>
+              <row>
+                <entry>Field</entry>
+                <entry>Name</entry>
+                <entry>Format</entry>
+                <entry>Content</entry>
+                <entry>(Maximum) Length</entry>
+              </row>
+            </thead>
+            <tbody>
+              <row>
+                <entry>2</entry>
+                <entry>Primary Account Number</entry>
+                <entry>LLVAR</entry>
+                <entry>n</entry>
+                <entry>19</entry>
+              </row>
+              <row>
+                <entry>3</entry>
+                <entry>Processing Code</entry>
+                <entry>Fixed</entry>
+                <entry>n</entry>
+                <entry>6</entry>
+              </row>
+              <row>
+                <entry>35</entry>
+                <entry>Track 2 Data</entry>
+                <entry>LLVAR</entry>
+                <entry>z</entry>
+                <entry>37</entry>
+              </row>
+               <row>
+                <entry>42</entry>
+                <entry>Card Acceptor Identification Code</entry>
+                <entry>Fixed</entry>
+                <entry>ans</entry>
+                <entry>15</entry>
+              </row>
+             <row>
+                <entry>63</entry>
+                <entry>Reserved Private</entry>
+                <entry>LLLVAR</entry>
+                <entry>ans</entry>
+                <entry>999</entry>
+              </row>
+              <row>
+                <entry>64</entry>
+                <entry>Message Authentication Code</entry>
+                <entry>Fixed</entry>
+                <entry>b</entry>
+                <entry>64</entry>
+              </row>
+            </tbody>
+          </tgroup>
+        </table></para>
     </section>
   </section>
 
