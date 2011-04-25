@@ -170,18 +170,37 @@
           <listitem>
             <para><emphasis>b</emphasis> for binary data</para>
           </listitem>
+
           <listitem>
             <para><emphasis>n</emphasis> for numeric data</para>
           </listitem>
+
           <listitem>
-            <para><emphasis>a</emphasis>, <emphasis>an</emphasis> and <emphasis>ans</emphasis> for various forms of strings</para>
+            <para><emphasis>a</emphasis>, <emphasis>an</emphasis> and
+            <emphasis>ans</emphasis> for various forms of strings</para>
           </listitem>
+
           <listitem>
             <para><emphasis>z</emphasis> for track 2 data</para>
           </listitem>
         </itemizedlist></para>
 
-      <para></para>
+      <para>To describe whether the field is of fixed or of variable length,
+      the following descriptors are used:</para>
+
+      <itemizedlist>
+        <listitem>
+          <para>LLVAR, the field is of variable length and the length can be
+          encoded in two decimal digits</para>
+        </listitem>
+        <listitem>
+          <para>LLLVAR, the field is of variable length and the length can be
+          encoded in three decimal digits</para>
+        </listitem>
+        <listitem>
+          <para>fixed, the field length is fixed</para>
+        </listitem>
+      </itemizedlist>
     </section>
   </section>
 
