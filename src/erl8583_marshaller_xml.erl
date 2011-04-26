@@ -78,14 +78,14 @@ unmarshal(Marshalled) ->
 
 marshal_field(FieldId, FieldValue, _EncodingRules) when is_list(FieldValue)->
 	Id = integer_to_list(FieldId),
-	"<field id=\"" ++ Id ++ "\" value=\"" ++ FieldValue ++ "\" />";
+	"<field id=\"" ++ Id ++ "\" value=\"" ++ FieldValue ++ "\" />\n";
 marshal_field(FieldId, FieldValue, _EncodingRules) when is_binary(FieldValue) ->
 	Id = integer_to_list(FieldId),
 	"<field id=\"" ++ 
 		Id ++ 
 		"\" value=\"" ++ 
 		erl8583_convert:binary_to_ascii_hex(FieldValue) ++
-		"\" type=\"binary\" />";
+		"\" type=\"binary\" />\n";
 % if we drop through to here, Value is of type iso8583message().
 marshal_field(FieldId, FieldValue, _EncodingRules) ->
 	{iso8583_message, _, _} = FieldValue,
@@ -96,7 +96,7 @@ marshal_field(FieldId, FieldValue, _EncodingRules) ->
 		encode_attributes(erl8583_message:get_attributes(FieldValue)) ++
 		">" ++
 		erl8583_marshaller:marshal(FieldValue, [{field_marshaller, ?MODULE}, {mti_marshaller, ?MODULE}]) ++
-		"</isomsg>".
+		"</isomsg>\n".
 
 %% @doc Extracts a field value for a specified field from an XML
 %%      document.  The field value and the XML document are 
@@ -123,7 +123,7 @@ unmarshal_field(FieldId, Marshalled, _EncodingRule) ->
 marshal_end(Message, Marshalled) ->
 	"<isomsg" ++ 
 		encode_attributes(erl8583_message:get_attributes(Message)) ++ 
-		">" ++ 
+		">\n" ++ 
 		Marshalled ++ 
 		"</isomsg>\n".
 	
