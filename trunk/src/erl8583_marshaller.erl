@@ -115,6 +115,7 @@ marshal(Message, MarshalHandlers) ->
 %%
 %% @spec unmarshal(list(byte()), list(marshal_handler())) -> iso8583message()
 -spec(unmarshal(list(byte()), list(marshal_handler())) -> iso8583message()).
+
 unmarshal(Marshalled, MarshalHandlers) ->
 	OptionsRecord = parse_options(MarshalHandlers, #marshal_options{}),
 	{Message0, Marshalled1} = init_unmarshalling(OptionsRecord, erl8583_message:new(), Marshalled),

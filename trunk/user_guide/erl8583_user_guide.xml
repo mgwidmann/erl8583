@@ -348,55 +348,94 @@
             be encoded as 6 BCD digits in 3 bytes or in 6 bytes as a string of
             6 characters.</para>
           </listitem>
+
           <listitem>
-            <para>A string field might use the ASCII character set or EBCDIC characters.</para>
+            <para>A string field might use the ASCII character set or EBCDIC
+            characters.</para>
           </listitem>
+
           <listitem>
-            <para>A binary (<emphasis>b</emphasis>) field might encode 8 bits of the value in 8 bits or the value
-might be converted to a hexadecimal string in which case the resultant encoding needs twice as many
-bytes as the original value.</para>
+            <para>A binary (<emphasis>b</emphasis>) field might encode 8 bits
+            of the value in 8 bits or the value might be converted to a
+            hexadecimal string in which case the resultant encoding needs
+            twice as many bytes as the original value.</para>
           </listitem>
+
           <listitem>
-            <para>While ISO 8583 specifies that a message consists of an MTI, a bitmap and data elements, some implementations precede the
-message with a length field containing the length of the message. Other implementations append padding characters to the end of the
-message so that all messages have the same length.</para>
+            <para>While ISO 8583 specifies that a message consists of an MTI,
+            a bitmap and data elements, some implementations precede the
+            message with a length field containing the length of the message.
+            Other implementations append padding characters to the end of the
+            message so that all messages have the same length.</para>
           </listitem>
         </itemizedlist></para>
-        <para>One of the goals of erl8583 is to make it simple to encode ISO 8583 messages irrespective of how some other party expects messages to be encoded.
-        </para>
+
+      <para>One of the goals of erl8583 is to make it simple to encode ISO
+      8583 messages irrespective of how some other party expects messages to
+      be encoded.</para>
     </section>
   </section>
 
   <section>
     <title>Erl8583</title>
 
-    <para>Foo.</para>
+    <para>Erl8583 is a library that can be used to construct and parse ISO 8583 messages for several encoding schemes used in practice. This section describes how to install erl8583. The modules that make up the library can be classified into four types:<itemizedlist>
+          <listitem>
+            <para>The erl8583_message module that provides an abstract data type for an ISO 8583 message.</para>
+          </listitem>
+          <listitem>
+            <para>Encoding rules modules that specify the domain of ISO 8583 data elements.</para>
+          </listitem>
+          <listitem>
+            <para>Marshalling modules that are used to encode ISO 8583 messages or to decode byte streams into ISO 8583 messages.</para>
+          </listitem>
+          <listitem>
+            <para>The erl8583_convert module that provides low-level conversions between data representations.</para>
+          </listitem>
+        </itemizedlist></para>
 
     <section>
       <title>Installing erl8583</title>
-      <para>Foo</para>
+
+      <para>To install erl8583, unzip the erlang archive into some directory
+      accessible from your Erlang runtime (e.g. /usr/lib/erlang/lib). The
+      archive adheres to the standard directory structure for an OTP
+      application:<itemizedlist>
+          <listitem>
+            <para>beam files in the ebin directory.</para>
+          </listitem>
+          <listitem>
+            <para>Include files in the include directory.</para>
+          </listitem>
+          <listitem>
+            <para>EDoc API documentation in the doc directory.</para>
+          </listitem>
+        </itemizedlist></para>
+      <para>The source code is included in the src directory and the EUnit unit tests are found in the test directory.</para>
     </section>
 
     <section>
       <title>The erl8583_message module</title>
+
       <para>Foo</para>
     </section>
 
     <section>
       <title>Encoding rules modules</title>
+
       <para>Foo</para>
     </section>
 
     <section>
       <title>Marshalling modules</title>
+
       <para>Foo</para>
     </section>
 
     <section>
       <title>The erl8583_convert module</title>
+
       <para>Foo</para>
     </section>
-
-
   </section>
 </article>
