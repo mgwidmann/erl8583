@@ -27,7 +27,7 @@ test() ->
 	% Display the fields defined for the message.
 	io:format("Fields: ~p~n", [erl8583_message:get_fields(Msg4)]),
 	
-	% Display the MTI, PAN and MAC.
+	% Display fields 0, 43 and 64.
 	io:format("MTI:                         ~p~n", [erl8583_message:get(0, Msg4)]),
 	io:format("Card acceptor name/location: ~p~n", [erl8583_message:get(43, Msg4)]),
 	io:format("MAC:                         ~p~n", [erl8583_message:get(64, Msg4)]).

@@ -15,6 +15,7 @@ echo "Creating archive"
 rsync -p -r --exclude=".*" src $ERL8583_BUILD
 rsync -p -r --exclude=".*" test $ERL8583_BUILD
 rsync -p -r --exclude=".*" include $ERL8583_BUILD
+rsync -p -r --exclude=".*" src_examples $ERL8583_BUILD
 cp make.sh $ERL8583_BUILD
 cp gen_doc.sh $ERL8583_BUILD
 cp overview.edoc $ERL8583_BUILD
