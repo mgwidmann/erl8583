@@ -98,12 +98,12 @@
 
       <para>The 1987 specification of ISO 8583 defines 128 data elements that
       may be present in a message. The 1993 and 2003 versions define 192
-      fields that can exist in a message. Each data element is identified by
-      an integer value in the range 1-128 for the 1987 specification or 1-192
-      for the later specifications. The sender indicates which data elements
-      are present in a message by one or more bitmaps. A bitmap is a
-      collection of 64 bits; if a bit is set in the bitmap it indicates that a
-      corresponding data element is present.</para>
+      fields. Each data element is identified by an integer value in the range
+      1-128 for the 1987 specification or 1-192 for the later specifications.
+      The sender indicates which data elements are present in a message by one
+      or more bitmaps. A bitmap is a collection of 64 bits; if a bit is set in
+      the bitmap it indicates that a corresponding data element is
+      present.</para>
 
       <para>The primary bitmap is used to indicate the presence or absence of
       data elements 1-64. The secondary bitmap is used for fields 65-128. If
@@ -194,8 +194,8 @@
 
       <para></para>
 
-      <para>To describe whether the field is of fixed or of variable length,
-      the following descriptors are used:</para>
+      <para>To describe whether the field is of fixed or variable length, the
+      following descriptors are used:</para>
 
       <itemizedlist>
         <listitem>
@@ -320,8 +320,8 @@
       byte.</emphasis></emphasis></para>
 
       <para>It may happen that the contents of a fixed length field is less
-      than the prescribed length in the ISO 8583 standard. In such cases:
-      <itemizedlist>
+      than the prescribed length in the ISO 8583 standard. If the value is
+      shorter than the prescribed length: <itemizedlist>
           <listitem>
             <para>The contents must be padded with trailing spaces for fields
             that contain strings, e.g. for field 42 in Table 1.</para>
@@ -379,20 +379,39 @@
   <section>
     <title>Erl8583</title>
 
-    <para>Erl8583 is a library that can be used to construct and parse ISO 8583 messages for several encoding schemes used in practice. This section describes how to install erl8583. The modules that make up the library can be classified into four types:<itemizedlist>
-          <listitem>
-            <para>The erl8583_message module that provides an abstract data type for an ISO 8583 message.</para>
-          </listitem>
-          <listitem>
-            <para>Encoding rules modules that specify the domain of ISO 8583 data elements.</para>
-          </listitem>
-          <listitem>
-            <para>Marshalling modules that are used to encode ISO 8583 messages or to decode byte streams into ISO 8583 messages.</para>
-          </listitem>
-          <listitem>
-            <para>The erl8583_convert module that provides low-level conversions between data representations.</para>
-          </listitem>
-        </itemizedlist></para>
+    <para>Erl8583 is a library that can be used to construct and parse ISO
+    8583 messages for several encoding schemes used in practice. This section
+    starts by describing how to install erl8583. The remainder of this section
+    describes the modules that make up the erl8583 library.</para>
+
+    <para>The definitive guide to the erl8583 API are the edocs in the
+    distribution. This guide provides a high-level overview of the modules to
+    help you get started. The modules can be classified into four
+    types:</para>
+
+    <para><itemizedlist>
+        <listitem>
+          <para>The erl8583_message module that provides a data structure for
+          an ISO 8583 message.</para>
+        </listitem>
+
+        <listitem>
+          <para>Encoding rules modules that specify the domain of ISO 8583
+          data elements.</para>
+        </listitem>
+
+        <listitem>
+          <para>Marshalling modules that are used to encode ISO 8583 messages
+          or to decode byte streams into ISO 8583 messages.</para>
+        </listitem>
+
+        <listitem>
+          <para>The erl8583_convert module that provides low-level conversions
+          between data representations.</para>
+        </listitem>
+      </itemizedlist></para>
+
+    <para></para>
 
     <section>
       <title>Installing erl8583</title>
@@ -402,22 +421,36 @@
       archive adheres to the standard directory structure for an OTP
       application:<itemizedlist>
           <listitem>
-            <para>beam files in the ebin directory.</para>
+            <para>beam files are in the ebin directory.</para>
           </listitem>
+
           <listitem>
-            <para>Include files in the include directory.</para>
+            <para>Include files are in the include directory.</para>
           </listitem>
+
           <listitem>
-            <para>EDoc API documentation in the doc directory.</para>
+            <para>EDoc API documentation files are in the doc
+            directory.</para>
           </listitem>
         </itemizedlist></para>
-      <para>The source code is included in the src directory and the EUnit unit tests are found in the test directory.</para>
+
+      <para></para>
+
+      <para>The source code is included in the src directory and the EUnit
+      unit tests are found in the test directory. Example Erlang files used in
+      this guide are included in the examples_src directory.</para>
+
+      <para></para>
     </section>
 
     <section>
       <title>The erl8583_message module</title>
 
-      <para>Foo</para>
+      <para>The erl8583_message module provides a data type representing an
+      ISO 8583 message with functions to get and set the data elements of a
+      message.</para>
+
+      <para></para>
     </section>
 
     <section>
