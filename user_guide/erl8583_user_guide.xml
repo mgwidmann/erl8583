@@ -580,31 +580,107 @@ get_encoding(?RETRIEVAL_REF_NUM) -&gt;
     <section>
       <title>Marshalling modules</title>
 
-      <para>The ISO 8583 specification provides an abstraction of messages. For the messages to be useful they must be transformed to 
-            a list of bytes. Erl8583 provides marshalling modules to perform transformations from a message to a sequence of bytes.</para>
-      
-      <para>As noted previously, different implementers encode ISO 8583 messages differently. To cater for the most common encodings 
-            of messages, erl8583 provides the following four modules:<itemizedlist>
+      <para>The ISO 8583 specification provides an abstraction of messages
+      that must be transformed to a list of bytes. Implementers of the ISO
+      8583 standard encode messages differently and there are a multitude of
+      ways to marshal a message into a wire-level encoding.</para>
+
+      <para>To cater for the most common encodings of messages, erl8583
+      provides the following four modules:<itemizedlist>
           <listitem>
-            <para><emphasis role="bold">erl8583_marshaller_ascii</emphasis> blah blah blah.</para>
+            <para><emphasis role="bold">erl8583_marshaller_ascii</emphasis>
+            Transforms a message to a list of ASCII characters. Binaries and
+            bitmaps are marshalled as ASCII hex strings.</para>
           </listitem>
 
           <listitem>
-            <para><emphasis role="bold">erl8583_marshaller_binary</emphasis> blah blah blah.</para>
+            <para><emphasis role="bold">erl8583_marshaller_binary</emphasis>
+            Transforms a message to a list of bytes. Binaries and strings are
+            encoded using the values set in the message. Numeric data is
+            transformed to BCD.</para>
           </listitem>
 
           <listitem>
-            <para><emphasis role="bold">erl8583_marshaller_ebcdic</emphasis> blah blah blah.</para>
+            <para><emphasis role="bold">erl8583_marshaller_ebcdic</emphasis>
+            Transforms a message to a list of EBCDIC characters. Binaries and
+            bitmaps are marshalled as EBCDIC hex strings.</para>
           </listitem>
 
           <listitem>
-            <para><emphasis role="bold">erl8583_marshaller_xml</emphasis> blah blah blah.</para>
+            <para><emphasis role="bold">erl8583_marshaller_xml</emphasis>
+            Transforms a message to an XML document. The XML schema is
+            (intended to be) the same as that used by jPOS.</para>
           </listitem>
         </itemizedlist></para>
-    
-    <para>Unfortunately, in practice, the above four marshalling modules are insufficient. Generic marshaller...
-    </para>
 
+      <para>Unfortunately, in practice, the above four marshalling modules are
+      insufficient. Erl8583 provides a generic marshaller, <emphasis
+      role="bold">erl8583_marshaller</emphasis>, that can be used to implement
+      other marshallers. The generic marshaller can be passed a list of
+      modules that will be called back to marshal:<itemizedlist>
+          <listitem>
+            <para>The MTI.</para>
+          </listitem>
+
+          <listitem>
+            <para>The bitmap.</para>
+          </listitem>
+
+          <listitem>
+            <para>The data elements.</para>
+          </listitem>
+        </itemizedlist></para>
+
+      <para>Additionally, the marshaller can be supplied with modules that
+      will be called:<itemizedlist>
+          <listitem>
+            <para>Before marshalling the MTI.</para>
+          </listitem>
+
+          <listitem>
+            <para>After marshalling all the data elements.</para>
+          </listitem>
+
+          <listitem>
+            <para>To get how a data element is encoded (e.g. to specify that
+            the 1987 version of the ISO 8583 standard must be used).</para>
+          </listitem>
+        </itemizedlist></para>
+
+      <para></para>
+
+      <para>The implementation of <emphasis
+      role="bold">erl8583_marshaller</emphasis>'s marshal function is shown
+      below. The structure of the code shows that code is called before
+      marshalling the MTI, then the MTI is marshalled, next the bitmap is
+      marshalled, then the data elements are encoded and, finally, a function
+      that completes the marshalling is called.</para>
+
+      <para><programlisting>%% @doc Marshals an ISO 8583 message into a byte sequence.
+%%
+%% @spec marshal(iso8583message(), list(marshal_handler())) -&gt; list(byte())
+-spec(marshal(iso8583message(), list(marshal_handler())) -&gt; list(byte())).
+
+marshal(Message, MarshalHandlers) -&gt;
+	OptionsRecord = parse_options(MarshalHaendlers, #marshal_options{}),
+	{Marshalled1, Message1} = init_marshalling(OptionsRecord, Message),
+	Marshalled2 = Marshalled1 ++ encode_mti(OptionsRecord, Message1),
+	{MarshalledBitmap, Message2} = encode_bitmap(OptionsRecord, Message1),
+	Marshalled3 = Marshalled2 ++ MarshalledBitmap,
+	Marshalled4 = Marshalled3 ++ encode_fields(OptionsRecord, Message2),
+	end_marshalling(OptionsRecord, Message2, Marshalled4).
+</programlisting></para>
+
+      <para>Four of the code examples in section 4 show how to use the
+      <emphasis role="bold">erl8583_marshaller</emphasis> to implement various
+      marshalling schemes.</para>
+
+      <para>As an aside, the ASCII, binary, EBCDIC and XML marshaller use the
+      generic marshaller; these marshallers invoke the generic marshaller but
+      pass themselves as the modules to be called back for marshalling the
+      MTI, bitmap, etc.</para>
+
+      <para> </para>
     </section>
 
     <section>
@@ -627,6 +703,4 @@ get_encoding(?RETRIEVAL_REF_NUM) -&gt;
 
     <para>Foo.</para>
   </section>
-
-
 </article>
