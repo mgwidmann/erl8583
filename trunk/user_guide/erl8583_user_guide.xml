@@ -680,13 +680,43 @@ marshal(Message, MarshalHandlers) -&gt;
       pass themselves as the modules to be called back for marshalling the
       MTI, bitmap, etc.</para>
 
-      <para> </para>
+      <para></para>
     </section>
 
     <section>
       <title>The erl8583_convert module</title>
 
-      <para>Foo</para>
+      <para>The <emphasis role="bold">erl8583_convert</emphasis> module
+      provides functions to convert between representations of data. Functions
+      are exported to:<itemizedlist>
+          <listitem>
+            <para>Convert ASCII characters to EBCDIC (and vice-versa).</para>
+          </listitem>
+
+          <listitem>
+            <para>Convert a string of decimal digits to BCD (and
+            vice-versa).</para>
+          </listitem>
+
+          <listitem>
+            <para>Pad a string with trailing spaces.</para>
+          </listitem>
+
+          <listitem>
+            <para>Pad a string of digits with leading zeroes.</para>
+          </listitem>
+
+          <listitem>
+            <para>Do other useful manipulations. See the EDocs for this module
+            for more details.</para>
+          </listitem>
+        </itemizedlist></para>
+
+      <para></para>
+
+      <para>In practice, you will probably never need to call these functions
+      yourself; the functions are used mainly by the marshallers and you will
+      invoke the marshalling functions instead.</para>
 
       <para></para>
     </section>
