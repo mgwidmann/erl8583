@@ -442,7 +442,8 @@
     </section>
 
     <section>
-      <title>The erl8583_message module</title>
+      <title>The <emphasis role="bold">erl8583_message</emphasis>
+      module</title>
 
       <para>The erl8583_message module provides a data type representing an
       ISO 8583 message. Some of the functions exposed by the module
@@ -671,7 +672,7 @@ marshal(Message, MarshalHandlers) -&gt;
 	end_marshalling(OptionsRecord, Message2, Marshalled4).
 </programlisting></para>
 
-      <para>Four of the code examples in section 4 show how to use the
+      <para>Three of the code examples in section 4 show how to use the
       <emphasis role="bold">erl8583_marshaller</emphasis> to implement various
       marshalling schemes.</para>
 
@@ -684,7 +685,8 @@ marshal(Message, MarshalHandlers) -&gt;
     </section>
 
     <section>
-      <title>The erl8583_convert module</title>
+      <title>The <emphasis role="bold">erl8583_convert</emphasis>
+      module</title>
 
       <para>The <emphasis role="bold">erl8583_convert</emphasis> module
       provides functions to convert between representations of data. Functions
@@ -725,7 +727,114 @@ marshal(Message, MarshalHandlers) -&gt;
   <section>
     <title>Example Code</title>
 
-    <para>Foo.</para>
+    <para>The first example in this section shows the use of the most commonly
+    used functions in the <emphasis role="bold">erl8583_message</emphasis>
+    module. The remaining five samples show how to marshal and unmarshal
+    messages.</para>
+
+    <para></para>
+
+    <section>
+      <title>The <emphasis role="bold">erl8583_message</emphasis>
+      module</title>
+
+      <para>The sample code below shows how to create a message. After
+      creating the message we set the value of data elements of various
+      types:<itemizedlist>
+          <listitem>
+            <para>Field 0 (the MTI) is a numeric value.</para>
+          </listitem>
+
+          <listitem>
+            <para>Field 43 is a string.</para>
+          </listitem>
+
+          <listitem>
+            <para>Field 64 is a binary value.</para>
+          </listitem>
+
+          <listitem>
+            <para>Field 127 is another message containing subfields 2 and 3.
+            The subfields can be referenced as the lists [127, 2] and [127,
+            3].</para>
+          </listitem>
+        </itemizedlist></para>
+
+      <para><programlisting>
+%% An example that demonstrates setting and getting data elements in an
+%% iso8583message().
+-module(example_1_message).
+
+%%
+%% Include files
+%%
+-include_lib("erl8583/include/erl8583_field_ids.hrl").
+
+%%
+%% Exported Functions
+%%
+-export([test/0]).
+
+%%
+%% API Functions
+%%
+test() -&gt;
+	% Create a message.
+	Msg1 = erl8583_message:new(),
+	
+	% Set the MTI (field 0), card acceptor name/location (field 43), a MAC (field 64) and
+	% field 127 is a private use field whose contents is not defined by ISO.
+	% This code shows how a data element can be a numeric value (field 0), a string
+	% (field 43), a binary (field 64) or another message (field 127) containing 
+	% subfields (fields 127.2 and 127.3). 
+	Msg2 = erl8583_message:set_mti("0200", Msg1),
+	Msg3 = erl8583_message:set(?CARD_ACCEPTOR_NAME_LOCATION, "ZIB Head Office ATM    V/I Lagos    01NG", Msg2),
+	Msg4 = erl8583_message:set(?MESSAGE_AUTHENTICATION_CODE, &lt;&lt;1,2,3,4,5,6,7,8&gt;&gt;, Msg3),
+	% Field 127 is a message containing subfields 127.2 and 127.3.
+	% Notice that we use two different ways of setting the value of a subfield.
+	% The way we set subfield 127.3 is the preferred idiom.
+	SubMsg1 = erl8583_message:new(),
+	SubMsg2 = erl8583_message:set(2, "0000387020", SubMsg1),
+	Msg5 = erl8583_message:set(127, SubMsg2, Msg4),
+	Msg6 = erl8583_message:set([127, 3], "ZIBeTranzSnk", Msg5),
+	
+	% Display the fields defined for the message.
+	io:format("Fields: ~w~n", [erl8583_message:get_fields(Msg6)]),
+	
+	% Display fields 0, 43, 64, 127.2 and 127.3.
+	io:format("MTI:                         ~s~n", [erl8583_message:get(0, Msg6)]),
+	io:format("Card acceptor name/location: ~s~n", [erl8583_message:get(43, Msg6)]),
+	io:format("MAC:                         ~p~n", [erl8583_message:get(64, Msg6)]),
+	io:format("Field 127.2:                 ~s~n", [erl8583_message:get([127, 2], Msg6)]),
+	io:format("Field 127.3:                 ~s~n", [erl8583_message:get([127, 3], Msg6)]).
+      </programlisting></para>
+
+      <para>Notice that we included the <emphasis
+      role="bold">erl8583_field_ids.hrl</emphasis> header so that we could
+      refer to the fields using macro identifiers rather than numeric
+      values.</para>
+
+      <para>Running the code produces the following output <computeroutput>
+      </computeroutput></para>
+
+      <para><computeroutput>Fields: [0,43,64,127] </computeroutput></para>
+
+      <para><computeroutput>MTI: 0200 </computeroutput></para>
+
+      <para><computeroutput>Card acceptor name/location: ZIB Head Office ATM
+      V/I Lagos 01NG </computeroutput></para>
+
+      <para><computeroutput>MAC: &lt;&lt;1,2,3,4,5,6,7,8&gt;&gt;
+      </computeroutput></para>
+
+      <para><computeroutput>Field 127.2: 0000387020 </computeroutput></para>
+
+      <para><computeroutput>Field 127.3: ZIBeTranzSnk </computeroutput></para>
+
+      <para><computeroutput>ok</computeroutput></para>
+
+      <para><computeroutput> </computeroutput></para>
+    </section>
   </section>
 
   <section>
