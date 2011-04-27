@@ -502,7 +502,79 @@
     <section>
       <title>Encoding rules modules</title>
 
-      <para>Foo</para>
+      <para>Section 2.3 described how ISO 8583 defines valid content for the
+      data elements of a message. A data element is constrained by the
+      permissible content (e.g. <emphasis>b</emphasis>,
+      <emphasis>n</emphasis>, <emphasis>ans</emphasis>, etc), its format
+      (fixed, LLVAR or LLVAR) and its length. Erl8583 has three modules
+      (erl8583_fields, erl8583_fields_1993 and erl8583_fields_2003) that
+      specify the permissible content for a data element based on the 1987,
+      1993 and 2003 specifications (note that erl8583 currently doesn't
+      support the 2003 specification). Each module exposes a function
+      <emphasis role="bold">get_encoding</emphasis> that returns the valid
+      content as a 3-tuple. The first element of the tuple is an atom that
+      describes the content type (e.g. <emphasis>b</emphasis>,
+      <emphasis>n</emphasis> or <emphasis>ans</emphasis>, etc). The second
+      element of the tuple is an atom describing the format
+      (<emphasis>fixed</emphasis>, <emphasis>llvar</emphasis> or
+      <emphasis>lllvar</emphasis>). The third element of the tuple is the
+      length specified as an integer. For the LLVAR and LLLVAR formats, the
+      length denotes the maximum allowed length for the element.</para>
+
+      <para>The code snippet below shows some of the implementation of the
+      erl8583_fields module.<programlisting>-module(erl8583_fields).
+
+%%
+%% Include files
+%%
+%% @headerfile "../include/erl8583_types.hrl"
+-include("erl8583_field_ids.hrl").
+-include("erl8583_types.hrl").
+
+%%
+%% Exported Functions
+%%
+-export([get_encoding/1]).
+
+%%
+%% API Functions
+%%
+
+%% @doc Returns how a field is encoded as a triple consisting of the content 
+%%      (e.g. ans, b, z, etc), the format (e.g. llvar, lllvar or fixed) and 
+%%      the maximum length.
+%%
+%% @spec get_encoding(FieldId::integer()) -&gt; field_encoding()
+-spec(get_encoding(integer()) -&gt; field_encoding()).
+
+get_encoding(?MTI) -&gt;
+	{n, fixed, 4};
+get_encoding(?BITMAP_EXTENDED) -&gt;
+	{b, fixed, 8};
+get_encoding(?PAN) -&gt;
+	{n, llvar, 19};
+get_encoding(?PROC_CODE) -&gt;
+	{n, fixed, 6};
+%%
+%% Code omitted...
+%%
+get_encoding(?TRACK_2_DATA) -&gt;
+	{z, llvar, 37};
+get_encoding(?TRACK_3_DATA) -&gt;
+	{ans, lllvar, 104};
+get_encoding(?RETRIEVAL_REF_NUM) -&gt;
+	{an, fixed, 12};
+%%
+%% Code omitted...
+%%
+</programlisting></para>
+
+      <para>The macros like <emphasis role="bold">MTI</emphasis>, <emphasis
+      role="bold">BITMAP_EXTENDED</emphasis>, <emphasis
+      role="bold">TRACK_2_DATA</emphasis>, etc. in the code listing are
+      defined in the erl8583_field_ids.hrl header file.</para>
+
+      <para></para>
     </section>
 
     <section>
@@ -515,6 +587,8 @@
       <title>The erl8583_convert module</title>
 
       <para>Foo</para>
+
+      <para></para>
     </section>
   </section>
 </article>
