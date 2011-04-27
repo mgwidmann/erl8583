@@ -434,11 +434,9 @@
           </listitem>
         </itemizedlist></para>
 
-      <para></para>
-
       <para>The source code is included in the src directory and the EUnit
       unit tests are found in the test directory. Example Erlang files used in
-      this guide are included in the examples_src directory.</para>
+      this guide are included in the src_examples directory.</para>
 
       <para></para>
     </section>
@@ -447,8 +445,56 @@
       <title>The erl8583_message module</title>
 
       <para>The erl8583_message module provides a data type representing an
-      ISO 8583 message with functions to get and set the data elements of a
-      message.</para>
+      ISO 8583 message. Some of the functions exposed by the module
+      are:<itemizedlist>
+          <listitem>
+            <para><emphasis role="bold">new</emphasis> that creates a message
+            data structure.</para>
+          </listitem>
+
+          <listitem>
+            <para><emphasis role="bold">set_mti</emphasis> and <emphasis
+            role="bold">get_mti</emphasis> for setting and getting the MTI of
+            an ISO 8583 message.</para>
+          </listitem>
+
+          <listitem>
+            <para><emphasis role="bold">set</emphasis> and <emphasis
+            role="bold">get</emphasis> for setting and getting the value of a
+            specified data element specified by its ID in the range 0-192. ISO
+            8583 defines data elements with IDs in the range 1-192; ID 0 is an
+            alias for the MTI.</para>
+          </listitem>
+
+          <listitem>
+            <para><emphasis role="bold">update</emphasis> for changing the
+            value of a data element.</para>
+          </listitem>
+
+          <listitem>
+            <para><emphasis role="bold">get_fields</emphasis> that returns a
+            list of the data element IDs that have been set for a
+            message.</para>
+          </listitem>
+        </itemizedlist></para>
+
+      <para>See the EDoc documentation for the complete list of functions and
+      the arguments that are passed.</para>
+
+      <para>Valid types for data element values are: strings, binaries and
+      nested message instances. The API does not prevent you setting the value
+      of a data element to be an atom, a tuple, an integer or a float but
+      those types will cause an exception to be raised if you try to marshal
+      (see section 3.3) the message. Note in particular that numeric
+      (<emphasis>n</emphasis>) values should be encoded as strings; e.g. set
+      the MTI as "0200" not as the integer 200.</para>
+
+      <para>It may seem strange allowing data elements to be nested messages
+      since ISO 8583 does not describe this scenario. However it is quite
+      common to see data elements that are reserved for private use (e.g.
+      field 127) to be nested messages. In such cases, one can refer to, say,
+      field 127.3 which denotes sub field 3 in data element 127. The example
+      in section 4.6 looks at such a case.</para>
 
       <para></para>
     </section>
