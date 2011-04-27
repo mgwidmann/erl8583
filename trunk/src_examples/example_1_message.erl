@@ -5,7 +5,7 @@
 %%
 %% Include files
 %%
--include("erl8583_field_ids.hrl").
+-include_lib("erl8583/include/erl8583_field_ids.hrl").
 
 %%
 %% Exported Functions
