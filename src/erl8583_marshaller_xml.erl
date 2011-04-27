@@ -94,7 +94,7 @@ marshal_field(FieldId, FieldValue, _EncodingRules) ->
 		Id ++ 
 		"\"" ++
 		encode_attributes(erl8583_message:get_attributes(FieldValue)) ++
-		">" ++
+		">\n" ++
 		erl8583_marshaller:marshal(FieldValue, [{field_marshaller, ?MODULE}, {mti_marshaller, ?MODULE}]) ++
 		"</isomsg>\n".
 
