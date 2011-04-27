@@ -34,7 +34,7 @@
 %%
 
 %% @doc Returns how a field is encoded as a triple consisting of the content (e.g. ans, b, z, etc),
-%%      the type (e.g. llvar, lllvar or fixed) and the maximum length.
+%%      the format (e.g. llvar, lllvar or fixed) and the maximum length.
 %%
 %% @spec get_encoding(integer()) -> field_encoding()
 -spec(get_encoding(integer()) -> field_encoding()).
