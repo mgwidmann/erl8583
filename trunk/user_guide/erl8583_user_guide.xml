@@ -580,7 +580,31 @@ get_encoding(?RETRIEVAL_REF_NUM) -&gt;
     <section>
       <title>Marshalling modules</title>
 
-      <para>Foo</para>
+      <para>The ISO 8583 specification provides an abstraction of messages. For the messages to be useful they must be transformed to 
+            a list of bytes. Erl8583 provides marshalling modules to perform transformations from a message to a sequence of bytes.</para>
+      
+      <para>As noted previously, different implementers encode ISO 8583 messages differently. To cater for the most common encodings 
+            of messages, erl8583 provides the following four modules:<itemizedlist>
+          <listitem>
+            <para><emphasis role="bold">erl8583_marshaller_ascii</emphasis> blah blah blah.</para>
+          </listitem>
+
+          <listitem>
+            <para><emphasis role="bold">erl8583_marshaller_binary</emphasis> blah blah blah.</para>
+          </listitem>
+
+          <listitem>
+            <para><emphasis role="bold">erl8583_marshaller_ebcdic</emphasis> blah blah blah.</para>
+          </listitem>
+
+          <listitem>
+            <para><emphasis role="bold">erl8583_marshaller_xml</emphasis> blah blah blah.</para>
+          </listitem>
+        </itemizedlist></para>
+    
+    <para>Unfortunately, in practice, the above four marshalling modules are insufficient. Generic marshaller...
+    </para>
+
     </section>
 
     <section>
@@ -591,4 +615,18 @@ get_encoding(?RETRIEVAL_REF_NUM) -&gt;
       <para></para>
     </section>
   </section>
+
+  <section>
+    <title>Example Code</title>
+
+    <para>Foo.</para>
+  </section>
+
+  <section>
+    <title>Conclusion</title>
+
+    <para>Foo.</para>
+  </section>
+
+
 </article>
