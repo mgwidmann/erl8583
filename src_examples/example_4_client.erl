@@ -1,7 +1,6 @@
 %% An example that demonstrates a minimal ISO 8583 client
 %% that uses ASCII marshalling.
 -module(example_4_client).
--include("erl8583/include/erl8583_marshallers.hrl").
 -export([test/0]).
 
 test() ->
@@ -13,15 +12,12 @@ test() ->
 	Msg5 = erl8583_message:set(41, "11111111", Msg4),
 	Msg6 = erl8583_message:set(42, "222222222222222", Msg5),
 	Msg7 = erl8583_message:set(63, "This is a Test Message", Msg6),
-	AsciiMessage = erl8583_marshaller_ascii:marshal(Msg7),
-	{ok, Sock} = gen_tcp:connect("localhost", 8583, [list, {packet, 0}, {active, false}]),
-	io:format("Sending:~n~s~n~n", [AsciiMessage]),
 	
-	% Our python server expects a two byte length to be sent before the message.
-	% Send the request.
-	Length = length(AsciiMessage),
-	LengthHeader = [Length div 256, Length rem 256],
-	ok = gen_tcp:send(Sock, LengthHeader ++ AsciiMessage),
+	% Marshal the message using our custom marshaller and send the result. 
+	AsciiMessage = example_4_marshaller:marshal(Msg7),
+	{ok, Sock} = gen_tcp:connect("localhost", 8583, [list, {packet, 0}, {active, false}]),
+	io:format("Sending:~n~p~n~n", [AsciiMessage]),
+	ok = gen_tcp:send(Sock, AsciiMessage),
 	
 	% Get the response to the request and unmarshal it.
 	AsciiResponse = do_recv(Sock, []),
