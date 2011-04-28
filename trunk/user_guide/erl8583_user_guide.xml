@@ -1065,6 +1065,16 @@ ok
     </para>
     <para/>
     </section>
+    
+    <section>
+      <title>Using the generic <emphasis role="bold">erl8583_marshaller</emphasis>
+      module</title>
+      
+      <para>In the previous section we wrote an ISO 8583 server using jPOS and used the erl8583_marshaller_ascii module to marshal and unmarshal our messages. In this section we write a minimal server in Python using the iso8583py library (available from http://code.google.com/p/iso8583py).
+      </para>
+
+    </section>
+
   </section>
 
   <section>
