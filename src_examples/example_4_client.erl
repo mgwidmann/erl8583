@@ -1,6 +1,7 @@
 %% An example that demonstrates a minimal ISO 8583 client
 %% that uses ASCII marshalling.
--module(example_3_client).
+-module(example_4_client).
+-include("erl8583/include/erl8583_marshallers.hrl").
 -export([test/0]).
 
 test() ->
@@ -13,13 +14,13 @@ test() ->
 	Msg6 = erl8583_message:set(42, "222222222222222", Msg5),
 	Msg7 = erl8583_message:set(63, "This is a Test Message", Msg6),
 	AsciiMessage = erl8583_marshaller_ascii:marshal(Msg7),
-	{ok, Sock} = gen_tcp:connect("localhost", 8000, [list, {packet, 0}, {active, false}]),
+	{ok, Sock} = gen_tcp:connect("localhost", 8583, [list, {packet, 0}, {active, false}]),
 	io:format("Sending:~n~s~n~n", [AsciiMessage]),
 	
-	% Our jPOS server expects a four digit length to be sent before the message.
-	% We use an erl8583_convert function to create the header.
+	% Our python server expects a two byte length to be sent before the message.
 	% Send the request.
-	LengthHeader = erl8583_convert:integer_to_string(length(AsciiMessage), 4),
+	Length = length(AsciiMessage),
+	LengthHeader = [Length div 256, Length rem 256],
 	ok = gen_tcp:send(Sock, LengthHeader ++ AsciiMessage),
 	
 	% Get the response to the request and unmarshal it.
@@ -36,13 +37,13 @@ do_recv(Sock, Bs) ->
         {ok, B} ->
 			UpdatedBs = Bs ++ B,
 			if
-				% There's a 4 byte length header. Use it to check if
+				% There's a 2 byte length header. Use it to check if
 				% we have received the whole response.
-				length(UpdatedBs) < 4 ->
+				length(UpdatedBs) < 2 ->
 					do_recv(Sock, UpdatedBs);
 				true ->
-					{LenStr, Rest} = lists:split(4, UpdatedBs),
-					Len = list_to_integer(LenStr) + 4,
+					{[Len1, Len2], Rest} = lists:split(2, UpdatedBs),
+					Len = Len1 * 256 + Len2 + 2,
 					if 
 						Len >= length(UpdatedBs) ->
 							% Got the whole response, return the response
