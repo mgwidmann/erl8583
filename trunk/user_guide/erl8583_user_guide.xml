@@ -923,6 +923,29 @@ test() -&gt;
 
       <para></para>
     </section>
+
+    <section>
+      <title>A Minimal ISh<link linkend="???"></link>O 8583 Client</title>
+
+      <para>jPOS is a popular Java framework for processing ISO 8583 messages.
+      It supports a host of ways to marshal messages. In this example we use
+      an ASCII packer (the jPOS term for what is called a marshaller in
+      erl8583). This serves two purposes:<itemizedlist>
+          <listitem>
+            <para>It shows that erl8583 can be used to exchange
+            messages.</para>
+          </listitem>
+
+          <listitem>
+            <para>It shows that ISO 8583 involves more than marshalling
+            messages; there are issues around networking as well.</para>
+          </listitem>
+        </itemizedlist></para>
+
+      <para>We start by writing a minimal jPOS server. To get this code to
+      compile and run, you will need to download jPOS from <link
+      linkend="???">http://www.jpos.org</link></para>
+    </section>
   </section>
 
   <section>
