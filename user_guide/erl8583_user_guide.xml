@@ -1125,6 +1125,88 @@ while 1:
 <para>
 The above code starts a server that listens on port 8583 and echoes any request after changing the MTI to 0810. This server, like the one in the previous section, expects data to be ASCII encoded. Unlike the previous server though where the length of messages was encoded as 4 ASCII digits this server expects the length of the marshalled data to be encoded as two (big-endian) bytes. It would be easy to modify only three or four lines of the previous client code to work with this server. However we'll make more extreme changes and implement a custom marshaller for marshalling the messages for this server. Our marshaller will prepend the length of the marshalled message at the beginning of the message. The listing below for the example_4_marshaller module shows the implementation:
 </para>
+<para><programlisting>
+-module(example_4_marshaller).
+
+-export([marshal/1, marshal_end/2]).
+
+% Our marshal function uses the ASCII marshaller to marshal the MTI,
+% the bitmap and the data elements but also specifies that the
+% marshal_end function in this module must be called after marshalling
+% all data elements.
+marshal(Message) ->
+	MarshallingOptions = [{mti_marshaller, erl8583_marshaller_ascii},
+						  {bitmap_marshaller,  erl8583_marshaller_ascii},
+						  {field_marshaller,  erl8583_marshaller_ascii},
+						  {end_marshaller, ?MODULE}],
+	erl8583_marshaller:marshal(Message, MarshallingOptions).
+
+% After marshalling the message, we prepend the message with the length of
+% the message encoded in two bytes.
+marshal_end(_Message, Marshalled) ->
+	Length = length(Marshalled),
+	[Length div 256, Length rem 256] ++ Marshalled.
+</programlisting></para>
+
+<para>
+Our client code, example_4_client, is now rewritten to use our custom marshaller. Notice that we no longer have code that prepends the 
+length of the message to the marshalled data:
+</para>
+
+<para><programlisting>
+-module(example_4_client).
+-export([test/0]).
+
+test() ->
+	% Create a message.
+	Msg1 = erl8583_message:new(),
+	Msg2 = erl8583_message:set_mti("0800", Msg1),
+	Msg3 = erl8583_message:set(3, "300000", Msg2),
+	Msg4 = erl8583_message:set(24, "045", Msg3),
+	Msg5 = erl8583_message:set(41, "11111111", Msg4),
+	Msg6 = erl8583_message:set(42, "222222222222222", Msg5),
+	Msg7 = erl8583_message:set(63, "This is a Test Message", Msg6),
+	
+	% Marshal the message using our custom marshaller and send the result. 
+	AsciiMessage = example_4_marshaller:marshal(Msg7),
+	{ok, Sock} = gen_tcp:connect("localhost", 8583, [list, {packet, 0}, {active, false}]),
+	io:format("Sending:~n~p~n~n", [AsciiMessage]),
+	ok = gen_tcp:send(Sock, AsciiMessage),
+	
+	% Get the response to the request and unmarshal it.
+	AsciiResponse = do_recv(Sock, []),
+	io:format("Received:~n~s~n", [AsciiResponse]),
+	Response = erl8583_marshaller_ascii:unmarshal(AsciiResponse),
+	
+	% Display the MTI from the response.
+	io:format("~nMTI: ~s~n", [erl8583_message:get(0, Response)]).	
+
+% A pretty standard function to read data from a socket.
+do_recv(Sock, Bs) ->
+    case gen_tcp:recv(Sock, 0) of
+        {ok, B} ->
+			UpdatedBs = Bs ++ B,
+			if
+				% There's a 2 byte length header. Use it to check if
+				% we have received the whole response.
+				length(UpdatedBs) &lt; 2 ->
+					do_recv(Sock, UpdatedBs);
+				true ->
+					{[Len1, Len2], Rest} = lists:split(2, UpdatedBs),
+					Len = Len1 * 256 + Len2 + 2,
+					if 
+						Len >= length(UpdatedBs) ->
+							% Got the whole response, return the response
+							% but not the length header.
+							Rest;
+						true ->
+							% Haven't got all the response data.
+							do_recv(Sock, UpdatedBs)
+					end
+			end
+    end.	
+</programlisting></para>
+
 
     </section>
 
