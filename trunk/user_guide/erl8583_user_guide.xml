@@ -925,7 +925,7 @@ test() -&gt;
     </section>
 
     <section>
-      <title>A Minimal ISO 8583 Client</title>
+      <title>A minimal ISO 8583 client</title>
 
       <para>jPOS is a popular Java framework for processing ISO 8583 messages.
       It supports a host of ways to marshal messages. In this example we use
@@ -944,9 +944,11 @@ test() -&gt;
 
       <para>We start by writing a minimal jPOS server. To get this code to
       compile and run, you will need to download jPOS from
-      http://www.jpos.org. The program listens on port 8000 for ISO 8583 messages and echoes them back to the client after changing the MTI to indicate that the message is a response.</para>
-      
-<para><programlisting>
+      http://www.jpos.org. The program listens on port 8000 for ISO 8583
+      messages and echoes them back to the client after changing the MTI to
+      indicate that the message is a response.</para>
+
+      <para><programlisting>
 import org.jpos.iso.*;
 import org.jpos.iso.channel.ASCIIChannel;
 import org.jpos.iso.packager.ISO87APackager;
@@ -974,17 +976,27 @@ public class Example3Server implements ISORequestListener {
 
 }
       </programlisting></para>
-      <para>The above line <programlisting>ServerChannel channel = new ASCIIChannel(new ISO87APackager());
-      </programlisting> creates an ISO87APackager that can marshal and unmarshal ASCII encoded messages. The ASCIIChannel class takes care of a transport layer detail: Identifying the end of the message. This class expects that the ASCII encoded message will be preceded by four ASCII digits that contain the length of the ISO 8583 message.
-      
-</para><para>The code below is an implementation of our client. We create an "0800" message, marshal the message, prepend four characters encoding the length and send the resultant data to the server. The do_recv function listens for the response and waits until it has all the response bytes, strips the first four bytes encoding the message length and returns the marshalled response data. The response is then unmarshalled and the MTI is displayed.
-      </para>
 
-<para><programlisting>
+      <para>The above line <programlisting>ServerChannel channel = new ASCIIChannel(new ISO87APackager());
+      </programlisting> creates an ISO87APackager that can marshal and
+      unmarshal ASCII encoded messages. The ASCIIChannel class takes care of a
+      transport layer detail: Identifying the end of the message. This class
+      expects that the ASCII encoded message will be preceded by four ASCII
+      digits that contain the length of the ISO 8583 message.</para>
+
+      <para>The code below is an implementation of our client. We create an
+      "0800" message, marshal the message, prepend four characters encoding
+      the length and send the resultant data to the server. The do_recv
+      function listens for the response and waits until it has all the
+      response bytes, strips the first four bytes encoding the message length
+      and returns the marshalled response data. The response is then
+      unmarshalled and the MTI is displayed.</para>
+
+      <para><programlisting>
 -module(example_3_client).
 -export([test/0]).
 
-test() ->
+test() -&gt;
 	% Create a message.
 	Msg1 = erl8583_message:new(),
 	Msg2 = erl8583_message:set_mti("0800", Msg1),
@@ -1014,66 +1026,71 @@ test() ->
 	io:format("~nMTI: ~s~n", [erl8583_message:get(0, Response)]).	
 
 % A pretty standard function to read data from a socket.
-do_recv(Sock, Bs) ->
+do_recv(Sock, Bs) -&gt;
     case gen_tcp:recv(Sock, 0) of
-        {ok, B} ->
+        {ok, B} -&gt;
 			UpdatedBs = Bs ++ B,
 			if
 				% There's a 4 byte length header. Use it to check if
 				% we have received the whole response.
-				length(UpdatedBs) &lt; 4 ->
+				length(UpdatedBs) &lt; 4 -&gt;
 					do_recv(Sock, UpdatedBs);
-				true ->
+				true -&gt;
 					{LenStr, Rest} = lists:split(4, UpdatedBs),
 					Len = list_to_integer(LenStr) + 4,
 					if 
-						Len >= length(UpdatedBs) ->
+						Len &gt;= length(UpdatedBs) -&gt;
 							% Got the whole response, return the response
 							% but not the length header.
 							Rest;
-						true ->
+						true -&gt;
 							% Haven't got all the response data.
 							do_recv(Sock, UpdatedBs)
 					end
 			end
     end.	
 </programlisting></para>
-    <para>If we start the Java server and run the Erlang client, the client produces the following output showing the ASCII marshalled request and response and the MTI of the response message:
-</para><para><computeroutput>
-Sending:
-</computeroutput></para>
-<para><computeroutput>
-08002000010000C0000230000004511111111222222222222222022This is a Test Message
-</computeroutput></para>
-<para><computeroutput>
 
-</computeroutput></para>
-<para><computeroutput>
-Received:
-</computeroutput></para>
-<para><computeroutput>
-08102000010000C0000230000004511111111222222222222222022This is a Test Message
-</computeroutput></para>
-<para><computeroutput>
+      <para>If we start the Java server and run the Erlang client, the client
+      produces the following output showing the ASCII marshalled request and
+      response and the MTI of the response message:</para>
 
-</computeroutput></para>
-<para><computeroutput>
-MTI: 0810
-</computeroutput></para>
-<para><computeroutput>
-ok
-</computeroutput></para>
-    <para/>
+      <para><computeroutput> Sending: </computeroutput></para>
+
+      <para><computeroutput>
+      08002000010000C0000230000004511111111222222222222222022This is a Test
+      Message </computeroutput></para>
+
+      <para><computeroutput> </computeroutput></para>
+
+      <para><computeroutput> Received: </computeroutput></para>
+
+      <para><computeroutput>
+      08102000010000C0000230000004511111111222222222222222022This is a Test
+      Message </computeroutput></para>
+
+      <para><computeroutput> </computeroutput></para>
+
+      <para><computeroutput> MTI: 0810 </computeroutput></para>
+
+      <para><computeroutput> ok </computeroutput></para>
+
+      <para></para>
     </section>
-    
-    <section>
-      <title>Using the generic <emphasis role="bold">erl8583_marshaller</emphasis>
-      module</title>
-      
-      <para>In the previous section we wrote an ISO 8583 server using jPOS and used the erl8583_marshaller_ascii module to marshal and unmarshal our messages. In this section we write a minimal server in Python using the iso8583py library (available from http://code.google.com/p/iso8583py). The server code below is modified from code written by Igor Custodio and licensed under the GNU GPL. The original code can be found on the iso8583py site hosted by googlecode. 
-      </para>
 
-<para><programlisting>
+    <section>
+      <title>Using the generic <emphasis
+      role="bold">erl8583_marshaller</emphasis> module</title>
+
+      <para>In the previous section we wrote an ISO 8583 server using jPOS and
+      used the erl8583_marshaller_ascii module to marshal and unmarshal our
+      messages. In this section we write a minimal server in Python using the
+      iso8583py library (available from http://code.google.com/p/iso8583py).
+      The server code below is modified from code written by Igor Custodio and
+      licensed under the GNU GPL. The original code can be found on the
+      iso8583py site hosted by googlecode.</para>
+
+      <para><programlisting>
 from ISO8583.ISO8583 import ISO8583
 from ISO8583.ISOErrors import *
 from socket import *
@@ -1122,10 +1139,20 @@ while 1:
         connection.close()             
 </programlisting></para>
 
-<para>
-The above code starts a server that listens on port 8583 and echoes any request after changing the MTI to 0810. This server, like the one in the previous section, expects data to be ASCII encoded. Unlike the previous server though where the length of messages was encoded as 4 ASCII digits this server expects the length of the marshalled data to be encoded as two (big-endian) bytes. It would be easy to modify only three or four lines of the previous client code to work with this server. However we'll make more extreme changes and implement a custom marshaller for marshalling the messages for this server. Our marshaller will prepend the length of the marshalled message at the beginning of the message. The listing below for the example_4_marshaller module shows the implementation:
-</para>
-<para><programlisting>
+      <para>The above code starts a server that listens on port 8583 and
+      echoes any request after changing the MTI to 0810. This server, like the
+      one in the previous section, expects data to be ASCII encoded. Unlike
+      the previous server though where the length of messages was encoded as 4
+      ASCII digits this server expects the length of the marshalled data to be
+      encoded as two (big-endian) bytes. It would be easy to modify only three
+      or four lines of the previous client code to work with this server.
+      However we'll make more extreme changes and implement a custom
+      marshaller for marshalling the messages for this server. Our marshaller
+      will prepend the length of the marshalled message at the beginning of
+      the message. The listing below for the example_4_marshaller module shows
+      the implementation:</para>
+
+      <para><programlisting>
 -module(example_4_marshaller).
 
 -export([marshal/1, marshal_end/2]).
@@ -1134,7 +1161,7 @@ The above code starts a server that listens on port 8583 and echoes any request 
 % the bitmap and the data elements but also specifies that the
 % marshal_end function in this module must be called after marshalling
 % all data elements.
-marshal(Message) ->
+marshal(Message) -&gt;
 	MarshallingOptions = [{mti_marshaller, erl8583_marshaller_ascii},
 						  {bitmap_marshaller,  erl8583_marshaller_ascii},
 						  {field_marshaller,  erl8583_marshaller_ascii},
@@ -1143,21 +1170,20 @@ marshal(Message) ->
 
 % After marshalling the message, we prepend the message with the length of
 % the message encoded in two bytes.
-marshal_end(_Message, Marshalled) ->
+marshal_end(_Message, Marshalled) -&gt;
 	Length = length(Marshalled),
 	[Length div 256, Length rem 256] ++ Marshalled.
 </programlisting></para>
 
-<para>
-Our client code, example_4_client, is now rewritten to use our custom marshaller. Notice that we no longer have code that prepends the 
-length of the message to the marshalled data:
-</para>
+      <para>Our client code, example_4_client, is now rewritten to use our
+      custom marshaller. Notice that we no longer have code that prepends the
+      length of the message to the marshalled data:</para>
 
-<para><programlisting>
+      <para><programlisting>
 -module(example_4_client).
 -export([test/0]).
 
-test() ->
+test() -&gt;
 	% Create a message.
 	Msg1 = erl8583_message:new(),
 	Msg2 = erl8583_message:set_mti("0800", Msg1),
@@ -1182,87 +1208,94 @@ test() ->
 	io:format("~nMTI: ~s~n", [erl8583_message:get(0, Response)]).	
 
 % A pretty standard function to read data from a socket.
-do_recv(Sock, Bs) ->
+do_recv(Sock, Bs) -&gt;
     case gen_tcp:recv(Sock, 0) of
-        {ok, B} ->
+        {ok, B} -&gt;
 			UpdatedBs = Bs ++ B,
 			if
 				% There's a 2 byte length header. Use it to check if
 				% we have received the whole response.
-				length(UpdatedBs) &lt; 2 ->
+				length(UpdatedBs) &lt; 2 -&gt;
 					do_recv(Sock, UpdatedBs);
-				true ->
+				true -&gt;
 					{[Len1, Len2], Rest} = lists:split(2, UpdatedBs),
 					Len = Len1 * 256 + Len2 + 2,
 					if 
-						Len >= length(UpdatedBs) ->
+						Len &gt;= length(UpdatedBs) -&gt;
 							% Got the whole response, return the response
 							% but not the length header.
 							Rest;
-						true ->
+						true -&gt;
 							% Haven't got all the response data.
 							do_recv(Sock, UpdatedBs)
 					end
 			end
     end.	
 </programlisting></para>
-<para>
-If we run the server and the client, the client displays the following:
-</para>
-<para><computeroutput>
-Sending:
-</computeroutput></para>
-<para><computeroutput>
-[0,77,48,56,48,48,50,48,48,48,48,49,48,48,48,48,67,48,48,48,48,50,51,48,48,48,
-</computeroutput></para>
-<para><computeroutput>
- 48,48,48,52,53,49,49,49,49,49,49,49,49,50,50,50,50,50,50,50,50,50,50,50,50,
-</computeroutput></para>
-<para><computeroutput>
- 50,50,50,48,50,50,84,104,105,115,32,105,115,32,97,32,84,101,115,116,32,77,
-</computeroutput></para>
-<para><computeroutput>
- 101,115,115,97,103,101]
-</computeroutput></para>
-<para><computeroutput>
 
-</computeroutput></para>
-<para><computeroutput>
-Received:
-</computeroutput></para>
-<para><computeroutput>
-08102000010000c0000230000004511111111222222222222222022This is a Test Message
-</computeroutput></para>
-<para><computeroutput>
+      <para>If we run the server and the client, the client displays the
+      following:</para>
 
-</computeroutput></para>
-<para><computeroutput>
-MTI: 0810
-</computeroutput></para>
-<para><computeroutput>
-ok
-</computeroutput></para>
+      <para><computeroutput> Sending: </computeroutput></para>
 
-<para>
-The first two bytes of the marshalled data [0, 77] indicate that 77 bytes of data follow.
-</para>
+      <para><computeroutput>
+      [0,77,48,56,48,48,50,48,48,48,48,49,48,48,48,48,67,48,48,48,48,50,51,48,48,48,
+      </computeroutput></para>
 
-<para>
-Writing a marshaller to prepend the length of the data to follow is NOT recommended; the length is part of the transport protocol not the application layer.  The code for adding the length should be done in a function that sends the data over the network. The purpose of this code was primarily to show how to write a very basic marshaller by extending an existing one.
-</para>
-<para />
+      <para><computeroutput>
+      48,48,48,52,53,49,49,49,49,49,49,49,49,50,50,50,50,50,50,50,50,50,50,50,50,
+      </computeroutput></para>
+
+      <para><computeroutput>
+      50,50,50,48,50,50,84,104,105,115,32,105,115,32,97,32,84,101,115,116,32,77,
+      </computeroutput></para>
+
+      <para><computeroutput> 101,115,115,97,103,101] </computeroutput></para>
+
+      <para><computeroutput> </computeroutput></para>
+
+      <para><computeroutput> Received: </computeroutput></para>
+
+      <para><computeroutput>
+      08102000010000c0000230000004511111111222222222222222022This is a Test
+      Message </computeroutput></para>
+
+      <para><computeroutput> </computeroutput></para>
+
+      <para><computeroutput> MTI: 0810 </computeroutput></para>
+
+      <para><computeroutput> ok </computeroutput></para>
+
+      <para>The first two bytes of the marshalled data [0, 77] indicate that
+      77 bytes of data follow.</para>
+
+      <para>Writing a marshaller to prepend the length of the data to follow
+      is NOT recommended; the length is part of the transport protocol not the
+      application layer. The code for adding the length should be done in a
+      function that sends the data over the network. The purpose of this code
+      was primarily to show how to write a very basic marshaller by extending
+      an existing one.</para>
+
+      <para></para>
     </section>
 
     <section>
-       <title>An unmarshaller for American Express messages</title>
-       <para>American Express provide a very detailed specification on how to exchange ISO 8583 messages with them. Unusually, they encode numeric and string data elements (including the MTI) using EBCDIC rather than ASCII. Unfortunately, we cannot use the erl8583_marshaller_ebcidc module for marshalling messages directly since they use binary encodings for the bitmap and binary fields. In this example, we write code capable of unmarshalling AMEX messages: 
-       </para>
-<para><programlisting>
+      <title>An unmarshaller for American Express messages</title>
+
+      <para>American Express provide a very detailed specification on how to
+      exchange ISO 8583 messages with them. Unusually, they encode numeric and
+      string data elements (including the MTI) using EBCDIC rather than ASCII.
+      Unfortunately, we cannot use the erl8583_marshaller_ebcidc module for
+      marshalling messages directly since they use binary encodings for the
+      bitmap and binary fields. In this example, we write code capable of
+      unmarshalling AMEX messages:</para>
+
+      <para><programlisting>
 -module(example_5_unmarshaller).
 
 -export([unmarshal/1, unmarshal_field/3]).
 
-unmarshal(Marshalled) ->
+unmarshal(Marshalled) -&gt;
 	% We use the EBCDIC marshaller to unmarshal the MTI,
 	%        the binary marshaller to unmarshal the bitmap,
 	%        this module unmarshals the data elements
@@ -1273,18 +1306,110 @@ unmarshal(Marshalled) ->
 
 % We use the binary marshaller to unmarshal binary data elements
 % and the EBCDIC marshaller to unmarshal all other data elements.
-unmarshal_field(FieldId, Marshalled, EncodingRules) ->
+unmarshal_field(FieldId, Marshalled, EncodingRules) -&gt;
 	% We use the encoding rules to get whether a data element is binary
 	% or anything else.
 	case EncodingRules:get_encoding(FieldId) of
-		{b, _, _} ->
+		{b, _, _} -&gt;
 			erl8583_marshaller_binary:unmarshal_field(FieldId, Marshalled, EncodingRules);
-		{_, _, _} ->
+		{_, _, _} -&gt;
 			erl8583_marshaller_ebcdic:unmarshal_field(FieldId, Marshalled, EncodingRules)
 	end.
 </programlisting></para>
 
-  </section>
+      <para>The unmarshal function above specifies that the <emphasis
+      role="bold">erl8583_marshaller</emphasis> should use the EBCDIC
+      marshaller to unmarshal the MTI, the binary marshaller to unmarshal the
+      bitmap and use the <emphasis
+      role="bold">example_5_unmarshaller</emphasis> module to unmarshal data
+      elements. When a data element needs to be unmarshalled, the
+      unmarshal_field function of <emphasis
+      role="bold">example_5_unmarshaller</emphasis> is called. Three arguments
+      (a field ID, marshalled data and a module that specifies how a data
+      element is encoded) are passed to the field unmarshalling function. The
+      implementation uses the encoding rules module to get whether the data
+      element to be unmarshalled is binary or some other type. If the data
+      element is binary, our unmarshaller delegates the unmarshalling to the
+      binary marshaller otherwise the EBCDIC marshaller is used.</para>
+
+      <para>The <emphasis role="bold">example_5_amex_message</emphasis> module
+      exercises our unmarshaller:</para>
+<para><programlisting>
+-module(example_5_amex_message).
+
+-export([test/0]).
+
+test() ->
+	% The marshalled message to unmarshal.
+	MarshalStr = "F1F1F0F0703425C000408000F1F5F3F7F0F0F1F2F3F4F5F6F1" ++ 
+					 "F2F3F4F5F0F0F4F0F0F0F0F0F0F0F0F0F0F0F0F1F0F0F0" ++ 
+					 "F0F0F0F0F1F0F9F0F1F0F0F0F0F0F0F0F0F1F3F0F1F8F4" ++ 
+					 "F0F1F0F1F1F5F0F6F0F0F1F2F0F1F8F0F1F2F3F4F0F7F4" ++ 
+					 "F2F0F0F0F0F0F0F0F1F2F3F4F5F6F7F8F8F4F0",
+	Marshalled = binary_to_list(erl8583_convert:ascii_hex_to_binary(MarshalStr)),
+	
+	% Unmarshal the message using our unmarshaller.
+	Message = example_5_unmarshaller:unmarshal(Marshalled),
+	
+	% Get the field IDs and display the values.
+	FieldIds = erl8583_message:get_fields(Message),
+	F = fun(FieldId) -> 
+				FieldValue = erl8583_message:get(FieldId, Message),
+				io:format("Field ~p: ~s~n", [FieldId, FieldValue]) 
+		end,
+	lists:map(F, FieldIds),
+	ok.</programlisting></para>
+
+      <para>Running our test on the test message in the above code produces the following output:</para>
+
+<para><computeroutput>
+Field 0: 1100
+</computeroutput></para>
+<para><computeroutput>
+Field 2: 370012345612345
+</computeroutput></para>
+<para><computeroutput>
+Field 3: 004000
+</computeroutput></para>
+<para><computeroutput>
+Field 4: 000000000100
+</computeroutput></para>
+<para><computeroutput>
+Field 11: 000001
+</computeroutput></para>
+<para><computeroutput>
+Field 12: 090100000000
+</computeroutput></para>
+<para><computeroutput>
+Field 14: 1301
+</computeroutput></para>
+<para><computeroutput>
+Field 19: 840
+</computeroutput></para>
+<para><computeroutput>
+Field 22: 101150600120
+</computeroutput></para>
+<para><computeroutput>
+Field 24: 180
+</computeroutput></para>
+<para><computeroutput>
+Field 25: 1234
+</computeroutput></para>
+<para><computeroutput>
+Field 26: 0742
+</computeroutput></para>
+<para><computeroutput>
+Field 42: 000000012345678
+</computeroutput></para>
+<para><computeroutput>
+Field 49: 840
+</computeroutput></para>
+<para><computeroutput>
+ok
+</computeroutput></para>
+
+      <para></para>
+    </section>
   </section>
 
   <section>
