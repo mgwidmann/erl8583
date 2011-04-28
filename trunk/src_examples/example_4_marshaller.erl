@@ -3,15 +3,17 @@
 %% end_marshaller to the marshaller.
 -module(example_4_marshaller).
 
--include_lib("erl8583/include/erl8583_marshallers.hrl").
-
 -export([marshal/1, marshal_end/2]).
 
-% Our marshal function uses the ASCII marshaller but specifies that the
+% Our marshal function uses the ASCII marshaller to marshal the MTI,
+% the bitmap and the data elements but also specifies that the
 % marshal_end function in this module must be called after marshalling
 % all data elements.
 marshal(Message) ->
-	MarshallingOptions = ?MARSHALLER_ASCII ++ [{end_marshaller, ?MODULE}],
+	MarshallingOptions = [{mti_marshaller, erl8583_marshaller_ascii},
+						  {bitmap_marshaller,  erl8583_marshaller_ascii},
+						  {field_marshaller,  erl8583_marshaller_ascii},
+						  {end_marshaller, ?MODULE}],
 	erl8583_marshaller:marshal(Message, MarshallingOptions).
 
 % After marshalling the message, we prepend the message with the length of
