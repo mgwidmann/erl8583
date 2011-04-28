@@ -925,7 +925,7 @@ test() -&gt;
     </section>
 
     <section>
-      <title>A Minimal ISh<link linkend="???"></link>O 8583 Client</title>
+      <title>A Minimal ISO 8583 Client</title>
 
       <para>jPOS is a popular Java framework for processing ISO 8583 messages.
       It supports a host of ways to marshal messages. In this example we use
@@ -943,8 +943,101 @@ test() -&gt;
         </itemizedlist></para>
 
       <para>We start by writing a minimal jPOS server. To get this code to
-      compile and run, you will need to download jPOS from <link
-      linkend="???">http://www.jpos.org</link></para>
+      compile and run, you will need to download jPOS from
+      http://www.jpos.org. The program listens on port 8000 for ISO 8583 messages and echoes them back to the client after changing the MTI to indicate that the message is a response.</para>
+      
+<para><programlisting>
+import org.jpos.iso.*;
+import org.jpos.iso.channel.ASCIIChannel;
+import org.jpos.iso.packager.ISO87APackager;
+
+public class Example3Server implements ISORequestListener {
+
+	public static void main(String[] args) throws Exception {
+		ServerChannel channel = new ASCIIChannel(new ISO87APackager());
+		ISOServer server = new ISOServer(8000, channel, null);
+		server.addISORequestListener(new Example3Server());
+		new Thread(server).start();
+	}
+
+	@Override
+	public boolean process(ISOSource source, ISOMsg m) {
+		try {
+			m.setResponseMTI();
+			source.send(m);
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+
+}
+      </programlisting></para>
+      <para>The above line <programlisting>ServerChannel channel = new ASCIIChannel(new ISO87APackager());
+      </programlisting> creates an ISO87APackager that can marshal and unmarshal ASCII encoded messages. The ASCIIChannel class takes care of a transport layer detail: Identifying the end of the message. This class expects that the ASCII encoded message will be preceded by four ASCII digits that contain the length of the ISO 8583 message.
+      
+</para><para>The code below is an implementation of our client. We create an "0800" message, marshal the message, prepend four characters encoding the length and send the resultant data to the server. The do_recv function listens for the response and waits until it has all the response bytes, strips the first four bytes encoding the message length and returns the marshalled response data. The response is then unmarshalled and the MTI is displayed.
+      </para>
+
+<para><programlisting>
+-module(example_3_client).
+-include("erl8583/include/erl8583_field_ids.hrl").
+-include("erl8583/include/erl8583_marshallers.hrl").
+-export([test/0]).
+
+test() ->
+	% Create a message.
+	Msg1 = erl8583_message:new(),
+	Msg2 = erl8583_message:set_mti("0800", Msg1),
+	Msg3 = erl8583_message:set(3, "300000", Msg2),
+	Msg4 = erl8583_message:set(24, "045", Msg3),
+	Msg5 = erl8583_message:set(41, "11111111", Msg4),
+	Msg6 = erl8583_message:set(42, "222222222222222", Msg5),
+	Msg7 = erl8583_message:set(63, "This is a Test Message", Msg6),
+	AsciiMessage = erl8583_marshaller_ascii:marshal(Msg7),
+	{ok, Sock} = gen_tcp:connect("localhost", 8000, [list, {packet, 0}, {active, false}]),
+	io:format("Sending:~n~s~n~n", [AsciiMessage]),
+	
+	% Our jPOS server expects a four digit length to be sent before the message.
+	% We use an erl8583_convert function to create the header.
+	% Send the request.
+	LengthHeader = erl8583_convert:integer_to_string(length(AsciiMessage), 4),
+	ok = gen_tcp:send(Sock, LengthHeader ++ AsciiMessage),
+	
+	% Get the response to the request and unmarshal it.
+	AsciiResponse = do_recv(Sock, []),
+	io:format("Received:~n~s~n", [AsciiResponse]),
+	Response = erl8583_marshaller_ascii:unmarshal(AsciiResponse),
+	
+	% Display the MTI from the response.
+	io:format("~nMTI: ~s~n", [erl8583_message:get(0, Response)]).	
+
+% A pretty standard function to read data from a socket.
+do_recv(Sock, Bs) ->
+    case gen_tcp:recv(Sock, 0) of
+        {ok, B} ->
+			UpdatedBs = Bs ++ B,
+			if
+				% There's a 4 byte length header. Use it to check if
+				% we have received the whole response.
+				length(UpdatedBs) &lt; 4 ->
+					do_recv(Sock, UpdatedBs);
+				true ->
+					{LenStr, Rest} = lists:split(4, UpdatedBs),
+					Len = list_to_integer(LenStr) + 4,
+					if 
+						Len >= length(UpdatedBs) ->
+							% Got the whole response, return the response
+							% but not the length header.
+							Rest;
+						true ->
+							% Haven't got all the response data.
+							do_recv(Sock, UpdatedBs)
+					end
+			end
+    end.	</programlisting></para>
+
     </section>
   </section>
 
