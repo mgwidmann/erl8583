@@ -12,14 +12,16 @@ test() ->
 	Msg5 = erl8583_message:set(41, "11111111", Msg4),
 	Msg6 = erl8583_message:set(42, "222222222222222", Msg5),
 	Msg7 = erl8583_message:set(63, "This is a Test Message", Msg6),
+	
+	% Marshal the message using the ASCII marshaller.
 	AsciiMessage = erl8583_marshaller_ascii:marshal(Msg7),
-	{ok, Sock} = gen_tcp:connect("localhost", 8000, [list, {packet, 0}, {active, false}]),
 	io:format("Sending:~n~s~n~n", [AsciiMessage]),
 	
 	% Our jPOS server expects a four digit length to be sent before the message.
 	% We use an erl8583_convert function to create the header.
 	% Send the request.
 	LengthHeader = erl8583_convert:integer_to_string(length(AsciiMessage), 4),
+	{ok, Sock} = gen_tcp:connect("localhost", 8000, [list, {packet, 0}, {active, false}]),
 	ok = gen_tcp:send(Sock, LengthHeader ++ AsciiMessage),
 	
 	% Get the response to the request and unmarshal it.
