@@ -14,17 +14,36 @@ test() ->
 	Msg6 = erl8583_message:set(42, "222222222222222", Msg5),
 	Msg7 = erl8583_message:set(63, "This is a Test Message", Msg6),
 	AsciiMessage = erl8583_marshaller_ascii:marshal(Msg7),
-	{ok, Sock} = gen_tcp:connect("localhost", 8000, [list, {packet, 0}, {active, true}]),
-	io:format("Sending:~n~s~n", [AsciiMessage]),
+	{ok, Sock} = gen_tcp:connect("localhost", 8000, [list, {packet, 0}, {active, false}]),
+	io:format("Sending:~n~s~n~n", [AsciiMessage]),
 	
 	% Our jPOS server expects a four digit length to be sent before the message.
-	ok = gen_tcp:send(Sock, erl8583_convert:integer_to_string(length(AsciiMessage), 4) ++ AsciiMessage),
-	receive {tcp, _, AsciiResponse} -> AsciiResponse end,
+	% We use an erl8583_convert function to create the header.
+	LengthHeader = erl8583_convert:integer_to_string(length(AsciiMessage), 4),
+	ok = gen_tcp:send(Sock, LengthHeader ++ AsciiMessage),
+	AsciiResponse = do_recv(Sock, []),
 	
-	% Strip the four length digits from the response.
-	{_LenDigits, AsciiResponse2} = lists:split(4, AsciiResponse),
-	io:format("Received:~n~s~n", [AsciiResponse2]),
-	Response = erl8583_marshaller_ascii:unmarshal(AsciiResponse2),
+	io:format("Received:~n~s~n", [AsciiResponse]),
+	Response = erl8583_marshaller_ascii:unmarshal(AsciiResponse),
 	
 	% Display the MTI
 	io:format("~nMTI: ~s~n", [erl8583_message:get(0, Response)]).	
+
+do_recv(Sock, Bs) ->
+    case gen_tcp:recv(Sock, 0) of
+        {ok, B} ->
+			UpdatedBs = Bs ++ B,
+			if
+				length(UpdatedBs) < 4 ->
+					do_recv(Sock, UpdatedBs);
+				true ->
+					{LenStr, Rest} = lists:split(4, UpdatedBs),
+					Len = list_to_integer(LenStr) + 4,
+					if 
+						Len >= length(UpdatedBs) ->
+						   Rest;
+						true ->
+							do_recv(Sock, UpdatedBs)
+					end
+			end
+    end.	
