@@ -1037,7 +1037,33 @@ do_recv(Sock, Bs) ->
 					end
 			end
     end.	</programlisting></para>
+    <para>If we start the Java server and run the Erlang client, the client produces the following output showing the ASCII marshalled request and response and the MTI of the response message:
+<para><computeroutput>
+Sending:
+</computeroutput></para>
+<para><computeroutput>
+08002000010000C0000230000004511111111222222222222222022This is a Test Message
+</computeroutput></para>
+<para><computeroutput>
 
+</computeroutput></para>
+<para><computeroutput>
+Received:
+</computeroutput></para>
+<para><computeroutput>
+08102000010000C0000230000004511111111222222222222222022This is a Test Message
+</computeroutput></para>
+<para><computeroutput>
+
+</computeroutput></para>
+<para><computeroutput>
+MTI: 0810
+</computeroutput></para>
+<para><computeroutput>
+ok
+</computeroutput></para>
+    </para>
+    <para/>
     </section>
   </section>
 
