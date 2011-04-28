@@ -1070,8 +1070,61 @@ ok
       <title>Using the generic <emphasis role="bold">erl8583_marshaller</emphasis>
       module</title>
       
-      <para>In the previous section we wrote an ISO 8583 server using jPOS and used the erl8583_marshaller_ascii module to marshal and unmarshal our messages. In this section we write a minimal server in Python using the iso8583py library (available from http://code.google.com/p/iso8583py).
+      <para>In the previous section we wrote an ISO 8583 server using jPOS and used the erl8583_marshaller_ascii module to marshal and unmarshal our messages. In this section we write a minimal server in Python using the iso8583py library (available from http://code.google.com/p/iso8583py). The server code below is modified from code written by Igor Custodio and licensed under the GNU GPL. The original code can be found on the iso8583py site hosted by googlecode. 
       </para>
+
+<para><programlisting>
+from ISO8583.ISO8583 import ISO8583
+from ISO8583.ISOErrors import *
+from socket import *
+
+# Configure the server
+serverIP = "127.0.0.1" 
+serverPort = 8583
+maxConn = 5
+
+# Create a TCP socket
+s = socket(AF_INET, SOCK_STREAM)    
+# bind it to the server port
+s.bind((serverIP, serverPort))   
+# Configure it to accept up to N simultaneous Clients waiting...
+s.listen(maxConn)                        
+
+
+# Run forever
+while 1:
+        #wait new Client Connection
+        connection, address = s.accept() 
+        while 1:
+                # receive message
+                isoStr = connection.recv(2048) 
+                if isoStr:
+                        pack = ISO8583()
+                        #parse the iso
+                        try:
+                                pack.setNetworkISO(isoStr)
+                                pack.getBitsAndValues()
+                        except InvalidIso8583, ii:
+                                print ii
+                                break
+                        except:
+                                print 'Something happened!!!!'
+                                break
+                        
+                        #send answer
+                        pack.setMTI('0810')
+                        ans = pack.getNetworkISO()
+                        connection.send(ans)
+                        
+                else:
+                        break
+        # close socket          
+        connection.close()             
+</programlisting></para>
+
+<para>
+The above code starts a server that listens on port 8583 and echoes any request after changing the MTI to 0810. This server, like the one in the previous section, expects data to be ASCII encoded. Unlike the previous server though where the length of messages was encoded as 4 ASCII digits this server expects the length of the marshalled data to be encoded as two (big-endian) bytes. It would be easy to modify only three or four lines of the previous client code to work with this server. However we'll make more extreme changes and implement a custom marshaller for marshalling the messages for this server. Our marshaller will prepend the length of the marshalled message at the beginning of the message. The listing below for the example_4_marshaller module shows the implementation:
+</para>
 
     </section>
 
