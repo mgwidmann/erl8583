@@ -78,15 +78,16 @@
           <listitem>
             <para>The message function. The third digit indicates whether the
             message is a request ('0'), a response ('1'), an advice ('2'),
-            etc.</para>
+            etc. See the ISO 8583 specification for all message
+            functions.</para>
           </listitem>
 
           <listitem>
             <para>The message origin. The fourth digit indicates where the
-            message originated and whether the message is a repeat, e.g. '0'
-            indicates that the message originated from an acquiring
-            institution while '1' denotes that the message is a repeat from an
-            acquiring institution.</para>
+            message originated and whether the message is a repeat. For
+            example, '0' indicates that the message originated from an
+            acquiring institution while '1' denotes that the message is a
+            repeat from an acquiring institution.</para>
           </listitem>
         </itemizedlist></para>
 
@@ -107,7 +108,7 @@
 
       <para>The primary bitmap is used to indicate the presence or absence of
       data elements 1-64. The secondary bitmap is used for fields 65-128. If
-      no data elements with identifier 65 or greater is present, there is no
+      no data elements with identifier 65 or greater are present, there is no
       need for the secondary bitmap. The secondary bitmap is actually data
       element 1, so if bit 1 is set in the primary bitmap it indicates that
       the message contains the secondary bitmap.</para>
@@ -152,19 +153,20 @@
       <para>The fields listed above contain quite different data:
       <itemizedlist>
           <listitem>
-            <para>Field 1 is binary data containing a sequence of bits</para>
+            <para>Field 1 is binary data containing a sequence of bits.</para>
           </listitem>
 
           <listitem>
-            <para>Fields 2 and 4 contain numeric amounts</para>
+            <para>Fields 2 and 4 contain numeric amounts.</para>
           </listitem>
 
           <listitem>
-            <para>Field 35 is encoded in a 4-bit format</para>
+            <para>Field 35 is encoded in a 4-bit format.</para>
           </listitem>
 
           <listitem>
-            <para>Field 98 contains a string with alphabetic characters</para>
+            <para>Field 98 contains a string with alphabetic
+            characters.</para>
           </listitem>
         </itemizedlist></para>
 
@@ -175,20 +177,20 @@
       following abbreviations are used to describe the contents of
       fields:<itemizedlist>
           <listitem>
-            <para><emphasis>b</emphasis> for binary data</para>
+            <para><emphasis>b</emphasis> for binary data.</para>
           </listitem>
 
           <listitem>
-            <para><emphasis>n</emphasis> for numeric data</para>
+            <para><emphasis>n</emphasis> for numeric data.</para>
           </listitem>
 
           <listitem>
             <para><emphasis>a</emphasis>, <emphasis>an</emphasis> and
-            <emphasis>ans</emphasis> for various forms of strings</para>
+            <emphasis>ans</emphasis> for various forms of strings.</para>
           </listitem>
 
           <listitem>
-            <para><emphasis>z</emphasis> for track 2 data</para>
+            <para><emphasis>z</emphasis> for track 2 data.</para>
           </listitem>
         </itemizedlist></para>
 
@@ -200,16 +202,16 @@
       <itemizedlist>
         <listitem>
           <para>LLVAR, the field is of variable length and the length can be
-          encoded in two decimal digits</para>
+          encoded in two decimal digits.</para>
         </listitem>
 
         <listitem>
           <para>LLLVAR, the field is of variable length and the length can be
-          encoded in three decimal digits</para>
+          encoded in three decimal digits.</para>
         </listitem>
 
         <listitem>
-          <para>fixed, the field length is fixed</para>
+          <para>fixed, the field length is constant.</para>
         </listitem>
       </itemizedlist>
 
@@ -425,7 +427,7 @@
           </listitem>
 
           <listitem>
-            <para>Include files are in the include directory.</para>
+            <para>Header files are in the include directory.</para>
           </listitem>
 
           <listitem>
@@ -435,8 +437,8 @@
         </itemizedlist></para>
 
       <para>The source code is included in the src directory and the EUnit
-      unit tests are found in the test directory. Example Erlang files used in
-      this guide are included in the src_examples directory.</para>
+      unit tests are found in the test directory. Example source code used in
+      this guide is in the src_examples directory.</para>
 
       <para></para>
     </section>
@@ -584,10 +586,9 @@ get_encoding(?RETRIEVAL_REF_NUM) -&gt;
       <para>The ISO 8583 specification provides an abstraction of messages
       that must be transformed to a list of bytes. Implementers of the ISO
       8583 standard encode messages differently and there are a multitude of
-      ways to marshal a message into a wire-level encoding.</para>
-
-      <para>To cater for the most common encodings of messages, erl8583
-      provides the following four modules:<itemizedlist>
+      ways to marshal a message into a wire-level encoding. To cater for the
+      most common encodings of messages, erl8583 provides the following four
+      modules:<itemizedlist>
           <listitem>
             <para><emphasis role="bold">erl8583_marshaller_ascii</emphasis>
             Transforms a message to a list of ASCII characters. Binaries and
@@ -614,7 +615,7 @@ get_encoding(?RETRIEVAL_REF_NUM) -&gt;
           </listitem>
         </itemizedlist></para>
 
-      <para>Unfortunately, in practice, the above four marshalling modules are
+      <para>Unfortunately, the above four marshalling modules are usually
       insufficient. Erl8583 provides a generic marshaller, <emphasis
       role="bold">erl8583_marshaller</emphasis>, that can be used to implement
       other marshallers. The generic marshaller can be passed a list of
@@ -645,6 +646,11 @@ get_encoding(?RETRIEVAL_REF_NUM) -&gt;
           <listitem>
             <para>To get how a data element is encoded (e.g. to specify that
             the 1987 version of the ISO 8583 standard must be used).</para>
+          </listitem>
+
+          <listitem>
+            <para>That specifies the order in which data elements must be
+            marshalled.</para>
           </listitem>
         </itemizedlist></para>
 
@@ -709,16 +715,17 @@ marshal(Message, MarshalHandlers) -&gt;
           </listitem>
 
           <listitem>
-            <para>Do other useful manipulations. See the EDocs for this module
-            for more details.</para>
+            <para>Convert lists of bytes to ASCII hex strings (and
+            vice-versa).</para>
           </listitem>
         </itemizedlist></para>
 
       <para></para>
 
-      <para>In practice, you will probably never need to call these functions
-      yourself; the functions are used mainly by the marshallers and you will
-      invoke the marshalling functions instead.</para>
+      <para>In practice, you may never need to call these functions yourself;
+      the functions are used mainly by the marshallers and you will invoke the
+      marshalling functions instead. See the EDocs for complete details of the
+      module.</para>
 
       <para></para>
     </section>
@@ -754,7 +761,7 @@ marshal(Message, MarshalHandlers) -&gt;
           </listitem>
 
           <listitem>
-            <para>Field 127 is another message containing subfields 2 and 3.
+            <para>Field 127 is another message containing subfields 2 and 12.
             The subfields can be referenced as the lists [127, 2] and [127,
             12].</para>
           </listitem>
@@ -811,8 +818,8 @@ test() -&gt;
 
       <para>Notice that we included the <emphasis
       role="bold">erl8583_field_ids.hrl</emphasis> header so that we could
-      refer to the fields using macro identifiers rather than numeric
-      values.</para>
+      refer to the fields using macro identifiers (e.g. <emphasis
+      role="bold">?MTI</emphasis>) rather than numeric values.</para>
 
       <para>Running the code produces the following output <computeroutput>
       </computeroutput></para>
@@ -845,8 +852,8 @@ test() -&gt;
       <emphasis role="bold">erl8583_marshaller_xml</emphasis> module. The XML
       marshaller is intended to be compatible with jPOS's XML packager. In
       practice, marshalling a message into an XML document is not very useful.
-      However the XML representation is easily human-readable which cannot be
-      said of the other encodings.</para>
+      However the XML representation is human-readable which cannot be said of
+      the other encodings.</para>
 
       <para><programlisting>
 %% An example that demonstrates marshalling an
