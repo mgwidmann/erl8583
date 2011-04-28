@@ -1206,7 +1206,51 @@ do_recv(Sock, Bs) ->
 			end
     end.	
 </programlisting></para>
+<para>
+If we run the server and the client, the client displays the following:
+</para>
+<para><computeroutput>
+Sending:
+</computeroutput></para>
+<para><computeroutput>
+[0,77,48,56,48,48,50,48,48,48,48,49,48,48,48,48,67,48,48,48,48,50,51,48,48,48,
+</computeroutput></para>
+<para><computeroutput>
+ 48,48,48,52,53,49,49,49,49,49,49,49,49,50,50,50,50,50,50,50,50,50,50,50,50,
+</computeroutput></para>
+<para><computeroutput>
+ 50,50,50,48,50,50,84,104,105,115,32,105,115,32,97,32,84,101,115,116,32,77,
+</computeroutput></para>
+<para><computeroutput>
+ 101,115,115,97,103,101]
+</computeroutput></para>
+<para><computeroutput>
 
+</computeroutput></para>
+<para><computeroutput>
+Received:
+</computeroutput></para>
+<para><computeroutput>
+08102000010000c0000230000004511111111222222222222222022This is a Test Message
+</computeroutput></para>
+<para><computeroutput>
+
+</computeroutput></para>
+<para><computeroutput>
+MTI: 0810
+</computeroutput></para>
+<para><computeroutput>
+ok
+</computeroutput></para>
+
+<para>
+The first two bytes of the marshalled data [0, 77] indicate that 77 bytes of data follow.
+</para>
+
+<para>
+Writing a marshaller to prepend the length of the data to follow is NOT recommended; the length is part of the transport protocol not the application layer.  The code for adding the length should be done in a function that sends the data over the network. The purpose of this code was primarily to show how to write a very basic marshaller by extending an existing one.
+</para>
+<para />
 
     </section>
 
