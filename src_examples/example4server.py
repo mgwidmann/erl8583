@@ -1,5 +1,6 @@
 """
 
+Adapted from code
 (C) Copyright 2009 Igor V. Custodio
 
 This program is free software: you can redistribute it and/or modify
@@ -26,9 +27,6 @@ from socket import *
 serverIP = "127.0.0.1" 
 serverPort = 8583
 maxConn = 5
-bigEndian = True
-#bigEndian = False
-
 
 # Create a TCP socket
 s = socket(AF_INET, SOCK_STREAM)    
@@ -46,26 +44,11 @@ while 1:
                 # receive message
                 isoStr = connection.recv(2048) 
                 if isoStr:
-                        print "\nInput ASCII |%s|" % isoStr
                         pack = ISO8583()
                         #parse the iso
                         try:
-                                if bigEndian:
-                                        pack.setNetworkISO(isoStr)
-                                else:
-                                        pack.setNetworkISO(isoStr,False)
-                        
-                                v1 = pack.getBitsAndValues()
-                                for v in v1:
-                                        print 'Bit %s of type %s with value = %s' % (v['bit'],v['type'],v['value'])
-                                        
-                                if pack.getMTI() == '0800':
-                                        print "\tThat's great !!! The client send a correct message !!!"
-                                else:
-                                        print "The client dosen't send the correct message!"    
-                                        break
-                                        
-                                        
+                                pack.setNetworkISO(isoStr)
+                                pack.getBitsAndValues()
                         except InvalidIso8583, ii:
                                 print ii
                                 break
@@ -75,18 +58,11 @@ while 1:
                         
                         #send answer
                         pack.setMTI('0810')
-                        
-                        if bigEndian:
-                                ans = pack.getNetworkISO()
-                        else:
-                                ans = pack.getNetworkISO(False)
-                                
-                        print 'Sending answer %s' % ans
+                        ans = pack.getNetworkISO()
                         connection.send(ans)
                         
                 else:
                         break
         # close socket          
         connection.close()             
-        print "Closed..."
 
