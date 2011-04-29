@@ -1411,7 +1411,7 @@ test() -&gt;
       <para>Postilion is a commercial ISO 8583 framework widely deployed for
       processing and switching messages. A commenter on a jPOS <ulink
       url="http://jpos.1045706.n5.nabble.com/I-cannot-unpack-Postilion-message-from-source-node-td2247729.html">newsgroup</ulink>
-      had difficulty unpacking the following message:</para>
+      had difficulty unpacking the following message from a Postilion 'node':</para>
 
       <para><computeroutput>
       30323030F23E049508E081000000000004000022313630353730303130353132
@@ -1554,6 +1554,131 @@ unmarshal_field(FieldId, Marshalled, EncodingRules) -&gt;
             marshaller.</para>
           </listitem>
         </itemizedlist></para>
+
+        <para>We exercise our unmarshaller by calling the test function of the example_6_postilion_message module:</para>
+
+	<para><programlisting>
+-module(example_6_postilion_message).
+
+-export([test/0]).
+
+test() ->
+	% Unmarshal this message which caused problems for
+	% someone on a jPOS forum.
+	Marshalled = "30323030F23E049508E0810000000000" ++
+			"04000022313630353730303130353132" ++
+			"32393839383433313030303030303030" ++
+			"30303030303030303130313231333437" ++
+			"33353030303031313133343733353130" ++
+			"31323037313231303131303031303043" ++
+			"30303030303030304330303030303030" ++
+			"30303636323736323930303030303033" ++
+			"38373032303130353730303131303031" ++
+			"2020202020202020202020205A494220" ++
+			"48656164204F66666963652041544D20" ++
+			"202020562F49204C61676F7320202020" ++
+			"30314E47353636303034313531303130" ++
+			"34303930313236363539303135323131" ++
+			"32303132303331343430303230303031" ++
+			"3135601C100000000000313030303030" ++
+			"3338373032305A656E69746841544D73" ++
+			"63725A4942655472616E7A536E6B3030" ++
+			"303030323030303031315A656E697468" ++
+			"54472020202031325A4942655472616E" ++
+			"7A536E6B303132333431303030303120" ++
+			"20203536365A454E4954482042323030" ++
+			"3630393231",
+	Message = example_6_unmarshaller:unmarshal(Marshalled),
+	
+	% Display the fields and their values
+	FieldIds = erl8583_message:get_fields(Message),
+	F = fun(FieldId) -> 
+			FieldValue = erl8583_message:get(FieldId, Message),
+			io:format("Field ~p: ~s~n", [FieldId, FieldValue]) 
+		end,
+	lists:map(F, FieldIds),
+	ok.
+        </programlisting></para>
+        <para>Running the test function produces:</para>
+
+<para><computeroutput>
+Field 0: 0200
+</computeroutput></para>
+<para><computeroutput>
+Field 1: ^@^@^@^@^D^@^@"
+</computeroutput></para>
+<para><computeroutput>
+Field 2: 0570010512298984
+</computeroutput></para>
+<para><computeroutput>
+Field 3: 310000
+</computeroutput></para>
+<para><computeroutput>
+Field 4: 000000000000
+</computeroutput></para>
+<para><computeroutput>
+Field 7: 1012134735
+</computeroutput></para>
+<para><computeroutput>
+Field 11: 000011
+</computeroutput></para>
+<para><computeroutput>
+Field 12: 134735
+</computeroutput></para>
+<para><computeroutput>
+Field 13: 1012
+</computeroutput></para>
+<para><computeroutput>
+Field 14: 0712
+</computeroutput></para>
+<para><computeroutput>
+Field 15: 1011
+</computeroutput></para>
+<para><computeroutput>
+Field 22: 001
+</computeroutput></para>
+<para><computeroutput>
+Field 25: 00
+</computeroutput></para>
+<para><computeroutput>
+Field 28: C00000000
+</computeroutput></para>
+<para><computeroutput>
+Field 30: C00000000
+</computeroutput></para>
+<para><computeroutput>
+Field 32: 627629
+</computeroutput></para>
+<para><computeroutput>
+Field 37: 000000387020
+</computeroutput></para>
+<para><computeroutput>
+Field 41: 10570011
+</computeroutput></para>
+<para><computeroutput>
+Field 42: 001            
+</computeroutput></para>
+<para><computeroutput>
+Field 43: ZIB Head Office ATM    V/I Lagos    01NG
+</computeroutput></para>
+<para><computeroutput>
+Field 49: 566
+</computeroutput></para>
+<para><computeroutput>
+Field 56: 1510
+</computeroutput></para>
+<para><computeroutput>
+Field 102: 4090126659
+</computeroutput></para>
+<para><computeroutput>
+Field 123: 211201203144002
+</computeroutput></para>
+<para><computeroutput>
+Field 127: `^\^P^@^@^@^@^@100000387020ZenithATMscrZIBeTranzSnk000002000011ZenithTG    12ZIBeTranzSnk01234100001   566ZENITH B20060921
+</computeroutput></para>
+<para><computeroutput>
+ok
+</computeroutput></para>
 
       <para></para>
     </section>

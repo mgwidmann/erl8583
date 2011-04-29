@@ -1,3 +1,4 @@
+%% A module to test our Postilion unmarshaller.
 -module(example_6_postilion_message).
 
 -export([test/0]).
