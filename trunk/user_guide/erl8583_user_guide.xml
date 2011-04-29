@@ -1410,6 +1410,88 @@ ok
 
       <para></para>
     </section>
+
+    <section>
+	<title>Unmarshalling a Postilion message</title>
+        <para>Postilion is a commercial ISO 8583 framework widely deployed for processing and switching messages. A commenter on a jPOS <ulink url="http://jpos.1045706.n5.nabble.com/I-cannot-unpack-Postilion-message-from-source-node-td2247729.html">newsgroup</ulink> had difficulty unpacking the following message:
+<para><computeroutput>
+30323030F23E049508E0810000000000
+</computeroutput></para>
+<para><computeroutput>
+04000022313630353730303130353132
+</computeroutput></para>
+<para><computeroutput>
+32393839383433313030303030303030
+</computeroutput></para>
+<para><computeroutput>
+30303030303030303130313231333437
+</computeroutput></para>
+<para><computeroutput>
+33353030303031313133343733353130
+</computeroutput></para>
+<para><computeroutput>
+31323037313231303131303031303043
+</computeroutput></para>
+<para><computeroutput>
+30303030303030304330303030303030
+</computeroutput></para>
+<para><computeroutput>
+30303636323736323930303030303033
+</computeroutput></para>
+<para><computeroutput>
+38373032303130353730303131303031
+</computeroutput></para>
+<para><computeroutput>
+2020202020202020202020205A494220
+</computeroutput></para>
+<para><computeroutput>
+48656164204F66666963652041544D20
+</computeroutput></para>
+<para><computeroutput>
+202020562F49204C61676F7320202020
+</computeroutput></para>
+<para><computeroutput>
+30314E47353636303034313531303130
+</computeroutput></para>
+<para><computeroutput>
+34303930313236363539303135323131
+</computeroutput></para>
+<para><computeroutput>
+32303132303331343430303230303031
+</computeroutput></para>
+<para><computeroutput>
+3135601C100000000000313030303030
+</computeroutput></para>
+<para><computeroutput>
+3338373032305A656E69746841544D73
+</computeroutput></para>
+<para><computeroutput>
+63725A4942655472616E7A536E6B3030
+</computeroutput></para>
+<para><computeroutput>
+303030323030303031315A656E697468
+</computeroutput></para>
+<para><computeroutput>
+54472020202031325A4942655472616E
+</computeroutput></para>
+<para><computeroutput>
+7A536E6B303132333431303030303120
+</computeroutput></para>
+<para><computeroutput>
+20203536365A454E4954482042323030
+</computeroutput></para>
+<para><computeroutput>
+3630393231
+</computeroutput></para>
+
+        <para>
+        </para>
+
+        </para>
+
+        <para/>
+    </section>
+
   </section>
 
   <section>
