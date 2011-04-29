@@ -261,7 +261,8 @@ response(FieldIds, Message) ->
 	[M1, M2, M3, M4] = get(?MTI, Message),
 	if
 		M3 =:= $0 orelse M3 =:= $2 orelse M3 =:= $4 ->
-			update(?MTI, [M1, M2, M3 + 1, M4], Clone)
+			% Ignore repeats.
+			update(?MTI, [M1, M2, M3 + 1, (M4 div 2) * 2], Clone)
 	end.
 
 %% @doc Creates a new message from an old message where the new message
