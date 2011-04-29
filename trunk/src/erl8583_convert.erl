@@ -72,8 +72,8 @@ ascii_hex_to_string(HexStr) ->
 %% @spec integer_to_string(integer(), integer()) -> string()
 -spec(integer_to_string(integer(), integer()) -> string()).
 
-integer_to_string(Value, Length) ->
-	pad_with_zeroes(Length, integer_to_list(Value)).
+integer_to_string(IntValue, Length) ->
+	pad_with_zeroes(Length, integer_to_list(IntValue)).
 
 %% @doc Pads an ASCII string with a number of spaces so that the
 %%      resultant string has specified length.
@@ -210,8 +210,8 @@ ascii_hex_to_digit([A]) when A >= $a andalso A =< $f ->
 %%      Values 10 - 15 are converted to the upper case strings
 %%      "A" - "F".
 %%
-%% @spec digit_to_ascii_hex(Value::integer()) -> string()
--spec(digit_to_ascii_hex(Value::integer()) -> string()).
+%% @spec digit_to_ascii_hex(IntValue::integer()) -> string()
+-spec(digit_to_ascii_hex(IntValue::integer()) -> string()).
 
 digit_to_ascii_hex(D) when D >= 0 andalso D =< 9 ->
 	[48+D];
