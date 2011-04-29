@@ -1674,11 +1674,19 @@ Field 102: 4090126659
 Field 123: 211201203144002
 </computeroutput></para>
 <para><computeroutput>
-Field 127: `^\^P^@^@^@^@^@100000387020ZenithATMscrZIBeTranzSnk000002000011ZenithTG    12ZIBeTranzSnk01234100001   566ZENITH B20060921
+Field 127: `^\^P^@^@^@^@^@100000387020ZenithATMscrZIBeTranzSnk000002000011ZenithTG
+</computeroutput></para>
+<para><computeroutput>
+12ZIBeTranzSnk01234100001   566ZENITH B20060921
 </computeroutput></para>
 <para><computeroutput>
 ok
 </computeroutput></para>
+
+      <para>
+The most noteable feature of the above is the apparent garbage in field 127 that encodes the bitmap.  In the next section, we extend our
+unmarshaller to extract the subfields of field 127.
+      </para>
 
       <para></para>
     </section>
