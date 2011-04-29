@@ -1514,6 +1514,21 @@ unmarshal_field(FieldId, Marshalled, EncodingRules) ->
 	end.
 </programlisting></para>
 
+        <para>The unmarshalling code's unmarshal function specifies modules that must be called before unmarshalling starts and to unmarshal the MTI, bitmap and data elements. The unmarshal_init function is called and converts a string of ASCII hex characters to a list of bytes so that we can use the default unmarshallers to do the bulk of unmarshalling. To unmarshal the MTI and bitmap the ASCII and binary unmarshallers are used. The above module provides the code to unmarshal data elements:<itemizedlist>
+          <listitem>
+            <para>We implement a function clause specifically for unmarshalling field 127 because of its non-standard encoding.</para>
+          </listitem>
+
+          <listitem>
+            <para>Binary data elements are unmarshalled using the binary marshaller.</para>
+          </listitem>
+
+          <listitem>
+            <para>All other data elements are unmarshalled using the ASCII marshaller.</para>
+          </listitem>
+        </itemizedlist>
+        </para>
+
         <para/>
     </section>
 
