@@ -30,7 +30,7 @@ test() ->
 	FieldIds = erl8583_message:get_fields(Message),
 	F = fun(FieldId) -> 
 				FieldValue = erl8583_message:get(FieldId, Message),
-				io:format("Field ~p: ~p~n", [FieldId, FieldValue]) 
+				io:format("Field ~p: ~s~n", [FieldId, FieldValue]) 
 		end,
 	lists:map(F, FieldIds),
 	ok.
