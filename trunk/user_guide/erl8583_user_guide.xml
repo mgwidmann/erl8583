@@ -1413,81 +1413,106 @@ ok
 
     <section>
 	<title>Unmarshalling a Postilion message</title>
-        <para>Postilion is a commercial ISO 8583 framework widely deployed for processing and switching messages. A commenter on a jPOS <ulink url="http://jpos.1045706.n5.nabble.com/I-cannot-unpack-Postilion-message-from-source-node-td2247729.html">newsgroup</ulink> had difficulty unpacking the following message:
+        <para>Postilion is a commercial ISO 8583 framework widely deployed for processing and switching messages. A commenter on a jPOS <ulink url="http://jpos.1045706.n5.nabble.com/I-cannot-unpack-Postilion-message-from-source-node-td2247729.html">newsgroup</ulink> had difficulty unpacking the following message:</para>
 <para><computeroutput>
-30323030F23E049508E0810000000000
+30323030F23E049508E081000000000004000022313630353730303130353132
 </computeroutput></para>
 <para><computeroutput>
-04000022313630353730303130353132
+3239383938343331303030303030303030303030303030303130313231333437
 </computeroutput></para>
 <para><computeroutput>
-32393839383433313030303030303030
+3335303030303131313334373335313031323037313231303131303031303043
 </computeroutput></para>
 <para><computeroutput>
-30303030303030303130313231333437
+3030303030303030433030303030303030303636323736323930303030303033
 </computeroutput></para>
 <para><computeroutput>
-33353030303031313133343733353130
+383730323031303537303031313030312020202020202020202020205A494220
 </computeroutput></para>
 <para><computeroutput>
-31323037313231303131303031303043
+48656164204F66666963652041544D20202020562F49204C61676F7320202020
 </computeroutput></para>
 <para><computeroutput>
-30303030303030304330303030303030
+30314E4735363630303431353130313034303930313236363539303135323131
 </computeroutput></para>
 <para><computeroutput>
-30303636323736323930303030303033
+323031323033313434303032303030313135601C100000000000313030303030
 </computeroutput></para>
 <para><computeroutput>
-38373032303130353730303131303031
+3338373032305A656E69746841544D7363725A4942655472616E7A536E6B3030
 </computeroutput></para>
 <para><computeroutput>
-2020202020202020202020205A494220
+303030323030303031315A656E69746854472020202031325A4942655472616E
 </computeroutput></para>
 <para><computeroutput>
-48656164204F66666963652041544D20
-</computeroutput></para>
-<para><computeroutput>
-202020562F49204C61676F7320202020
-</computeroutput></para>
-<para><computeroutput>
-30314E47353636303034313531303130
-</computeroutput></para>
-<para><computeroutput>
-34303930313236363539303135323131
-</computeroutput></para>
-<para><computeroutput>
-32303132303331343430303230303031
-</computeroutput></para>
-<para><computeroutput>
-3135601C100000000000313030303030
-</computeroutput></para>
-<para><computeroutput>
-3338373032305A656E69746841544D73
-</computeroutput></para>
-<para><computeroutput>
-63725A4942655472616E7A536E6B3030
-</computeroutput></para>
-<para><computeroutput>
-303030323030303031315A656E697468
-</computeroutput></para>
-<para><computeroutput>
-54472020202031325A4942655472616E
-</computeroutput></para>
-<para><computeroutput>
-7A536E6B303132333431303030303120
-</computeroutput></para>
-<para><computeroutput>
-20203536365A454E4954482042323030
+7A536E6B30313233343130303030312020203536365A454E4954482042323030
 </computeroutput></para>
 <para><computeroutput>
 3630393231
 </computeroutput></para>
 
-        <para>
+        <para>There are three points about the above message (the first point is obvious and the last two aren't):<itemizedlist>
+          <listitem>
+            <para>The message is encoded as ASCII hex which is not a marshalling scheme inherently supported by erl8583.</para>
+          </listitem>
+
+          <listitem>
+            <para>Field 127 is encoded with a 6 digit length rather than a 3 digit length as in the ISO 8583 specification. Effectively the format is LLLLLLVAR rather than LLLVAR. This seems to have been the cause of the poster's problem.</para>
+          </listitem>
+
+          <listitem>
+            <para>Field 127 is itself a message containing a bitmap followed by data elements; i.e.field 127 contains subfields.</para>
+          </listitem>
+        </itemizedlist></para>
+        <para>In this section we write an unmarshaller that is capable of parsing the above message and attends to the first two issues. In the next section we extend our unmarshaller so that it unpacks field 127 into a message.
         </para>
 
+        <para>The code below implements our unmarshaller:
         </para>
+
+<para><programlisting>
+-module(example_6_unmarshaller).
+
+-export([unmarshal/1, unmarshal_init/2, unmarshal_field/3]).
+
+% Use:
+%      The ASCII marshaller to unmarshal the MTI
+%      The binary marshaller to unmarshal the bitmap
+%      This module to unmarshal data elements
+% Also call the unmarshal_init method of this module before
+% trying to unmarshal the message.
+unmarshal(Marshalled) ->
+	MarshallingOptions = [{mti_marshaller, erl8583_marshaller_ascii},
+						  {bitmap_marshaller, erl8583_marshaller_binary},
+						  {field_marshaller, ?MODULE},
+						  {init_marshaller, ?MODULE}],
+	erl8583_marshaller:unmarshal(Marshalled, MarshallingOptions).
+
+% The marshalled message is encoded as ASCII hex. Convert the ASCII hex
+% to a list of bytes before unmarshalling further.
+unmarshal_init(Message, Marshalled) ->
+	MarshalledBin = erl8583_convert:ascii_hex_to_binary_list(Marshalled),
+	{Message, MarshalledBin}.
+
+% This function is called when a data element needs to be unmarshalled.
+%
+% Special handling for field 127.
+% The length of field 127 is encoded in 6 bytes rather than 3.
+unmarshal_field(127, Marshalled, _EncodingRules) ->
+	{LenStr, Rest} = lists:split(6, Marshalled),
+	Len = list_to_integer(LenStr),
+	{Value, MarshalledRem} = lists:split(Len, Rest),
+	{Value, MarshalledRem, []};
+% Use the binary marshaller to unmarshal binary fields and
+% the ASCII marshaller to unmarshal all other fields.
+unmarshal_field(FieldId, Marshalled, EncodingRules) ->
+	case EncodingRules:get_encoding(FieldId) of
+		{b, _, _} ->
+			erl8583_marshaller_binary:unmarshal_field(FieldId, Marshalled, EncodingRules);
+		{_, _, _} ->
+			erl8583_marshaller_ascii:unmarshal_field(FieldId, Marshalled, EncodingRules)
+	end.
+</programlisting></para>
 
         <para/>
     </section>
