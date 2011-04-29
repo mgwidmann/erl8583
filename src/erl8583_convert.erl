@@ -81,44 +81,44 @@ integer_to_string(Value, Length) ->
 %% @spec pad_with_trailing_spaces(string(), integer()) -> string()
 -spec(pad_with_trailing_spaces(string(), integer()) -> string()).
 
-pad_with_trailing_spaces(List, Length) ->
-	lists:reverse(pad_with_leading_spaces(lists:reverse(List), Length)).
+pad_with_trailing_spaces(Str, Length) ->
+	lists:reverse(pad_with_leading_spaces(lists:reverse(Str), Length)).
 
 %% @doc Returns the ASCII hex encoding of a binary value.
 %%
 %% @spec binary_to_ascii_hex(binary()) -> string()
 -spec(binary_to_ascii_hex(binary()) -> string()).
 
-binary_to_ascii_hex(Bin) ->
-	binary_to_ascii_hex(binary_to_list(Bin), []).
+binary_to_ascii_hex(BinValue) ->
+	binary_to_ascii_hex(binary_to_list(BinValue), []).
 
 %% @doc Returns the ASCII hex encoding of a list of bytes.
 %%
 %% @spec binary_list_to_ascii_hex(binary()) -> string()
 -spec(binary_list_to_ascii_hex(list(byte())) -> string()).
 
-binary_list_to_ascii_hex(Bin) ->
-	binary_to_ascii_hex(Bin, []).
+binary_list_to_ascii_hex(BinList) ->
+	binary_to_ascii_hex(BinList, []).
 
 %% @doc Returns the binary value corresponding to an ASCII hex string.
 %%
 %% @spec ascii_hex_to_binary(string()) -> binary()
 -spec(ascii_hex_to_binary(string()) -> binary()).
 
-ascii_hex_to_binary(List) ->
-	list_to_binary(ascii_hex_to_binary_list(List)).
+ascii_hex_to_binary(HexStr) ->
+	list_to_binary(ascii_hex_to_binary_list(HexStr)).
 	
 %% @doc Returns a binary list corresponding to an ASCII hex string.
 %%
 %% @spec ascii_hex_to_binary_list(string()) -> list(byte())
 -spec(ascii_hex_to_binary_list(string()) -> list(byte())).
 
-ascii_hex_to_binary_list(List) ->
-	case length(List) rem 2 of
+ascii_hex_to_binary_list(HexStr) ->
+	case length(HexStr) rem 2 of
 		0 ->
-			ascii_hex_to_bytes(List, []);
+			ascii_hex_to_bytes(HexStr, []);
 		1 ->
-			ascii_hex_to_bytes([$0|List], [])
+			ascii_hex_to_bytes([$0|HexStr], [])
 	end.
 	
 %% @doc Converts an integer to a list of specified length 
@@ -127,8 +127,8 @@ ascii_hex_to_binary_list(List) ->
 %% @spec integer_to_bcd(integer(), integer()) -> list(byte())
 -spec(integer_to_bcd(integer(), integer()) -> list(byte())).
 
-integer_to_bcd(Value, Length) ->
-	integer_to_bcd(Value, Length, []).
+integer_to_bcd(IntValue, Length) ->
+	integer_to_bcd(IntValue, Length, []).
 
 %% @doc Converts an ASCII hex encoded string to a list of BCD
 %%      encoded bytes ()padded with a specified padding character
@@ -137,23 +137,23 @@ integer_to_bcd(Value, Length) ->
 %% @spec ascii_hex_to_bcd(string(), char()) -> list(byte())
 -spec(ascii_hex_to_bcd(string(), char()) -> list(byte())).
 
-ascii_hex_to_bcd(Value, PaddingChar) when length(Value) rem 2 =:= 1 ->
-	ascii_hex_to_bcd(Value ++ PaddingChar, PaddingChar);
-ascii_hex_to_bcd(Value, _PaddingChar) ->
-	ascii_hex_to_bcd2(Value, []).	
+ascii_hex_to_bcd(HexStr, PaddingChar) when length(HexStr) rem 2 =:= 1 ->
+	ascii_hex_to_bcd(HexStr ++ PaddingChar, PaddingChar);
+ascii_hex_to_bcd(HexStr, _PaddingChar) ->
+	ascii_hex_to_bcd2(HexStr, []).	
 	
 %% @doc Converts a list of BCD encoded bytes to an integer.
 %%
 %% @spec bcd_to_integer(list(byte())) -> integer()
 -spec(bcd_to_integer(list(byte())) -> integer()).
 
-bcd_to_integer(Bcd) ->
+bcd_to_integer(BcdList) ->
 	F = fun(Value, Acc) ->
 				Dig1 = Value div 16,
 				Dig2 = Value rem 16,
 				100 * Acc + 10 * Dig1 + Dig2
 		end,
-	lists:foldl(F, 0, Bcd).
+	lists:foldl(F, 0, BcdList).
 
 %% @doc Converts a BCD encoding of a value of specified length (possibly
 %%      padded with a padding character) to an ASCII hex string.
@@ -161,8 +161,8 @@ bcd_to_integer(Bcd) ->
 %% @spec bcd_to_ascii_hex(list(byte()), integer(), char()) -> string()
 -spec(bcd_to_ascii_hex(list(byte()), integer(), char()) -> string()).
 
-bcd_to_ascii_hex(Bcd, Length, PaddingChar) when length(Bcd) =:= (Length + 1) div 2 ->
-	IntValue = bcd_to_integer(Bcd),
+bcd_to_ascii_hex(BcdList, Length, PaddingChar) when length(BcdList) =:= (Length + 1) div 2 ->
+	IntValue = bcd_to_integer(BcdList),
 	case Length rem 2 of
 		0 ->
 			integer_to_string(IntValue, Length);
@@ -178,8 +178,8 @@ bcd_to_ascii_hex(Bcd, Length, PaddingChar) when length(Bcd) =:= (Length + 1) div
 %% @spec track2_to_string(list(byte()), integer()) -> string()
 -spec(track2_to_string(list(byte()), integer()) -> string()).
 
-track2_to_string(Data, Length) ->
-	lists:sublist(track2_to_string2(Data, []), 1, Length).
+track2_to_string(Track2Data, Length) ->
+	lists:sublist(track2_to_string2(Track2Data, []), 1, Length).
 
 %% @doc Converts a string of ASCII characters to a track 2
 %%      encoding.
@@ -187,16 +187,16 @@ track2_to_string(Data, Length) ->
 %% @spec string_to_track2(string()) -> list(byte())
 -spec(string_to_track2(string()) -> list(byte())).
 
-string_to_track2(Data) ->
-	string_to_track2(Data, [], 0, true).
+string_to_track2(Str) ->
+	string_to_track2(Str, [], 0, true).
 
 %% @doc Converts a string containing 1 ASCII hex character
 %%      to its value. The ASCII hex digits A-F can be encoded
 %%      as upper-case ("A" - "F") or lower-case ("a" - "f")
 %%      characters.
 %%
-%% @spec ascii_hex_to_digit(string()) -> integer()
--spec(ascii_hex_to_digit(string()) -> integer()).
+%% @spec ascii_hex_to_digit(HexDigit::string()) -> integer()
+-spec(ascii_hex_to_digit(HexDigit::string()) -> integer()).
 
 ascii_hex_to_digit([A]) when A >= $0 andalso A =< $9 ->
 	A - $0;
@@ -210,8 +210,8 @@ ascii_hex_to_digit([A]) when A >= $a andalso A =< $f ->
 %%      Values 10 - 15 are converted to the upper case strings
 %%      "A" - "F".
 %%
-%% @spec digit_to_ascii_hex(integer()) -> string()
--spec(digit_to_ascii_hex(integer()) -> string()).
+%% @spec digit_to_ascii_hex(Value::integer()) -> string()
+-spec(digit_to_ascii_hex(Value::integer()) -> string()).
 
 digit_to_ascii_hex(D) when D >= 0 andalso D =< 9 ->
 	[48+D];
@@ -228,8 +228,8 @@ strip_trailing_spaces(Str) ->
 
 %% @doc Strips leading zeroes from an ASCII string.
 %%
-%% @spec strip_leading_zeroes(string()) -> string()
--spec(strip_leading_zeroes(string()) -> string()).
+%% @spec strip_leading_zeroes(Str::string()) -> string()
+-spec(strip_leading_zeroes(Str::string()) -> string()).
 
 strip_leading_zeroes([$0|Tail]) ->
 	strip_leading_zeroes(Tail);
