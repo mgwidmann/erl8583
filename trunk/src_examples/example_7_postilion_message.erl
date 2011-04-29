@@ -37,5 +37,6 @@ test() ->
 				FieldValue = erl8583_message:get(FieldId, Field127),
 				io:format("Field 127.~p: ~s~n", [FieldId, FieldValue]) 
 		end,
-	lists:map(F, erl8583_message:get_fields(Field127)),
+	Field127Subfields = erl8583_message:get_fields(Field127),
+	lists:map(F, Field127Subfields),
 	ok.
