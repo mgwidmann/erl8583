@@ -26,7 +26,9 @@
 		 integer_to_string/2, 
 		 pad_with_trailing_spaces/2,
 		 binary_to_ascii_hex/1,
+		 binary_list_to_ascii_hex/1,
 		 ascii_hex_to_binary/1,
+		 ascii_hex_to_binary_list/1,
 		 integer_to_bcd/2,
 		 ascii_hex_to_bcd/2,
 		 bcd_to_integer/1,
@@ -90,19 +92,34 @@ pad_with_trailing_spaces(List, Length) ->
 binary_to_ascii_hex(Bin) ->
 	binary_to_ascii_hex(binary_to_list(Bin), []).
 
+%% @doc Returns the ASCII hex encoding of a list of bytes.
+%%
+%% @spec binary_list_to_ascii_hex(binary()) -> string()
+-spec(binary_list_to_ascii_hex(list(byte())) -> string()).
+
+binary_list_to_ascii_hex(Bin) ->
+	binary_to_ascii_hex(Bin, []).
+
 %% @doc Returns the binary value corresponding to an ASCII hex string.
 %%
 %% @spec ascii_hex_to_binary(string()) -> binary()
 -spec(ascii_hex_to_binary(string()) -> binary()).
 
 ascii_hex_to_binary(List) ->
+	list_to_binary(ascii_hex_to_binary_list(List)).
+	
+%% @doc Returns a binary list corresponding to an ASCII hex string.
+%%
+%% @spec ascii_hex_to_binary_list(string()) -> list(byte())
+-spec(ascii_hex_to_binary_list(string()) -> list(byte())).
+
+ascii_hex_to_binary_list(List) ->
 	case length(List) rem 2 of
 		0 ->
-			Bytes = ascii_hex_to_bytes(List, []);
+			ascii_hex_to_bytes(List, []);
 		1 ->
-			Bytes = ascii_hex_to_bytes([$0|List], [])
-	end,		
-	list_to_binary(Bytes).
+			ascii_hex_to_bytes([$0|List], [])
+	end.
 	
 %% @doc Converts an integer to a list of specified length 
 %%      of BCD encoded bytes.
