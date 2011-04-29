@@ -152,6 +152,24 @@ response_2_test() ->
 	[0, 2, 10] = erl8583_message:get_fields(Response),
 	"hello2" = erl8583_message:get(2, Response),
 	"0230" = erl8583_message:get(0, Response).
+
+% response shouldn't use the keep the repeat digit.
+response_3_test() ->
+	Message = erl8583_message:new([{mapper, ?MODULE}]),
+	Message2 = erl8583_message:set(10, "hello", Message),
+	Message3 = erl8583_message:set(0, "0221", Message2),
+	Response = erl8583_message:response(Message3),
+	[0, 10] = erl8583_message:get_fields(Response),
+	"hello" = erl8583_message:get(10, Response),
+	"0230" = erl8583_message:get(0, Response).
+	
+% response shouldn't use the keep the repeat digit.
+response_4_test() ->
+	Message = erl8583_message:new([{mapper, ?MODULE}]),
+	Message2 = erl8583_message:set(0, "0423", Message),
+	Response = erl8583_message:response(Message2),
+	[0] = erl8583_message:get_fields(Response),
+	"0432" = erl8583_message:get(0, Response).
 	
 remove_fields_test() ->
 	Message = erl8583_message:new([{mapper, ?MODULE}]),
