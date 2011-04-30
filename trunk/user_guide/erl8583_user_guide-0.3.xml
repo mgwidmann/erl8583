@@ -1412,7 +1412,8 @@ unmarshal_field(FieldId, Marshalled, EncodingRules) -&gt;
       binary marshaller otherwise the EBCDIC marshaller is used.</para>
 
       <para>The <emphasis role="bold">example_5_amex_message</emphasis> module
-      exercises our unmarshaller:</para>
+      exercises our unmarshaller using a sample message from the American
+      Express specification:</para>
 
       <para><programlisting>
 -module(example_5_amex_message).
