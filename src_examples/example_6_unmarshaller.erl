@@ -14,7 +14,8 @@ unmarshal(Marshalled) ->
 	MarshallingOptions = [{mti_marshaller, erl8583_marshaller_ascii},
 						  {bitmap_marshaller, erl8583_marshaller_binary},
 						  {field_marshaller, ?MODULE},
-						  {init_marshaller, ?MODULE}],
+						  {init_marshaller, ?MODULE},
+						  {end_marshaller, erl8583_marshaller_ascii}],
 	erl8583_marshaller:unmarshal(Marshalled, MarshallingOptions).
 
 % The marshalled message is encoded as ASCII hex. Convert the ASCII hex
