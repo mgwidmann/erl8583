@@ -115,7 +115,7 @@ marshal_field(FieldId, FieldValue, EncodingRules) ->
 -spec(unmarshal_field(integer(), list(byte()), module()) -> {iso8583field_value(), list(byte())}).
 
 unmarshal_field(1, BinaryFields, _EncodingRules) ->
-	{Value, Rest} = unmarshal_data_element({b, fixed, 8}, BinaryFields),
+	{Value, Rest} = unmarshal_data_element({b, fixed, 64}, BinaryFields),
 	{Value, Rest, erl8583_convert:bitmap_to_list(Value, 64)};
 unmarshal_field(FieldId, BinaryFields, EncodingRules) ->
 	Pattern = EncodingRules:get_encoding(FieldId),
@@ -196,10 +196,8 @@ marshal_data_element({ans, lllvar, Length}, FieldValue) when length(FieldValue) 
 marshal_data_element({x_n, fixed, Length}, [Head | FieldValue]) when Head =:= $C orelse Head =:= $D ->
 	IntValue = list_to_integer(FieldValue),
 	[Head|erl8583_convert:integer_to_bcd(IntValue, Length)];
-marshal_data_element({b, fixed, Length}, FieldValue) when size(FieldValue) =:= Length ->
-	binary_to_list(FieldValue);
-marshal_data_element({bitmap, fixed, Length}, FieldValue) when length(FieldValue) =:= Length ->
-	FieldValue.
+marshal_data_element({b, fixed, Length}, FieldValue) when size(FieldValue) =:= Length div 8->
+	binary_to_list(FieldValue).
 
 unmarshal_data_element({n, llvar, _MaxLength}, BinaryFields) ->
 	[NBin|RestBin] = BinaryFields,
@@ -256,5 +254,5 @@ unmarshal_data_element({z, llvar, _MaxLength}, BinaryFields) ->
 	{ValueBin, Rest} = lists:split((N+1) div 2, RestBin), 
 	{erl8583_convert:track2_to_string(ValueBin, N), Rest};
 unmarshal_data_element({b, fixed, Length}, BinaryFields) ->
-	{Bin, Rest} = lists:split(Length, BinaryFields),
+	{Bin, Rest} = lists:split(Length div 8, BinaryFields),
 	{list_to_binary(Bin), Rest}.

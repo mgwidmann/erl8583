@@ -118,7 +118,7 @@ marshal_field(FieldId, FieldValue, EncodingRules) ->
 -spec(unmarshal_field(integer(), string(), module()) -> {iso8583field_value(), string()}).
 
 unmarshal_field(1, AsciiFields, _EncodingRules) ->
-	{Value, Rest} = unmarshal_data_element({b, fixed, 8}, AsciiFields),
+	{Value, Rest} = unmarshal_data_element({b, fixed, 64}, AsciiFields),
 	{Value, Rest, erl8583_convert:bitmap_to_list(Value, 64)};
 unmarshal_field(FieldId, AsciiFields, EncodingRules) ->
 	Pattern = EncodingRules:get_encoding(FieldId),
@@ -190,10 +190,8 @@ marshal_data_element({x_n, fixed, Length}, [Head | FieldValue]) when Head =:= $C
 	[Head] ++ erl8583_convert:integer_to_string(IntValue, Length);
 marshal_data_element({z, llvar, Length}, FieldValue) when length(FieldValue) =< Length ->
 	erl8583_convert:integer_to_string(length(FieldValue), 2) ++ FieldValue;
-marshal_data_element({b, fixed, Length}, FieldValue) when size(FieldValue) =:= Length ->
-	erl8583_convert:binary_to_ascii_hex(FieldValue);
-marshal_data_element({bitmap, fixed, Length}, FieldValue) ->
-	marshal_data_element({b, fixed, Length}, list_to_binary(FieldValue)).
+marshal_data_element({b, fixed, Length}, FieldValue) when size(FieldValue) =:= Length div 8 ->
+	erl8583_convert:binary_to_ascii_hex(FieldValue).
 
 unmarshal_data_element({n, llvar, _MaxLength}, AsciiFields) ->
 	{N, Rest} = lists:split(2, AsciiFields),
@@ -228,6 +226,6 @@ unmarshal_data_element({z, llvar, _MaxLength}, AsciiFields) ->
 	{N, Rest} = lists:split(2, AsciiFields),
 	lists:split(list_to_integer(N), Rest);
 unmarshal_data_element({b, fixed, Length}, AsciiFields) ->
-	{ValueStr, Rest} = lists:split(2 * Length, AsciiFields),
+	{ValueStr, Rest} = lists:split(Length div 4, AsciiFields),
 	Value = erl8583_convert:ascii_hex_to_binary(ValueStr),
 	{Value, Rest}.
