@@ -1534,7 +1534,8 @@ unmarshal(Marshalled) -&gt;
 	MarshallingOptions = [{mti_marshaller, erl8583_marshaller_ascii},
 						  {bitmap_marshaller, erl8583_marshaller_binary},
 						  {field_marshaller, ?MODULE},
-						  {init_marshaller, ?MODULE}],
+						  {init_marshaller, ?MODULE},
+						  {end_marshaller, erl8583_marshaller_ascii}],
 	erl8583_marshaller:unmarshal(Marshalled, MarshallingOptions).
 
 % The marshalled message is encoded as ASCII hex. Convert the ASCII hex
@@ -1636,9 +1637,6 @@ test() ->
 
 <para><computeroutput>
 Field 0: 0200
-</computeroutput></para>
-<para><computeroutput>
-Field 1: ^@^@^@^@^D^@^@"
 </computeroutput></para>
 <para><computeroutput>
 Field 2: 0570010512298984
@@ -1766,7 +1764,8 @@ unmarshal(Marshalled) ->
 	MarshallingOptions = [{mti_marshaller, erl8583_marshaller_ascii},
 						  {bitmap_marshaller, erl8583_marshaller_binary},
 						  {field_marshaller, ?MODULE},
-						  {init_marshaller, ?MODULE}],
+						  {init_marshaller, ?MODULE},
+						  {end_marshaller, erl8583_marshaller_ascii}],
 	erl8583_marshaller:unmarshal(Marshalled, MarshallingOptions).
 
 unmarshal_init(Message, Marshalled) ->
