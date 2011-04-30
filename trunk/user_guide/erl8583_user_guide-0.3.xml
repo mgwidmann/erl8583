@@ -21,45 +21,64 @@
   <section>
     <title>Introduction</title>
 
-  <section>
-    <title>What erl8583 is</title>
-   <para>Erl8583 is an Erlang library that provides abstractions of ISO 8583 messages and functions to pack and unpack messages as byte streams. The library supports a number of 
-   packing formats (ASCII, binary, XML and EBCDIC) that are in use. This user guide 
-   shows that erl8583 can be used to encode messages in formats used by a number of frameworks 
-   and transaction processors including jPOS, iso8583py, American Express and Postilion.</para>
-  
-<para>
-Erl8583 was influenced by jPOS, an open-source Java framework for processing ISO 8583 messages. JPOS's API is, unsurprising, quite different from erl8583's though.
-  </para>
+    <section>
+      <title>What erl8583 is</title>
 
-  <para/>
-  </section>
-  <section>
-    <title>What erl8583 is not</title>
-   <para>Erl8583 is not a framework for processing ISO 8583 messages. There is probably a case to be made for writing an Erlang/OTP application that can process or switch financial transactions because of OTP's scalability and robustness. Unfortunately, erl8583 is not that application but, with luck, erl8583 may be useful in developing such software.</para>
-  <para/>
-  </section>
+      <para>Erl8583 is an Erlang library that provides abstractions of ISO
+      8583 messages and functions to pack and unpack messages as byte streams.
+      The library supports a number of packing formats (ASCII, binary, XML and
+      EBCDIC) that are in use. This user guide shows that erl8583 can be used
+      to encode messages in formats used by a number of frameworks and
+      transaction processors including jPOS, iso8583py, American Express and
+      Postilion.</para>
 
-  <section>
-    <title>Overview</title>
-   <para>The following material is covered in this user guide:</para>
-    <para><itemizedlist>
-        <listitem>
-          <para>Section 2 gives a brief introduction to ISO 8583 messages. This section can be skipped if you have experience with the ISO 8583 standard.</para>
-        </listitem>
+      <para>Erl8583 was influenced by jPOS, an open-source Java framework for
+      processing ISO 8583 messages. JPOS's API is, unsurprising, quite
+      different from erl8583's though.</para>
 
-        <listitem>
-          <para>Section 3 describes the modules of erl8583 and how the library marshals (packs) and unmarshals (unpacks) messages.</para>
-        </listitem>
+      <para></para>
+    </section>
 
-        <listitem>
-          <para>Section 4 provides several examples of how to use erl8583 for marshalling and unmarshalling messages..</para>
-        </listitem>
-      </itemizedlist></para>
-      <para/>
-  <para/>
-  </section>
+    <section>
+      <title>What erl8583 is not</title>
 
+      <para>Erl8583 is not a framework for processing ISO 8583 messages. There
+      is probably a case to be made for writing an Erlang/OTP application that
+      can process or switch financial transactions because of OTP's
+      scalability and robustness. Unfortunately, erl8583 is not that
+      application but, with luck, erl8583 may be useful in developing such
+      software.</para>
+
+      <para></para>
+    </section>
+
+    <section>
+      <title>Overview</title>
+
+      <para>The following material is covered in this user guide:</para>
+
+      <para><itemizedlist>
+          <listitem>
+            <para>Section 2 gives a brief introduction to ISO 8583 messages.
+            This section can be skipped if you have experience with the ISO
+            8583 standard.</para>
+          </listitem>
+
+          <listitem>
+            <para>Section 3 describes the modules of erl8583 and how the
+            library marshals (packs) and unmarshals (unpacks) messages.</para>
+          </listitem>
+
+          <listitem>
+            <para>Section 4 provides several examples of how to use erl8583
+            for marshalling and unmarshalling messages..</para>
+          </listitem>
+        </itemizedlist></para>
+
+      <para></para>
+
+      <para></para>
+    </section>
   </section>
 
   <section>
@@ -408,9 +427,11 @@ Erl8583 was influenced by jPOS, an open-source Java framework for processing ISO
           </listitem>
         </itemizedlist></para>
 
-      <para>A goal of erl8583 is to make it simple to encode ISO
-      8583 messages irrespective of how some other party expects messages to
-      be encoded.</para>
+      <para>A goal of erl8583 is to make it simple to encode ISO 8583 messages
+      irrespective of how some other party expects messages to be
+      encoded.</para>
+
+      <para></para>
     </section>
   </section>
 
@@ -422,10 +443,10 @@ Erl8583 was influenced by jPOS, an open-source Java framework for processing ISO
     starts by describing how to install erl8583. The remainder of this section
     describes the modules that make up the erl8583 library.</para>
 
-    <para>The definitive references for the erl8583 API are the edocs in the
-    distribution. This guide provides a high-level overview of the modules to
-    help you get started. The modules can be classified into four
-    types:</para>
+    <para>The definitive references for the erl8583 API are the EDocs in the
+    distribution. This guide simply provides a high-level overview of the
+    modules to help you get started. The erl8583 modules can be classified
+    into four classes:</para>
 
     <para><itemizedlist>
         <listitem>
@@ -478,7 +499,7 @@ Erl8583 was influenced by jPOS, an open-source Java framework for processing ISO
       this guide is in the src_examples directory.</para>
 
       <para>On Linux you should be able to build the archive by running the
-      make.sh bash script.</para>
+      <emphasis role="bold">make.sh</emphasis> bash script.</para>
 
       <para></para>
     </section>
@@ -528,7 +549,7 @@ Erl8583 was influenced by jPOS, an open-source Java framework for processing ISO
       nested message instances. The API does not prevent you setting the value
       of a data element to be an atom, a tuple, an integer or a float but
       those types will cause an exception to be raised if you try to marshal
-      (see section 3.3) the message. Note in particular that numeric
+      (see section 3.4) the message. Note in particular that numeric
       (<emphasis>n</emphasis>) values should be encoded as strings; e.g. set
       the MTI as "0200" not as the integer 200.</para>
 
@@ -536,8 +557,8 @@ Erl8583 was influenced by jPOS, an open-source Java framework for processing ISO
       since ISO 8583 does not describe this scenario. However it is quite
       common to see data elements that are reserved for private use (e.g.
       field 127) to be nested messages. In such cases, one can refer to, say,
-      field 127.3 which denotes sub field 3 in data element 127. The example
-      in section 4.7 looks at such a case.</para>
+      field 127.3 which denotes subfield 3 in data element 127. The example in
+      section 4.7 looks at such a case.</para>
 
       <para></para>
     </section>
@@ -550,22 +571,24 @@ Erl8583 was influenced by jPOS, an open-source Java framework for processing ISO
       permissible content (e.g. <emphasis>b</emphasis>,
       <emphasis>n</emphasis>, <emphasis>ans</emphasis>, etc), its format
       (fixed, LLVAR or LLVAR) and its length. Erl8583 has three modules
-      (erl8583_fields, erl8583_fields_1993 and erl8583_fields_2003) that
-      specify the permissible content for a data element based on the 1987,
-      1993 and 2003 specifications (note that erl8583 currently doesn't
-      support the 2003 specification). Each module exposes a function
-      <emphasis role="bold">get_encoding</emphasis> that returns the valid
-      content as a 3-tuple. The first element of the tuple is an atom that
-      describes the content type (e.g. <emphasis>b</emphasis>,
-      <emphasis>n</emphasis> or <emphasis>ans</emphasis>, etc). The second
-      element of the tuple is an atom describing the format
-      (<emphasis>fixed</emphasis>, <emphasis>llvar</emphasis> or
-      <emphasis>lllvar</emphasis>). The third element of the tuple is the
-      length specified as an integer. For the LLVAR and LLLVAR formats, the
-      length denotes the maximum allowed length for the element.</para>
+      (<emphasis role="bold">erl8583_fields</emphasis>, <emphasis
+      role="bold">erl8583_fields_1993</emphasis> and <emphasis
+      role="bold">erl8583_fields_2003</emphasis>) that specify the permissible
+      content for a data element based on the 1987, 1993 and 2003
+      specifications (note that erl8583 currently doesn't support the 2003
+      specification). Each module exposes a function <emphasis
+      role="bold">get_encoding</emphasis> that returns the valid content as a
+      3-tuple. The first element of the tuple is an atom that describes the
+      content type (e.g. <emphasis>b</emphasis>, <emphasis>n</emphasis> or
+      <emphasis>ans</emphasis>, etc). The second element of the tuple is an
+      atom describing the format (<emphasis>fixed</emphasis>,
+      <emphasis>llvar</emphasis> or <emphasis>lllvar</emphasis>). The third
+      element of the tuple is the length specified as an integer. For the
+      LLVAR and LLLVAR formats, the length denotes the maximum allowed length
+      for the element.</para>
 
       <para>The code snippet below shows some of the implementation of the
-      erl8583_fields module.<programlisting>-module(erl8583_fields).
+      <emphasis role="bold">erl8583_fields</emphasis> module.<programlisting>-module(erl8583_fields).
 
 %%
 %% Include files
@@ -983,10 +1006,11 @@ test() -&gt;
         </itemizedlist></para>
 
       <para>We start by writing a minimal jPOS server. To get this code to
-      compile and run, you will need to download jPOS from
-      <ulink url="http://www.jpos.org">http://www.jpos.org</ulink>. The program listens on port 8000 for ISO 8583
-      messages and echoes them back to the client after changing the MTI to
-      indicate that the message is a response.</para>
+      compile and run, you will need to download jPOS from <ulink
+      url="http://www.jpos.org">http://www.jpos.org</ulink>. The program
+      listens on port 8000 for ISO 8583 messages and echoes them back to the
+      client after changing the MTI to indicate that the message is a
+      response.</para>
 
       <para><programlisting>
 import org.jpos.iso.*;
@@ -1125,7 +1149,8 @@ do_recv(Sock, Bs) -&gt;
       <para>In the previous section we wrote an ISO 8583 server using jPOS and
       used the erl8583_marshaller_ascii module to marshal and unmarshal our
       messages. In this section we write a minimal server in Python using the
-      iso8583py library (available from <ulink url="http://code.google.com/p/iso8583py">http://code.google.com/p/iso8583py</ulink>).
+      iso8583py library (available from <ulink
+      url="http://code.google.com/p/iso8583py">http://code.google.com/p/iso8583py</ulink>).
       The server code below is modified from code written by Igor Custodio and
       licensed under the GNU GPL. The original code can be found on the
       iso8583py site hosted by googlecode.</para>
@@ -1214,9 +1239,15 @@ marshal_end(_Message, Marshalled) -&gt;
 	Length = length(Marshalled),
 	[Length div 256, Length rem 256] ++ Marshalled.
 </programlisting></para>
-     
-     <para>The marshalling code uses the generic marshaller to call back the ASCII marshaller when marshalling the MTI, the bitmap and the data elements. After marshalling the data elements, the generic marshaller calls the marshal_end function of the example_4_marshaller module (as specified by the {end_marshaller, ?MODULE} option passed to the generic marshaller's marshal function). The marshal_end function prepends the marshalled message with two bytes that encode the length of the marshalled data. 
-     </para>
+
+      <para>The marshalling code uses the generic marshaller to call back the
+      ASCII marshaller when marshalling the MTI, the bitmap and the data
+      elements. After marshalling the data elements, the generic marshaller
+      calls the marshal_end function of the example_4_marshaller module (as
+      specified by the {end_marshaller, ?MODULE} option passed to the generic
+      marshaller's marshal function). The marshal_end function prepends the
+      marshalled message with two bytes that encode the length of the
+      marshalled data.</para>
 
       <para>Our client code, example_4_client, is now rewritten to use our
       custom marshaller. Notice that we no longer have code that prepends the
@@ -1447,7 +1478,8 @@ test() -&gt;
       <para>Postilion is a commercial ISO 8583 framework widely deployed for
       processing and switching messages. A commenter on a jPOS <ulink
       url="http://jpos.1045706.n5.nabble.com/I-cannot-unpack-Postilion-message-from-source-node-td2247729.html">newsgroup</ulink>
-      had difficulty unpacking the following message from a Postilion 'node':</para>
+      had difficulty unpacking the following message from a Postilion
+      'node':</para>
 
       <para><computeroutput>
       30323030F23E049508E081000000000004000022313630353730303130353132
@@ -1592,14 +1624,15 @@ unmarshal_field(FieldId, Marshalled, EncodingRules) -&gt;
           </listitem>
         </itemizedlist></para>
 
-        <para>We exercise our unmarshaller by calling the test function of the example_6_postilion_message module:</para>
+      <para>We exercise our unmarshaller by calling the test function of the
+      example_6_postilion_message module:</para>
 
-	<para><programlisting>
+      <para><programlisting>
 -module(example_6_postilion_message).
 
 -export([test/0]).
 
-test() ->
+test() -&gt;
 	% Unmarshal this message which caused problems for
 	% someone on a jPOS forum.
 	Marshalled = "30323030F23E049508E0810000000000" ++
@@ -1629,109 +1662,90 @@ test() ->
 	
 	% Display the fields and their values
 	FieldIds = erl8583_message:get_fields(Message),
-	F = fun(FieldId) -> 
+	F = fun(FieldId) -&gt; 
 			FieldValue = erl8583_message:get(FieldId, Message),
 			io:format("Field ~p: ~s~n", [FieldId, FieldValue]) 
 		end,
 	lists:map(F, FieldIds),
 	ok.
         </programlisting></para>
-        <para>Running the test function produces:</para>
 
-<para><computeroutput>
-Field 0: 0200
-</computeroutput></para>
-<para><computeroutput>
-Field 2: 0570010512298984
-</computeroutput></para>
-<para><computeroutput>
-Field 3: 310000
-</computeroutput></para>
-<para><computeroutput>
-Field 4: 000000000000
-</computeroutput></para>
-<para><computeroutput>
-Field 7: 1012134735
-</computeroutput></para>
-<para><computeroutput>
-Field 11: 000011
-</computeroutput></para>
-<para><computeroutput>
-Field 12: 134735
-</computeroutput></para>
-<para><computeroutput>
-Field 13: 1012
-</computeroutput></para>
-<para><computeroutput>
-Field 14: 0712
-</computeroutput></para>
-<para><computeroutput>
-Field 15: 1011
-</computeroutput></para>
-<para><computeroutput>
-Field 22: 001
-</computeroutput></para>
-<para><computeroutput>
-Field 25: 00
-</computeroutput></para>
-<para><computeroutput>
-Field 28: C00000000
-</computeroutput></para>
-<para><computeroutput>
-Field 30: C00000000
-</computeroutput></para>
-<para><computeroutput>
-Field 32: 627629
-</computeroutput></para>
-<para><computeroutput>
-Field 37: 000000387020
-</computeroutput></para>
-<para><computeroutput>
-Field 41: 10570011
-</computeroutput></para>
-<para><computeroutput>
-Field 42: 001            
-</computeroutput></para>
-<para><computeroutput>
-Field 43: ZIB Head Office ATM    V/I Lagos    01NG
-</computeroutput></para>
-<para><computeroutput>
-Field 49: 566
-</computeroutput></para>
-<para><computeroutput>
-Field 56: 1510
-</computeroutput></para>
-<para><computeroutput>
-Field 102: 4090126659
-</computeroutput></para>
-<para><computeroutput>
-Field 123: 211201203144002
-</computeroutput></para>
-<para><computeroutput>
-Field 127: `^\^P^@^@^@^@^@100000387020ZenithATMscrZIBeTranzSnk000002000011ZenithTG
-</computeroutput></para>
-<para><computeroutput>
-12ZIBeTranzSnk01234100001   566ZENITH B20060921
-</computeroutput></para>
-<para><computeroutput>
-ok
-</computeroutput></para>
+      <para>Running the test function produces:</para>
 
-      <para>
-The most noteable feature of the above is the apparent garbage in field 127 that encodes the bitmap.  In the next section, we extend our
-unmarshaller to extract the subfields of field 127.
-      </para>
+      <para><computeroutput> Field 0: 0200 </computeroutput></para>
+
+      <para><computeroutput> Field 2: 0570010512298984
+      </computeroutput></para>
+
+      <para><computeroutput> Field 3: 310000 </computeroutput></para>
+
+      <para><computeroutput> Field 4: 000000000000 </computeroutput></para>
+
+      <para><computeroutput> Field 7: 1012134735 </computeroutput></para>
+
+      <para><computeroutput> Field 11: 000011 </computeroutput></para>
+
+      <para><computeroutput> Field 12: 134735 </computeroutput></para>
+
+      <para><computeroutput> Field 13: 1012 </computeroutput></para>
+
+      <para><computeroutput> Field 14: 0712 </computeroutput></para>
+
+      <para><computeroutput> Field 15: 1011 </computeroutput></para>
+
+      <para><computeroutput> Field 22: 001 </computeroutput></para>
+
+      <para><computeroutput> Field 25: 00 </computeroutput></para>
+
+      <para><computeroutput> Field 28: C00000000 </computeroutput></para>
+
+      <para><computeroutput> Field 30: C00000000 </computeroutput></para>
+
+      <para><computeroutput> Field 32: 627629 </computeroutput></para>
+
+      <para><computeroutput> Field 37: 000000387020 </computeroutput></para>
+
+      <para><computeroutput> Field 41: 10570011 </computeroutput></para>
+
+      <para><computeroutput> Field 42: 001 </computeroutput></para>
+
+      <para><computeroutput> Field 43: ZIB Head Office ATM V/I Lagos 01NG
+      </computeroutput></para>
+
+      <para><computeroutput> Field 49: 566 </computeroutput></para>
+
+      <para><computeroutput> Field 56: 1510 </computeroutput></para>
+
+      <para><computeroutput> Field 102: 4090126659 </computeroutput></para>
+
+      <para><computeroutput> Field 123: 211201203144002
+      </computeroutput></para>
+
+      <para><computeroutput> Field 127:
+      `^\^P^@^@^@^@^@100000387020ZenithATMscrZIBeTranzSnk000002000011ZenithTG
+      </computeroutput></para>
+
+      <para><computeroutput> 12ZIBeTranzSnk01234100001 566ZENITH B20060921
+      </computeroutput></para>
+
+      <para><computeroutput> ok </computeroutput></para>
+
+      <para>The most noteable feature of the above is the apparent garbage in
+      field 127 that encodes the bitmap. In the next section, we extend our
+      unmarshaller to extract the subfields of field 127.</para>
 
       <para></para>
     </section>
 
     <section>
-	<title>Writing a field encoder for a Postilion message</title>
-        <para>
-	Data element 127 of the Postilion message of the previous section contains subfields. To unpack this field, we need to define how
-   		the subfields are encoded. We implement an encoding rules module, example_7_field127_rules:</para>
+      <title>Writing a field encoder for a Postilion message</title>
 
-<para><programlisting>
+      <para>Data element 127 of the Postilion message of the previous section
+      contains subfields. To unpack this field, we need to define how the
+      subfields are encoded. We implement an encoding rules module,
+      example_7_field127_rules:</para>
+
+      <para><programlisting>
 -module(example_7_field127_rules).
 
 -export([get_encoding/1]).
@@ -1739,31 +1753,36 @@ unmarshaller to extract the subfields of field 127.
 % We provide clauses only for field IDs 2, 3, 12, 13, 14 and 20
 % since these are the only (sub)fields needed for example 7.
 % For completeness we could add clauses for other fields.
-get_encoding(2) ->
+get_encoding(2) -&gt;
 	{ans, llvar, 32};
-get_encoding(3) ->
+get_encoding(3) -&gt;
 	{ans, fixed, 48};
-get_encoding(12) ->
+get_encoding(12) -&gt;
 	{ans, llvar, 25};
-get_encoding(13) ->
+get_encoding(13) -&gt;
 	{ans, fixed, 17};
-get_encoding(14) ->
+get_encoding(14) -&gt;
 	{ans, fixed, 8};
-get_encoding(20) ->
+get_encoding(20) -&gt;
 	{n, fixed, 8}.
 </programlisting></para>
-    <para>The types defined in our encoding rules module were obtained from the same web page where the problem of unmarshalling the message was reported. The page also specifies the encoding of other subfields of field 127 but we don't implement them since they're not relevant to our example.
-    </para>
 
-    <para>Now that we have the encoding rules implemented, we rework the unmarshaller of the previous section to use it. The result is the example_7_unmarshaller module:
-    </para>
+      <para>The types defined in our encoding rules module were obtained from
+      the same web page where the problem of unmarshalling the message was
+      reported. The page also specifies the encoding of other subfields of
+      field 127 but we don't implement them since they're not relevant to our
+      example.</para>
 
-<para><programlisting>
+      <para>Now that we have the encoding rules implemented, we rework the
+      unmarshaller of the previous section to use it. The result is the
+      example_7_unmarshaller module:</para>
+
+      <para><programlisting>
 -module(example_7_unmarshaller).
 
 -export([unmarshal/1, unmarshal_init/2, unmarshal_field/3]).
 
-unmarshal(Marshalled) ->
+unmarshal(Marshalled) -&gt;
 	MarshallingOptions = [{mti_marshaller, erl8583_marshaller_ascii},
 						  {bitmap_marshaller, erl8583_marshaller_binary},
 						  {field_marshaller, ?MODULE},
@@ -1771,7 +1790,7 @@ unmarshal(Marshalled) ->
 						  {end_marshaller, erl8583_marshaller_ascii}],
 	erl8583_marshaller:unmarshal(Marshalled, MarshallingOptions).
 
-unmarshal_init(Message, Marshalled) ->
+unmarshal_init(Message, Marshalled) -&gt;
 	MarshalledBin = erl8583_convert:ascii_hex_to_binary_list(Marshalled),
 	{Message, MarshalledBin}.
 
@@ -1781,7 +1800,7 @@ unmarshal_init(Message, Marshalled) ->
 % The length of field 127 is encoded in 6 bytes rather than 3.
 % After extracting the value of field 127 we unmarshal it since
 % it contains subfields.
-unmarshal_field(127, Marshalled, _EncodingRules) ->
+unmarshal_field(127, Marshalled, _EncodingRules) -&gt;
 	{LenStr, Rest} = lists:split(6, Marshalled),
 	Len = list_to_integer(LenStr),
 	{Value, MarshalledRem} = lists:split(Len, Rest),
@@ -1801,27 +1820,30 @@ unmarshal_field(127, Marshalled, _EncodingRules) ->
 
 % Use the binary marshaller to unmarshal binary fields and
 % the ASCII marshaller to unmarshal all other fields.
-unmarshal_field(FieldId, Marshalled, EncodingRules) ->
+unmarshal_field(FieldId, Marshalled, EncodingRules) -&gt;
 	case EncodingRules:get_encoding(FieldId) of
-		{b, _, _} ->
+		{b, _, _} -&gt;
 			erl8583_marshaller_binary:unmarshal_field(FieldId, Marshalled, EncodingRules);
-		{_, _, _} ->
+		{_, _, _} -&gt;
 			erl8583_marshaller_ascii:unmarshal_field(FieldId, Marshalled, EncodingRules)
 	end.
 </programlisting></para>
-<para>
-The unmarshal function clause to unmarshal field 127 now uses the erl8583_marshaller to unmarshal the value of field 127 using our encoding rules module and the existing unmarshal function. We do not specify a module to unmarshal the MTI since the subfield does not contain a message type.
-</para>
 
-<para>
-The code below exercises our unmarshaller and displays the subfields of data element 127:
-</para>
-<para><programlisting>
+      <para>The unmarshal function clause to unmarshal field 127 now uses the
+      erl8583_marshaller to unmarshal the value of field 127 using our
+      encoding rules module and the existing unmarshal function. We do not
+      specify a module to unmarshal the MTI since the subfield does not
+      contain a message type.</para>
+
+      <para>The code below exercises our unmarshaller and displays the
+      subfields of data element 127:</para>
+
+      <para><programlisting>
 -module(example_7_postilion_message).
 
 -export([test/0]).
 
-test() ->
+test() -&gt;
 	% Unmarshal this message which caused problems for
 	% someone on a jPOS forum.
 	Marshalled = "30323030F23E049508E0810000000000" ++
@@ -1851,7 +1873,7 @@ test() ->
 	
 	% Get field 127 and display its subfields
 	Field127 = erl8583_message:get(127, Message),
-	F = fun(FieldId) -> 
+	F = fun(FieldId) -&gt; 
 				FieldValue = erl8583_message:get(FieldId, Field127),
 				io:format("Field 127.~p: ~s~n", [FieldId, FieldValue]) 
 		end,
@@ -1859,45 +1881,41 @@ test() ->
 	lists:map(F, Field127Subfields),
 	ok.
 </programlisting></para>
-<para>
-Calling the test function of example_7_postilion_message produces: 
-</para>
-<para><computeroutput>
-Field 127.2: 0000387020
-</computeroutput></para>
-<para><computeroutput>
-Field 127.3: ZenithATMscrZIBeTranzSnk000002000011ZenithTG    
-</computeroutput></para>
-<para><computeroutput>
-Field 127.12: ZIBeTranzSnk
-</computeroutput></para>
-<para><computeroutput>
-Field 127.13: 01234100001   566
-</computeroutput></para>
-<para><computeroutput>
-Field 127.14: ZENITH B
-</computeroutput></para>
-<para><computeroutput>
-Field 127.20: 20060921
-</computeroutput></para>
-<para><computeroutput>
-ok
-</computeroutput></para>
 
+      <para>Calling the test function of example_7_postilion_message
+      produces:</para>
 
+      <para><computeroutput> Field 127.2: 0000387020 </computeroutput></para>
 
-        <para />
+      <para><computeroutput> Field 127.3:
+      ZenithATMscrZIBeTranzSnk000002000011ZenithTG </computeroutput></para>
+
+      <para><computeroutput> Field 127.12: ZIBeTranzSnk
+      </computeroutput></para>
+
+      <para><computeroutput> Field 127.13: 01234100001 566
+      </computeroutput></para>
+
+      <para><computeroutput> Field 127.14: ZENITH B </computeroutput></para>
+
+      <para><computeroutput> Field 127.20: 20060921 </computeroutput></para>
+
+      <para><computeroutput> ok </computeroutput></para>
+
+      <para></para>
     </section>
-
   </section>
 
   <section>
     <title>Concluding comments</title>
 
-    <para>The erl8583 library provides modules for encapsulating ISO 8583 messages and for packing and unpacking messages for transmission over
-    a network. The library does not provide functions for processing ISO 8583 messages. 
-    However, there is a project, node8583, also hosted on googlecode that has message
-    processing as its goal and for which erl8583 was written as a first step.</para>
-    <para/>
+    <para>The erl8583 library provides modules for encapsulating ISO 8583
+    messages and for packing and unpacking messages for transmission over a
+    network. The library does not provide functions for processing ISO 8583
+    messages. However, there is a project, node8583, also hosted on googlecode
+    that has message processing as its goal and for which erl8583 was written
+    as a first step.</para>
+
+    <para></para>
   </section>
 </article>
