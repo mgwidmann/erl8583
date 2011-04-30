@@ -808,8 +808,8 @@ marshal(Message, MarshalHandlers) -&gt;
       <title>The <emphasis role="bold">erl8583_message</emphasis>
       module</title>
 
-      <para>The sample code below shows how to create a message. After
-      creating the message we set the value of data elements of various
+      <para>The code below shows how to create a message and how
+      to set the value of data elements of various
       types:<itemizedlist>
           <listitem>
             <para>Field 0 (the MTI) is a numeric value.</para>
@@ -856,7 +856,7 @@ test() -&gt;
 	% field 127 is a private use field whose contents is not defined by ISO.
 	% This code shows how a data element can be a numeric value (field 0), a string
 	% (field 43), a binary (field 64) or another message (field 127) containing 
-	% subfields (fields 127.2 and 127.3). 
+	% subfields (fields 127.2 and 127.12). 
 	Msg2 = erl8583_message:set_mti("0200", Msg1),
 	Msg3 = erl8583_message:set(?CARD_ACCEPTOR_NAME_LOCATION, "ZIB Head Office ATM    V/I Lagos    01NG", Msg2),
 	Msg4 = erl8583_message:set(?MESSAGE_AUTHENTICATION_CODE, &lt;&lt;1,2,3,4,5,6,7,8&gt;&gt;, Msg3),

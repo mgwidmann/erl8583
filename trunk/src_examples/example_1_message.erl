@@ -23,7 +23,7 @@ test() ->
 	% field 127 is a private use field whose contents is not defined by ISO.
 	% This code shows how a data element can be a numeric value (field 0), a string
 	% (field 43), a binary (field 64) or another message (field 127) containing 
-	% subfields (fields 127.2 and 127.3). 
+	% subfields (fields 127.2 and 127.12). 
 	Msg2 = erl8583_message:set_mti("0200", Msg1),
 	Msg3 = erl8583_message:set(?CARD_ACCEPTOR_NAME_LOCATION, "ZIB Head Office ATM    V/I Lagos    01NG", Msg2),
 	Msg4 = erl8583_message:set(?MESSAGE_AUTHENTICATION_CODE, <<1,2,3,4,5,6,7,8>>, Msg3),
