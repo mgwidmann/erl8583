@@ -1482,7 +1482,7 @@ test() -&gt;
       <title>Unmarshalling a Postilion message</title>
 
       <para>Postilion is a commercial ISO 8583 framework widely deployed for
-      processing and switching messages. A commenter on a jPOS <ulink
+      processing and switching messages. A commenter on a <ulink
       url="http://jpos.1045706.n5.nabble.com/I-cannot-unpack-Postilion-message-from-source-node-td2247729.html">newsgroup</ulink>
       had difficulty unpacking the following message from a Postilion
       'node':</para>
@@ -1611,8 +1611,8 @@ unmarshal_field(FieldId, Marshalled, EncodingRules) -&gt;
       converts a string of ASCII hex characters to a list of bytes so that we
       can use the default unmarshallers to do the bulk of unmarshalling. To
       unmarshal the MTI and bitmap the ASCII and binary unmarshallers are
-      used. The above module provides the code to unmarshal data
-      elements:<itemizedlist>
+      used. The above module provides the code to unmarshal data elements (the
+      unmarshal_field function):<itemizedlist>
           <listitem>
             <para>We implement a function clause specifically for
             unmarshalling field 127 because of its non-standard
@@ -1631,7 +1631,8 @@ unmarshal_field(FieldId, Marshalled, EncodingRules) -&gt;
         </itemizedlist></para>
 
       <para>We exercise our unmarshaller by calling the test function of the
-      example_6_postilion_message module:</para>
+      <emphasis role="bold">example_6_postilion_message</emphasis>
+      module:</para>
 
       <para><programlisting>
 -module(example_6_postilion_message).
@@ -1748,8 +1749,8 @@ test() -&gt;
 
       <para>Data element 127 of the Postilion message of the previous section
       contains subfields. To unpack this field, we need to define how the
-      subfields are encoded. We implement an encoding rules module,
-      example_7_field127_rules:</para>
+      subfields are encoded. We implement an encoding rules module, <emphasis
+      role="bold">example_7_field127_rules</emphasis>:</para>
 
       <para><programlisting>
 -module(example_7_field127_rules).
@@ -1774,14 +1775,14 @@ get_encoding(20) -&gt;
 </programlisting></para>
 
       <para>The types defined in our encoding rules module were obtained from
-      the same web page where the problem of unmarshalling the message was
+      the same web page where the problem of unpacking the message was
       reported. The page also specifies the encoding of other subfields of
       field 127 but we don't implement them since they're not relevant to our
       example.</para>
 
       <para>Now that we have the encoding rules implemented, we rework the
       unmarshaller of the previous section to use it. The result is the
-      example_7_unmarshaller module:</para>
+      <emphasis role="bold">example_7_unmarshaller</emphasis> module:</para>
 
       <para><programlisting>
 -module(example_7_unmarshaller).
@@ -1836,10 +1837,10 @@ unmarshal_field(FieldId, Marshalled, EncodingRules) -&gt;
 </programlisting></para>
 
       <para>The unmarshal function clause to unmarshal field 127 now uses the
-      erl8583_marshaller to unmarshal the value of field 127 using our
-      encoding rules module and the existing unmarshal function. We do not
-      specify a module to unmarshal the MTI since the subfield does not
-      contain a message type.</para>
+      <emphasis role="bold">erl8583_marshaller</emphasis> to unmarshal the
+      value of field 127 using our encoding rules module and the existing
+      unmarshal function. We do not specify a module to unmarshal the MTI
+      since the subfield does not contain a message type.</para>
 
       <para>The code below exercises our unmarshaller and displays the
       subfields of data element 127:</para>
@@ -1888,8 +1889,8 @@ test() -&gt;
 	ok.
 </programlisting></para>
 
-      <para>Calling the test function of example_7_postilion_message
-      produces:</para>
+      <para>Calling the test function of <emphasis
+      role="bold">example_7_postilion_message</emphasis> produces:</para>
 
       <para><computeroutput> Field 127.2: 0000387020 </computeroutput></para>
 
