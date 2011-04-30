@@ -23,7 +23,10 @@
 
   <section>
     <title>What erl8583 is</title>
-   <para>Erl8583 is an Erlang library that provides abstractions of ISO 8583 messages and functions to pack and unpack messages as byte streams. The library supports a number of packing formats (ASCII, binary, XML and EBCDIC) that are in use. This user guide shows that it can be used to encode messages in formats used by a number of frameworks and transaction processors including jPOS, iso8583py, American Express and Postilion.</para>
+   <para>Erl8583 is an Erlang library that provides abstractions of ISO 8583 messages and functions to pack and unpack messages as byte streams. The library supports a number of 
+   packing formats (ASCII, binary, XML and EBCDIC) that are in use. This user guide 
+   shows that erl8583 can be used to encode messages in formats used by a number of frameworks 
+   and transaction processors including jPOS, iso8583py, American Express and Postilion.</para>
   
 <para>
 Erl8583 was influenced by jPOS, an open-source Java framework for processing ISO 8583 messages. JPOS's API is, unsurprising, quite different from erl8583's though.
@@ -33,7 +36,7 @@ Erl8583 was influenced by jPOS, an open-source Java framework for processing ISO
   </section>
   <section>
     <title>What erl8583 is not</title>
-   <para>Erl8583 is not a framework for processing ISO 8583 messages. There is probably a case to be made for writing an Erlang/OTP application that can process or switch financial transactions because of OTP's scalability and robustness. Unfortunately, erl8583 is not that application but, with luck, erl8583 may be useful in developing such switches and transaction processors.</para>
+   <para>Erl8583 is not a framework for processing ISO 8583 messages. There is probably a case to be made for writing an Erlang/OTP application that can process or switch financial transactions because of OTP's scalability and robustness. Unfortunately, erl8583 is not that application but, with luck, erl8583 may be useful in developing such software.</para>
   <para/>
   </section>
 
@@ -53,6 +56,7 @@ Erl8583 was influenced by jPOS, an open-source Java framework for processing ISO
           <para>Section 4 provides several examples of how to use erl8583 for marshalling and unmarshalling messages..</para>
         </listitem>
       </itemizedlist></para>
+      <para/>
   <para/>
   </section>
 
@@ -116,7 +120,7 @@ Erl8583 was influenced by jPOS, an open-source Java framework for processing ISO
           </listitem>
 
           <listitem>
-            <para>The message origin. The fourth digit indicates where the
+            <para>The message origin. The fourth digit identifies where the
             message originated and whether the message is a repeat. For
             example, '0' indicates that the message originated from an
             acquiring institution while '1' denotes that the message is a
@@ -381,7 +385,7 @@ Erl8583 was influenced by jPOS, an open-source Java framework for processing ISO
           <listitem>
             <para>A numeric (<emphasis>n</emphasis>) field of length 6 might
             be encoded as 6 BCD digits in 3 bytes or in 6 bytes as a string of
-            6 ASCUU characters.</para>
+            6 ASCII characters.</para>
           </listitem>
 
           <listitem>
@@ -392,8 +396,7 @@ Erl8583 was influenced by jPOS, an open-source Java framework for processing ISO
           <listitem>
             <para>A binary (<emphasis>b</emphasis>) field might encode 8 bits
             of the value in 8 bits or the value might be converted to an ASCII
-            hexadecimal string in which case the resultant encoding needs
-            twice as many bytes as the original value.</para>
+            hexadecimal string.</para>
           </listitem>
 
           <listitem>
@@ -405,7 +408,7 @@ Erl8583 was influenced by jPOS, an open-source Java framework for processing ISO
           </listitem>
         </itemizedlist></para>
 
-      <para>One of the goals of erl8583 is to make it simple to encode ISO
+      <para>A goal of erl8583 is to make it simple to encode ISO
       8583 messages irrespective of how some other party expects messages to
       be encoded.</para>
     </section>
