@@ -23,7 +23,6 @@
 
   <section>
     <title>What erl8583 is</title>
-  </section>
    <para>Erl8583 is an Erlang library that provides abstractions of ISO 8583 messages and functions to pack and unpack messages as byte streams. The library supports a number of packing formats (ASCII, binary, XML and EBCDIC) that are in use. This user guide shows that it can be used to encode messages in formats used by a number of frameworks and transaction processors including jPOS, iso8583py, American Express and Postilion.</para>
   
 <para>
@@ -31,6 +30,7 @@ Erl8583 was influenced by jPOS, an open-source Java framework for processing ISO
   </para>
 
   <para/>
+  </section>
   <section>
     <title>What erl8583 is not</title>
    <para>Erl8583 is not a framework for processing ISO 8583 messages. There is probably a case to be made for writing an Erlang/OTP application that can process or switch financial transactions because of OTP's scalability and robustness. Unfortunately, erl8583 is not that application but, with luck, erl8583 may be useful in developing such switches and transaction processors.</para>
@@ -50,7 +50,7 @@ Erl8583 was influenced by jPOS, an open-source Java framework for processing ISO
         </listitem>
 
         <listitem>
-          <para>Section 4 provides several examples of how to use erl8583.</para>
+          <para>Section 4 provides several examples of how to use erl8583 for marshalling and unmarshalling messages..</para>
         </listitem>
       </itemizedlist></para>
   <para/>
@@ -1890,8 +1890,12 @@ ok
   </section>
 
   <section>
-    <title>Conclusion</title>
+    <title>Concluding comments</title>
 
-    <para>Foo.</para>
+    <para>The erl8583 library provides modules for encapsulating ISO 8583 messages and for packing and unpacking messages for transmission over
+    a network. The library does not provide functions for processing ISO 8583 messages. 
+    However, there is a project, node8583, also hosted on googlecode that has message
+    processing as its goal and for which erl8583 was written as a first step.</para>
+    <para/>
   </section>
 </article>
