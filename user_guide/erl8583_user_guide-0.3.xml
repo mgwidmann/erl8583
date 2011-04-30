@@ -1047,9 +1047,9 @@ public class Example3Server implements ISORequestListener {
       expects that the ASCII encoded message will be preceded by four ASCII
       digits that contain the length of the ISO 8583 message.</para>
 
-      <para>The code below, <emphasis>example_3_client</emphasis>, is an
-      implementation of a client. We create an "0800" message, marshal the
-      message, prepend four characters encoding the length and send the
+      <para>The code below, <emphasis role="bold">example_3_client</emphasis>,
+      is an implementation of a client. We create an "0800" message, marshal
+      the message, prepend four characters encoding the length and send the
       resultant data to the server. The do_recv function listens for the
       response and waits until it has all the response bytes, strips the first
       four bytes encoding the message length and returns the marshalled
@@ -1146,14 +1146,15 @@ do_recv(Sock, Bs) -&gt;
       <title>Using the generic <emphasis
       role="bold">erl8583_marshaller</emphasis> module</title>
 
-      <para>In the previous section we wrote an ISO 8583 server using jPOS and
-      used the erl8583_marshaller_ascii module to marshal and unmarshal our
-      messages. In this section we write a minimal server in Python using the
-      iso8583py library (available from <ulink
+      <para>In the previous example we wrote an ISO 8583 server using the jPOS
+      framework and used the <emphasis
+      role="bold">erl8583_marshaller_ascii</emphasis> module to marshal and
+      unmarshal our messages on the client. In this section we write a minimal
+      server in Python using the iso8583py library (available from <ulink
       url="http://code.google.com/p/iso8583py">http://code.google.com/p/iso8583py</ulink>).
       The server code below is modified from code written by Igor Custodio and
-      licensed under the GNU GPL. The original code can be found on the
-      iso8583py site hosted by googlecode.</para>
+      licensed under the GNU GPL. Igor Custodio's original code can be found
+      on the iso8583py site hosted by googlecode.</para>
 
       <para><programlisting>
 from ISO8583.ISO8583 import ISO8583
@@ -1206,16 +1207,17 @@ while 1:
 
       <para>The above code starts a server that listens on port 8583 and
       echoes any request after changing the MTI to 0810. This server, like the
-      one in the previous section, expects data to be ASCII encoded. Unlike
-      the previous server though where the length of messages was encoded as 4
+      jPOS server example, expects data to be ASCII encoded. Unlike the
+      previous server though where the length of messages was encoded as 4
       ASCII digits this server expects the length of the marshalled data to be
       encoded as two (big-endian) bytes. It would be easy to modify only three
       or four lines of the previous client code to work with this server.
       However we'll make more extreme changes and implement a custom
       marshaller for marshalling the messages for this server. Our marshaller
       will prepend the length of the marshalled message at the beginning of
-      the message. The listing below for the example_4_marshaller module shows
-      the implementation:</para>
+      the message. The listing below for the <emphasis
+      role="bold">example_4_marshaller</emphasis> module shows the
+      implementation:</para>
 
       <para><programlisting>
 -module(example_4_marshaller).
@@ -1240,16 +1242,19 @@ marshal_end(_Message, Marshalled) -&gt;
 	[Length div 256, Length rem 256] ++ Marshalled.
 </programlisting></para>
 
-      <para>The marshalling code uses the generic marshaller to call back the
-      ASCII marshaller when marshalling the MTI, the bitmap and the data
-      elements. After marshalling the data elements, the generic marshaller
-      calls the marshal_end function of the example_4_marshaller module (as
-      specified by the {end_marshaller, ?MODULE} option passed to the generic
-      marshaller's marshal function). The marshal_end function prepends the
-      marshalled message with two bytes that encode the length of the
-      marshalled data.</para>
+      <para>The marshalling code uses the generic marshaller (<emphasis
+      role="bold">erl8583_marshaller</emphasis>) to call back the ASCII
+      marshaller when marshalling the MTI, the bitmap and the data elements.
+      After marshalling the data elements, the generic marshaller calls the
+      marshal_end function of the <emphasis
+      role="bold">example_4_marshaller</emphasis> module (as specified by the
+      {end_marshaller, ?MODULE} option passed to the generic marshaller's
+      marshal function). The marshal_end function prepends the marshalled
+      message with two bytes that encode the length of the marshalled
+      data.</para>
 
-      <para>Our client code, example_4_client, is now rewritten to use our
+      <para>Our client code, <emphasis
+      role="bold">example_4_client</emphasis>, is now rewritten to use our
       custom marshaller. Notice that we no longer have code that prepends the
       length of the message to the marshalled data:</para>
 
