@@ -3,7 +3,7 @@
 "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
 <article>
   <articleinfo>
-    <title>Erl8583 - Getting Started</title>
+    <title>Erl8583 User Guide</title>
 
     <author>
       <firstname>CA</firstname>
@@ -21,8 +21,41 @@
   <section>
     <title>Introduction</title>
 
-    <para>Erl8583 is an Erlang library for generating and parsing ISO 8583
-    messages.</para>
+  <section>
+    <title>What erl8583 is</title>
+  </section>
+   <para>Erl8583 is an Erlang library that provides abstractions of ISO 8583 messages and functions to pack and unpack messages as byte streams. The library supports a number of packing formats (ASCII, binary, XML and EBCDIC) that are in use. This user guide shows that it can be used to encode messages in formats used by a number of frameworks and transaction processors including jPOS, iso8583py, American Express and Postilion.</para>
+  
+<para>
+Erl8583 was influenced by jPOS, an open-source Java framework for processing ISO 8583 messages. JPOS's API is, unsurprising, quite different from erl8583's though.
+  </para>
+
+  <para/>
+  <section>
+    <title>What erl8583 is not</title>
+   <para>Erl8583 is not a framework for processing ISO 8583 messages. There is probably a case to be made for writing an Erlang/OTP application that can process or switch financial transactions because of OTP's scalability and robustness. Unfortunately, erl8583 is not that application but, with luck, erl8583 may be useful in developing such switches and transaction processors.</para>
+  <para/>
+  </section>
+
+  <section>
+    <title>Overview</title>
+   <para>The following material is covered in this user guide:</para>
+    <para><itemizedlist>
+        <listitem>
+          <para>Section 2 gives a brief introduction to ISO 8583 messages. This section can be skipped if you have experience with the ISO 8583 standard.</para>
+        </listitem>
+
+        <listitem>
+          <para>Section 3 describes the modules of erl8583 and how the library marshals (packs) and unmarshals (unpacks) messages.</para>
+        </listitem>
+
+        <listitem>
+          <para>Section 4 provides several examples of how to use erl8583.</para>
+        </listitem>
+      </itemizedlist></para>
+  <para/>
+  </section>
+
   </section>
 
   <section>
