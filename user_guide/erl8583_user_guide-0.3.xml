@@ -911,12 +911,12 @@ test() -&gt;
       <title>Marshalling a message with the <emphasis
       role="bold">erl8583_marshaller_xml</emphasis> module</title>
 
-      <para>The code below shows how to marshal the message using the
+      <para>The source code below shows how to marshal the previous message using the
       <emphasis role="bold">erl8583_marshaller_xml</emphasis> module. The XML
       marshaller is intended to be compatible with jPOS's XML packager. In
       practice, marshalling a message into an XML document is not very useful.
       However the XML representation is human-readable which cannot be said of
-      the other encodings.</para>
+      other encoding schemes.</para>
 
       <para><programlisting>
 %% An example that demonstrates marshalling an
