@@ -808,9 +808,8 @@ marshal(Message, MarshalHandlers) -&gt;
       <title>The <emphasis role="bold">erl8583_message</emphasis>
       module</title>
 
-      <para>The code below shows how to create a message and how
-      to set the value of data elements of various
-      types:<itemizedlist>
+      <para>The code below shows how to create a message and how to set the
+      value of data elements of various types:<itemizedlist>
           <listitem>
             <para>Field 0 (the MTI) is a numeric value.</para>
           </listitem>
@@ -911,12 +910,12 @@ test() -&gt;
       <title>Marshalling a message with the <emphasis
       role="bold">erl8583_marshaller_xml</emphasis> module</title>
 
-      <para>The source code below shows how to marshal the previous message using the
-      <emphasis role="bold">erl8583_marshaller_xml</emphasis> module. The XML
-      marshaller is intended to be compatible with jPOS's XML packager. In
-      practice, marshalling a message into an XML document is not very useful.
-      However the XML representation is human-readable which cannot be said of
-      other encoding schemes.</para>
+      <para>The source code below shows how to marshal the previous message
+      using the <emphasis role="bold">erl8583_marshaller_xml</emphasis>
+      module. The XML marshaller is intended to be compatible with jPOS's XML
+      packager. In practice, marshalling a message into an XML document is not
+      very useful. However the XML representation is human-readable which is
+      not true of other encoding schemes.</para>
 
       <para><programlisting>
 %% An example that demonstrates marshalling an
@@ -954,7 +953,7 @@ test() -&gt;
 
       <para></para>
 
-      <para>Running the above program produces the output underneath. Notice
+      <para>Running the above program produces the output that follows. Notice
       that the binary field (field 64) has attribute type="binary" and that
       the complex data element (field 127) is encapsulated in an isomsg
       tag.</para>
@@ -991,8 +990,8 @@ test() -&gt;
       <title>A minimal ISO 8583 client</title>
 
       <para>jPOS is a popular Java framework for processing ISO 8583 messages.
-      It supports a host of ways to marshal messages. In this example we use
-      an ASCII packer (the jPOS term for what is called a marshaller in
+      It supports many ways to marshal messages. In this example we use an
+      ASCII packager (the jPOS term for what is called a marshaller in
       erl8583). This serves two purposes:<itemizedlist>
           <listitem>
             <para>It shows that erl8583 can be used to exchange
@@ -1007,7 +1006,7 @@ test() -&gt;
 
       <para>We start by writing a minimal jPOS server. To get this code to
       compile and run, you will need to download jPOS from <ulink
-      url="http://www.jpos.org">http://www.jpos.org</ulink>. The program
+      url="http://www.jpos.org">http://www.jpos.org</ulink>. The server
       listens on port 8000 for ISO 8583 messages and echoes them back to the
       client after changing the MTI to indicate that the message is a
       response.</para>
@@ -1041,20 +1040,21 @@ public class Example3Server implements ISORequestListener {
 }
       </programlisting></para>
 
-      <para>The above line <programlisting>ServerChannel channel = new ASCIIChannel(new ISO87APackager());
+      <para>The following line of code<programlisting>ServerChannel channel = new ASCIIChannel(new ISO87APackager());
       </programlisting> creates an ISO87APackager that can marshal and
       unmarshal ASCII encoded messages. The ASCIIChannel class takes care of a
       transport layer detail: Identifying the end of the message. This class
       expects that the ASCII encoded message will be preceded by four ASCII
       digits that contain the length of the ISO 8583 message.</para>
 
-      <para>The code below is an implementation of our client. We create an
-      "0800" message, marshal the message, prepend four characters encoding
-      the length and send the resultant data to the server. The do_recv
-      function listens for the response and waits until it has all the
-      response bytes, strips the first four bytes encoding the message length
-      and returns the marshalled response data. The response is then
-      unmarshalled and the MTI is displayed.</para>
+      <para>The code below, <emphasis>example_3_client</emphasis>, is an
+      implementation of a client. We create an "0800" message, marshal the
+      message, prepend four characters encoding the length and send the
+      resultant data to the server. The do_recv function listens for the
+      response and waits until it has all the response bytes, strips the first
+      four bytes encoding the message length and returns the marshalled
+      response data. The response is then unmarshalled and the MTI is
+      displayed.</para>
 
       <para><programlisting>
 -module(example_3_client).
