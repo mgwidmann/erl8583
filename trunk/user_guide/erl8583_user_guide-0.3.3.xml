@@ -24,7 +24,8 @@
     <section>
       <title>What erl8583 is</title>
 
-      <para>Erl8583 is an Erlang library that provides abstractions of ISO
+      <para>ISO 8583 is a standard that defines messages for credit and debit card transactions. 
+      Erl8583 is an Erlang library that provides abstractions of ISO
       8583 messages and that exports functions to pack and unpack messages as
       byte streams. The library supports a number of packing formats (ASCII,
       binary, XML and EBCDIC) that are in use. This user guide shows that
@@ -33,7 +34,7 @@
       American Express and Postilion.</para>
 
       <para>Erl8583 was influenced by jPOS, an open-source ISO 8583 Java
-      framework. JPOS's API is, unsurprising, quite different from erl8583's
+      framework. JPOS's API is, unsurprisingly, quite different from erl8583's
       though.</para>
 
       <para></para>
