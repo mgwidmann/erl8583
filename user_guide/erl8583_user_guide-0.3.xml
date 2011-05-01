@@ -25,16 +25,16 @@
       <title>What erl8583 is</title>
 
       <para>Erl8583 is an Erlang library that provides abstractions of ISO
-      8583 messages and functions to pack and unpack messages as byte streams.
-      The library supports a number of packing formats (ASCII, binary, XML and
-      EBCDIC) that are in use. This user guide shows that erl8583 can be used
-      to encode messages in formats used by a number of frameworks and
-      transaction processors including jPOS, iso8583py, American Express and
-      Postilion.</para>
+      8583 messages and that exports functions to pack and unpack messages as
+      byte streams. The library supports a number of packing formats (ASCII,
+      binary, XML and EBCDIC) that are in use. This user guide shows that
+      erl8583 can be used to encode messages in formats used by a number of
+      frameworks and transaction processors including jPOS, iso8583py,
+      American Express and Postilion.</para>
 
-      <para>Erl8583 was influenced by jPOS, an open-source Java framework for
-      processing ISO 8583 messages. JPOS's API is, unsurprising, quite
-      different from erl8583's though.</para>
+      <para>Erl8583 was influenced by jPOS, an open-source ISO 8583 Java
+      framework. JPOS's API is, unsurprising, quite different from erl8583's
+      though.</para>
 
       <para></para>
     </section>
@@ -46,7 +46,7 @@
       is probably a case to be made for writing an Erlang/OTP application that
       can process or switch financial transactions because of OTP's
       scalability and robustness. Unfortunately, erl8583 is not that
-      application but, with luck, erl8583 may be useful in developing such
+      application but erl8583 may be useful in developing such
       software.</para>
 
       <para></para>
@@ -114,7 +114,7 @@
     <section>
       <title>Message Type Identifier (MTI)</title>
 
-      <para>The MTI is a 4 (decimai) digit number that encodes:</para>
+      <para>The MTI is a 4 (decimal) digit number that encodes:</para>
 
       <para><itemizedlist>
           <listitem>
@@ -157,10 +157,10 @@
       may be present in a message. The 1993 and 2003 versions define 192
       fields. Each data element is identified by an integer value in the range
       1-128 for the 1987 specification or 1-192 for the later specifications.
-      The sender indicates which data elements are present in a message by one
-      or more bitmaps. A bitmap is a collection of 64 bits; if a bit is set in
-      the bitmap it indicates that a corresponding data element is
-      present.</para>
+      The sender indicates which data elements are present in a message by
+      means of one or more bitmaps. A bitmap is a collection of 64 bits; if a
+      bit is set in the bitmap it indicates that a corresponding data element
+      is present.</para>
 
       <para>The primary bitmap is used to indicate the presence or absence of
       data elements 1-64. The secondary bitmap is used for fields 65-128. If
@@ -427,8 +427,8 @@
           </listitem>
         </itemizedlist></para>
 
-      <para>A goal of erl8583 is to make it simple to encode ISO 8583 messages
-      irrespective of how some other party expects messages to be
+      <para>A goal of erl8583 is to make it simple to pack and unpack ISO 8583
+      messages irrespective of how some other party expects messages to be
       encoded.</para>
 
       <para></para>
@@ -438,10 +438,9 @@
   <section>
     <title>Erl8583</title>
 
-    <para>Erl8583 is a library that can be used to construct and parse ISO
-    8583 messages for several encoding schemes used in practice. This section
-    starts by describing how to install erl8583. The remainder of this section
-    describes the modules that make up the erl8583 library.</para>
+    <para>Erl8583 is a library to construct and parse ISO 8583 messages. This
+    section starts by describing how to install erl8583. The remainder of this
+    section describes the modules that make up the erl8583 library.</para>
 
     <para>The definitive references for the erl8583 API are the EDocs in the
     distribution. This guide simply provides a high-level overview of the
@@ -616,7 +615,7 @@
 get_encoding(?MTI) -&gt;
 	{n, fixed, 4};
 get_encoding(?BITMAP_EXTENDED) -&gt;
-	{b, fixed, 8};
+	{b, fixed, 64};
 get_encoding(?PAN) -&gt;
 	{n, llvar, 19};
 get_encoding(?PROC_CODE) -&gt;
@@ -661,7 +660,7 @@ get_encoding(?RETRIEVAL_REF_NUM) -&gt;
           <listitem>
             <para><emphasis role="bold">erl8583_marshaller_binary</emphasis>
             Transforms a message to a list of bytes. Binaries and strings are
-            encoded using the values set in the message. Numeric data is
+            encoded using the values set in the message. Numeric values are
             transformed to BCD.</para>
           </listitem>
 
@@ -679,10 +678,11 @@ get_encoding(?RETRIEVAL_REF_NUM) -&gt;
         </itemizedlist></para>
 
       <para>Unfortunately, the above four marshalling modules are usually
-      insufficient. Erl8583 provides a generic marshaller, <emphasis
-      role="bold">erl8583_marshaller</emphasis>, that can be used to implement
-      other marshallers. The generic marshaller can be passed a list of
-      modules that will be called back to marshal:<itemizedlist>
+      insufficient. Erl8583 provides the <emphasis
+      role="bold">erl8583_marshaller</emphasis> module that can be used as a
+      generic marshaller to implement other marshallers. This generic
+      marshalling module can be passed a list of modules that will be called
+      back to marshal:<itemizedlist>
           <listitem>
             <para>The MTI.</para>
           </listitem>
@@ -989,8 +989,8 @@ test() -&gt;
     <section>
       <title>A minimal ISO 8583 client</title>
 
-      <para>jPOS is a popular Java framework for processing ISO 8583 messages.
-      It supports many ways to marshal messages. In this example we use an
+      <para>jPOS is a popular Java framework for processing ISO 8583 messages
+      that supports many ways to marshal messages. In this example we use an
       ASCII packager (the jPOS term for what is called a marshaller in
       erl8583). This serves two purposes:<itemizedlist>
           <listitem>
@@ -1209,10 +1209,10 @@ while 1:
       echoes any request after changing the MTI to 0810. This server, like the
       jPOS server example, expects data to be ASCII encoded. Unlike the
       previous server though where the length of messages was encoded as 4
-      ASCII digits this server expects the length of the marshalled data to be
-      encoded as two (big-endian) bytes. It would be easy to modify only three
-      or four lines of the previous client code to work with this server.
-      However we'll make more extreme changes and implement a custom
+      ASCII characters this server expects the length of the marshalled data
+      to be encoded as two (big-endian) bytes. It would be easy to modify only
+      three or four lines of the previous client code to work with this
+      server. However we'll make more extreme changes and implement a custom
       marshaller for marshalling the messages for this server. Our marshaller
       will prepend the length of the marshalled message at the beginning of
       the message. The listing below for the <emphasis
@@ -1738,7 +1738,7 @@ test() -&gt;
       <para><computeroutput> ok </computeroutput></para>
 
       <para>The most noteable feature of the above is the apparent garbage in
-      field 127 that encodes the bitmap. In the next section, we extend our
+      field 127 that encodes a bitmap. In the next section, we extend our
       unmarshaller to extract the subfields of field 127.</para>
 
       <para></para>
