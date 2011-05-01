@@ -71,7 +71,7 @@
 
           <listitem>
             <para>Section 4 provides several examples of how to use erl8583
-            for marshalling and unmarshalling messages..</para>
+            for marshalling and unmarshalling messages.</para>
           </listitem>
         </itemizedlist></para>
 
@@ -432,6 +432,8 @@
       encoded.</para>
 
       <para></para>
+
+      <para></para>
     </section>
   </section>
 
@@ -789,6 +791,8 @@ marshal(Message, MarshalHandlers) -&gt;
       the functions are used mainly by the marshallers and you will invoke the
       marshalling functions instead. See the EDocs for complete details of the
       module.</para>
+
+      <para></para>
 
       <para></para>
     </section>
@@ -1910,19 +1914,26 @@ test() -&gt;
       <para><computeroutput> ok </computeroutput></para>
 
       <para></para>
+
+      <para></para>
     </section>
   </section>
 
   <section>
     <title>Concluding comments</title>
 
-    <para>The erl8583 library provides modules for encapsulating ISO 8583
-    messages and for packing and unpacking messages for transmission over a
-    network. The library does not provide functions for processing ISO 8583
-    messages. However, there is a project, node8583, also hosted on googlecode
-    that has message processing as its goal and for which erl8583 was written
-    as a first step.</para>
+    <para>Erl8583 provides modules and functions to encapsulate ISO 8583
+    messages and to marshal messages as ASCII, binary, EBCDIC or XML. The
+    library provides a generic marshalling module that can be used to create
+    custom marshallers for encodings not inherently supported by
+    erl8583.</para>
 
-    <para></para>
+    <para>Erlang/OTP is useful for creating robust and scaleable applications.
+    The language should be suitable for writing ISO 8583 applications to
+    switch or process tens of thousands of financial transactions per second
+    on commodity hardware. I hope that erl8583 might be useful in developing
+    such applications.</para>
+
+    <para> </para>
   </section>
 </article>
