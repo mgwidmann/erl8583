@@ -1931,9 +1931,10 @@ test() -&gt;
     <para>Erlang/OTP is useful for creating robust and scaleable applications.
     The language should be suitable for writing ISO 8583 applications to
     switch or process tens of thousands of financial transactions per second
-    on commodity hardware. I hope that erl8583 might be useful in developing
-    such applications.</para>
+    on commodity hardware. Erl8583 will not be extended to become an ISO 8583
+    framework for processing messages but I hope that erl8583 might be useful
+    in developing such applications.</para>
 
-    <para> </para>
+    <para></para>
   </section>
 </article>
