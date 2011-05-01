@@ -852,7 +852,7 @@ test() -&gt;
 	Msg1 = erl8583_message:new(),
 	
 	% Set the MTI (field 0), card acceptor name/location (field 43), a MAC (field 64) and
-	% field 127 is a private use field whose contents is not defined by ISO.
+	% a private use field (field 127) whose contents is not defined by ISO.
 	% This code shows how a data element can be a numeric value (field 0), a string
 	% (field 43), a binary (field 64) or another message (field 127) containing 
 	% subfields (fields 127.2 and 127.12). 
