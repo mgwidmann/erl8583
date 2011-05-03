@@ -34,25 +34,23 @@ test() ->
 
 % A pretty standard function to read data from a socket.
 do_recv(Sock, Bs) ->
-    case gen_tcp:recv(Sock, 0) of
-        {ok, B} ->
-			UpdatedBs = Bs ++ B,
-			if
-				% There's a 4 byte length header. Use it to check if
-				% we have received the whole response.
-				length(UpdatedBs) < 4 ->
-					do_recv(Sock, UpdatedBs);
-				true ->
-					{LenStr, Rest} = lists:split(4, UpdatedBs),
-					Len = list_to_integer(LenStr) + 4,
-					if 
-						Len >= length(UpdatedBs) ->
-							% Got the whole response, return the response
-							% but not the length header.
-							Rest;
-						true ->
-							% Haven't got all the response data.
-							do_recv(Sock, UpdatedBs)
-					end
+    {ok, B} = gen_tcp:recv(Sock, 0),
+	UpdatedBs = Bs ++ B,
+	if
+		% There's a 4 byte length header. Use it to check if
+		% we have received the whole response.
+		length(UpdatedBs) < 4 ->
+			do_recv(Sock, UpdatedBs);
+		true ->
+			{LenStr, Rest} = lists:split(4, UpdatedBs),
+			Len = list_to_integer(LenStr) + 4,
+			if 
+				Len =:= length(UpdatedBs) ->
+					% Got the whole response, return the response
+					% but not the length header.
+					Rest;
+				Len < length(UpdatedBs) ->
+					% Haven't got all the response data.
+					do_recv(Sock, UpdatedBs)
 			end
     end.	
