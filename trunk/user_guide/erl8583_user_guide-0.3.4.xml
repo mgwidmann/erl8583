@@ -1095,27 +1095,25 @@ test() -&gt;
 	io:format("~nMTI: ~s~n", [erl8583_message:get(0, Response)]).	
 
 % A pretty standard function to read data from a socket.
-do_recv(Sock, Bs) -&gt;
-    case gen_tcp:recv(Sock, 0) of
-        {ok, B} -&gt;
-			UpdatedBs = Bs ++ B,
-			if
-				% There's a 4 byte length header. Use it to check if
-				% we have received the whole response.
-				length(UpdatedBs) &lt; 4 -&gt;
-					do_recv(Sock, UpdatedBs);
-				true -&gt;
-					{LenStr, Rest} = lists:split(4, UpdatedBs),
-					Len = list_to_integer(LenStr) + 4,
-					if 
-						Len &gt;= length(UpdatedBs) -&gt;
-							% Got the whole response, return the response
-							% but not the length header.
-							Rest;
-						true -&gt;
-							% Haven't got all the response data.
-							do_recv(Sock, UpdatedBs)
-					end
+do_recv(Sock, Bs) ->
+    {ok, B} = gen_tcp:recv(Sock, 0),
+	UpdatedBs = Bs ++ B,
+	if
+		% There's a 4 byte length header. Use it to check if
+		% we have received the whole response.
+		length(UpdatedBs) < 4 ->
+			do_recv(Sock, UpdatedBs);
+		true ->
+			{LenStr, Rest} = lists:split(4, UpdatedBs),
+			Len = list_to_integer(LenStr) + 4,
+			if 
+				Len =:= length(UpdatedBs) ->
+					% Got the whole response, return the response
+					% but not the length header.
+					Rest;
+				Len < length(UpdatedBs) ->
+					% Haven't got all the response data.
+					do_recv(Sock, UpdatedBs)
 			end
     end.	
 </programlisting></para>
@@ -1292,27 +1290,25 @@ test() -&gt;
 	io:format("~nMTI: ~s~n", [erl8583_message:get(0, Response)]).	
 
 % A pretty standard function to read data from a socket.
-do_recv(Sock, Bs) -&gt;
-    case gen_tcp:recv(Sock, 0) of
-        {ok, B} -&gt;
-			UpdatedBs = Bs ++ B,
-			if
-				% There's a 2 byte length header. Use it to check if
-				% we have received the whole response.
-				length(UpdatedBs) &lt; 2 -&gt;
-					do_recv(Sock, UpdatedBs);
-				true -&gt;
-					{[Len1, Len2], Rest} = lists:split(2, UpdatedBs),
-					Len = Len1 * 256 + Len2 + 2,
-					if 
-						Len &gt;= length(UpdatedBs) -&gt;
-							% Got the whole response, return the response
-							% but not the length header.
-							Rest;
-						true -&gt;
-							% Haven't got all the response data.
-							do_recv(Sock, UpdatedBs)
-					end
+do_recv(Sock, Bs) ->
+    {ok, B} = gen_tcp:recv(Sock, 0),
+	UpdatedBs = Bs ++ B,
+	if
+		% There's a 2 byte length header. Use it to check if
+		% we have received the whole response.
+		length(UpdatedBs) < 2 ->
+			do_recv(Sock, UpdatedBs);
+		true ->
+			{[Len1, Len2], Rest} = lists:split(2, UpdatedBs),
+			Len = Len1 * 256 + Len2 + 2,
+			if 
+				Len =:= length(UpdatedBs) ->
+					% Got the whole response, return the response
+					% but not the length header.
+					Rest;
+				Len < length(UpdatedBs) ->
+					% Haven't got all the response data.
+					do_recv(Sock, UpdatedBs)
 			end
     end.	
 </programlisting></para>
