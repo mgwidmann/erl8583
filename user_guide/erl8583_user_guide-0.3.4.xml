@@ -1101,7 +1101,7 @@ do_recv(Sock, Bs) ->
 	if
 		% There's a 4 byte length header. Use it to check if
 		% we have received the whole response.
-		length(UpdatedBs) < 4 ->
+		length(UpdatedBs) &lt; 4 ->
 			do_recv(Sock, UpdatedBs);
 		true ->
 			{LenStr, Rest} = lists:split(4, UpdatedBs),
@@ -1111,7 +1111,7 @@ do_recv(Sock, Bs) ->
 					% Got the whole response, return the response
 					% but not the length header.
 					Rest;
-				Len < length(UpdatedBs) ->
+				Len &lt; length(UpdatedBs) ->
 					% Haven't got all the response data.
 					do_recv(Sock, UpdatedBs)
 			end
@@ -1296,7 +1296,7 @@ do_recv(Sock, Bs) ->
 	if
 		% There's a 2 byte length header. Use it to check if
 		% we have received the whole response.
-		length(UpdatedBs) < 2 ->
+		length(UpdatedBs) &lt; 2 ->
 			do_recv(Sock, UpdatedBs);
 		true ->
 			{[Len1, Len2], Rest} = lists:split(2, UpdatedBs),
@@ -1306,7 +1306,7 @@ do_recv(Sock, Bs) ->
 					% Got the whole response, return the response
 					% but not the length header.
 					Rest;
-				Len < length(UpdatedBs) ->
+				Len &lt; length(UpdatedBs) ->
 					% Haven't got all the response data.
 					do_recv(Sock, UpdatedBs)
 			end
