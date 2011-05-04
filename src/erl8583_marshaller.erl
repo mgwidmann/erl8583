@@ -27,9 +27,9 @@
 %%      encoding rules are passed, the version indicated by the MTI is
 %%      used.
 %%
-%%      A module can also be specified that reorders the message IDs prior
-%%      to marshalling a field. By default, field IDs are marshalled in increasing
-%%      order. In some cases though, the default ordering might not be appropriate;
+%%      A module can also be specified that reorders the data elements prior
+%%      to marshalling a field. By default, data elements are packed in increasing
+%%      order of field ID. In some cases though, the default ordering might not be appropriate;
 %%      for example, one might want to marshal the tertiary bitmap field (field 65)
 %%      immediately after the secondary bitmap field.
 -module(erl8583_marshaller).
