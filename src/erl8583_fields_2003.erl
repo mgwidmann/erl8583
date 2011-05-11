@@ -40,10 +40,4 @@
 -spec(get_encoding(integer()) -> field_encoding()).
 
 get_encoding(_FieldId) ->
-	erlang:error("No support yet for the 2003 version of ISO 8583.").
-
-
-%%
-%% Local Functions
-%%
-
+	throw("No support yet for the 2003 version of ISO 8583.").
