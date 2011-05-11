@@ -59,7 +59,7 @@
 %%	  {mti_marshaller, module()} |
 %%	  {init_marshaller, module()} |
 %%	  {end_marshaller, module()} |
-%%    {field_arranger, module()} |
+%%	  {field_arranger, module()} |
 %%	  {encoding_rules, module()}. A callback function that implements
 %%    functionality related to marshalling.<br/><br/> 
 %%    An mti_marshaller must implement marshal_mti/1 and unmarshal_mti/1
