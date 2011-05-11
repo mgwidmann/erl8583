@@ -71,8 +71,3 @@ get_encoding(?MESSAGE_SECURITY_CODE) ->
 	{an, llvar, 18};
 get_encoding(FieldId) ->
 	erl8583_fields:get_encoding(FieldId).
-
-%%
-%% Local Functions
-%%
-

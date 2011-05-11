@@ -251,9 +251,3 @@ get_encoding(?MESSAGE_AUTHENTICATION_CODE2) ->
 	{b, fixed, 64};
 get_encoding(Id) when Id >= 105 andalso Id =< 127 ->
 	{ans, lllvar, 999}.
-
-
-%%
-%% Local Functions
-%%
-
