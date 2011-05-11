@@ -270,9 +270,7 @@ list_to_bitmap(FieldIds, Offset) ->
 -spec(bitmap_to_list(binary(), integer()) -> list(integer())).
 
 bitmap_to_list(Bitmap, Offset) when size(Bitmap) =:= 8 ->
-	%L = binary_to_list(Bitmap),
-	%F = fun(X, Acc) -> Acc bsl 8 + X end,
-	<< BitmapInt:64 >> = Bitmap,
+	<< BitmapInt:64/big >> = Bitmap,
 	bitmap_int_to_list(BitmapInt, Offset, 0, []).
 
 %%
