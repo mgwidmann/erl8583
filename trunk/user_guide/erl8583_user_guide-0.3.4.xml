@@ -447,7 +447,8 @@
 
     <para>The definitive references for the erl8583 API are the EDocs in the
     distribution. This guide simply provides a high-level overview of the
-    modules to help you get started. The erl8583 modules can be classified
+    modules to help you get started.</para> 
+    <para>The erl8583 modules can be classified
     into four classes:</para>
 
     <para><itemizedlist>
