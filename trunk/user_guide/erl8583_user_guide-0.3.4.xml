@@ -230,7 +230,7 @@
       <para></para>
 
       <para>ISO 8583 provides a format for describing acceptable contents for
-      a field and for whether the field has fixed length or variable. The
+      a field and for whether the field has fixed length or variable length. The
       following abbreviations are used to describe the contents of
       fields:<itemizedlist>
           <listitem>
