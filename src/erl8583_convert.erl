@@ -250,7 +250,7 @@ ascii_to_ebcdic(Str) ->
 -spec(ebcdic_to_ascii(list(byte())) -> string()).
 
 ebcdic_to_ascii(EbcdicStr) ->
-	ebcdic_to_ascii(EbcdicStr, []).
+	[ebcdic_to_ascii_char(C) || C <- EbcdicStr].
 
 %% @doc Converts a list of integer IDs to a 64-bit bitmap.
 %%      Values in the range [Offset+1, Offset+64] are
@@ -439,88 +439,86 @@ ascii_to_ebcdic_char($}) ->
 ascii_to_ebcdic_char(92) ->
 	224.
 
-ebcdic_to_ascii([], Result) ->
-	lists:reverse(Result);
-ebcdic_to_ascii([H|Tail], Result) when H >= 129 andalso H =< 137 ->
-	ebcdic_to_ascii(Tail, [H - 129 + $a|Result]);
-ebcdic_to_ascii([H|Tail], Result) when H >= 145 andalso H =< 153 ->
-	ebcdic_to_ascii(Tail, [H - 145 + $j|Result]);
-ebcdic_to_ascii([H|Tail], Result) when H >= 162 andalso H =< 169 ->
-	ebcdic_to_ascii(Tail, [H - 162 + $s|Result]);
-ebcdic_to_ascii([H|Tail], Result) when H >= 193 andalso H =< 201 ->
-	ebcdic_to_ascii(Tail, [H - 193 + $A|Result]);
-ebcdic_to_ascii([H|Tail], Result) when H >= 209 andalso H =< 217 ->
-	ebcdic_to_ascii(Tail, [H - 209 + $J|Result]);
-ebcdic_to_ascii([H|Tail], Result) when H >= 226 andalso H =< 233 ->
-	ebcdic_to_ascii(Tail, [H - 226 + $S|Result]);
-ebcdic_to_ascii([H|Tail], Result) when H >= 240 andalso H =< 249 ->
-	ebcdic_to_ascii(Tail, [H - 240 + $0|Result]);
-ebcdic_to_ascii([64|Tail], Result) ->
-	ebcdic_to_ascii(Tail, [$ |Result]);
-ebcdic_to_ascii([75|Tail], Result) ->
-	ebcdic_to_ascii(Tail, [$.|Result]);
-ebcdic_to_ascii([76|Tail], Result) ->
-	ebcdic_to_ascii(Tail, [$<|Result]);
-ebcdic_to_ascii([77|Tail], Result) ->
-	ebcdic_to_ascii(Tail, [$(|Result]);
-ebcdic_to_ascii([78|Tail], Result) ->
-	ebcdic_to_ascii(Tail, [$+|Result]);
-ebcdic_to_ascii([79|Tail], Result) ->
-	ebcdic_to_ascii(Tail, [$||Result]);
-ebcdic_to_ascii([80|Tail], Result) ->
-	ebcdic_to_ascii(Tail, [$&|Result]);
-ebcdic_to_ascii([90|Tail], Result) ->
-	ebcdic_to_ascii(Tail, [$!|Result]);
-ebcdic_to_ascii([91|Tail], Result) ->
-	ebcdic_to_ascii(Tail, [$$|Result]);
-ebcdic_to_ascii([92|Tail], Result) ->
-	ebcdic_to_ascii(Tail, [$*|Result]);
-ebcdic_to_ascii([93|Tail], Result) ->
-	ebcdic_to_ascii(Tail, [$)|Result]);
-ebcdic_to_ascii([94|Tail], Result) ->
-	ebcdic_to_ascii(Tail, [$;|Result]);
-ebcdic_to_ascii([96|Tail], Result) ->
-	ebcdic_to_ascii(Tail, [$-|Result]);
-ebcdic_to_ascii([97|Tail], Result) ->
-	ebcdic_to_ascii(Tail, [$/|Result]);
-ebcdic_to_ascii([107|Tail], Result) ->
-	ebcdic_to_ascii(Tail, [$,|Result]);
-ebcdic_to_ascii([108|Tail], Result) ->
-	ebcdic_to_ascii(Tail, [$%|Result]);
-ebcdic_to_ascii([109|Tail], Result) ->
-	ebcdic_to_ascii(Tail, [$_|Result]);
-ebcdic_to_ascii([110|Tail], Result) ->
-	ebcdic_to_ascii(Tail, [$>|Result]);
-ebcdic_to_ascii([111|Tail], Result) ->
-	ebcdic_to_ascii(Tail, [$?|Result]);
-ebcdic_to_ascii([121|Tail], Result) ->
-	ebcdic_to_ascii(Tail, [$`|Result]);
-ebcdic_to_ascii([122|Tail], Result) ->
-	ebcdic_to_ascii(Tail, [$:|Result]);
-ebcdic_to_ascii([123|Tail], Result) ->
-	ebcdic_to_ascii(Tail, [$#|Result]);
-ebcdic_to_ascii([124|Tail], Result) ->
-	ebcdic_to_ascii(Tail, [$@|Result]);
-ebcdic_to_ascii([125|Tail], Result) ->
-	ebcdic_to_ascii(Tail, [$'|Result]);
-ebcdic_to_ascii([126|Tail], Result) ->
-	ebcdic_to_ascii(Tail, [$=|Result]);
-ebcdic_to_ascii([127|Tail], Result) ->
-	ebcdic_to_ascii(Tail, [$"|Result]);
-ebcdic_to_ascii([161|Tail], Result) ->
-	ebcdic_to_ascii(Tail, [$~|Result]);
-ebcdic_to_ascii([176|Tail], Result) ->
-	ebcdic_to_ascii(Tail, [$^|Result]);
-ebcdic_to_ascii([186|Tail], Result) ->
-	ebcdic_to_ascii(Tail, [$[|Result]);
-ebcdic_to_ascii([187|Tail], Result) ->
-	ebcdic_to_ascii(Tail, [$]|Result]);
-ebcdic_to_ascii([192|Tail], Result) ->
-	ebcdic_to_ascii(Tail, [${|Result]);
-ebcdic_to_ascii([208|Tail], Result) ->
-	ebcdic_to_ascii(Tail, [$}|Result]);
-ebcdic_to_ascii([224|Tail], Result) ->
-	ebcdic_to_ascii(Tail, [$\\|Result]).
+ebcdic_to_ascii_char(H) when H >= 129 andalso H =< 137 ->
+	H - 129 + $a;
+ebcdic_to_ascii_char(H) when H >= 145 andalso H =< 153 ->
+	H - 145 + $j;
+ebcdic_to_ascii_char(H) when H >= 162 andalso H =< 169 ->
+	H - 162 + $s;
+ebcdic_to_ascii_char(H) when H >= 193 andalso H =< 201 ->
+	H - 193 + $A;
+ebcdic_to_ascii_char(H) when H >= 209 andalso H =< 217 ->
+	H - 209 + $J;
+ebcdic_to_ascii_char(H) when H >= 226 andalso H =< 233 ->
+	H - 226 + $S;
+ebcdic_to_ascii_char(H) when H >= 240 andalso H =< 249 ->
+	H - 240 + $0;
+ebcdic_to_ascii_char(64) ->
+	$ ;
+ebcdic_to_ascii_char(75) ->
+	$.;
+ebcdic_to_ascii_char(76) ->
+	$<;
+ebcdic_to_ascii_char(77) ->
+	$(;
+ebcdic_to_ascii_char(78) ->
+	$+;
+ebcdic_to_ascii_char(79) ->
+	$|;
+ebcdic_to_ascii_char(80) ->
+	$&;
+ebcdic_to_ascii_char(90) ->
+	$!;
+ebcdic_to_ascii_char(91) ->
+	$$;
+ebcdic_to_ascii_char(92) ->
+	$*;
+ebcdic_to_ascii_char(93) ->
+	$);
+ebcdic_to_ascii_char(94) ->
+	$;;
+ebcdic_to_ascii_char(96) ->
+	$-;
+ebcdic_to_ascii_char(97) ->
+	$/;
+ebcdic_to_ascii_char(107) ->
+	$,;
+ebcdic_to_ascii_char(108) ->
+	$%;
+ebcdic_to_ascii_char(109) ->
+	$_;
+ebcdic_to_ascii_char(110) ->
+	$>;
+ebcdic_to_ascii_char(111) ->
+	$?;
+ebcdic_to_ascii_char(121) ->
+	$`;
+ebcdic_to_ascii_char(122) ->
+	$:;
+ebcdic_to_ascii_char(123) ->
+	$#;
+ebcdic_to_ascii_char(124) ->
+	$@;
+ebcdic_to_ascii_char(125) ->
+	$';
+ebcdic_to_ascii_char(126) ->
+	$=;
+ebcdic_to_ascii_char(127) ->
+	$";
+ebcdic_to_ascii_char(161) ->
+	$~;
+ebcdic_to_ascii_char(176) ->
+	$^;
+ebcdic_to_ascii_char(186) ->
+	$[;
+ebcdic_to_ascii_char(187) ->
+	$];
+ebcdic_to_ascii_char(192) ->
+	${;
+ebcdic_to_ascii_char(208) ->
+	$};
+ebcdic_to_ascii_char(224) ->
+	$\\.
 
 list_to_bitmap([], _Offset, Result) ->
 	list_to_binary(array:to_list(Result));
