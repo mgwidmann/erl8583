@@ -242,7 +242,7 @@ strip_leading_zeroes(Str) ->
 -spec(ascii_to_ebcdic(string()) -> list(byte())).
 
 ascii_to_ebcdic(Str) ->
-	ascii_to_ebcdic(Str, []).
+	[ascii_to_ebcdic_char(C) || C <- Str].
 
 %% @doc Converts an EBCDIC string to an ASCII string.
 %%
@@ -358,88 +358,86 @@ strip_leading_spaces([$ |Tail]) ->
 strip_leading_spaces(Str) ->
 	Str.
 
-ascii_to_ebcdic([], Result) ->
-	lists:reverse(Result);
-ascii_to_ebcdic([H|Tail], Result) when H >= $0 andalso H =< $9 ->
-	ascii_to_ebcdic(Tail, [H - $0 + 240|Result]);
-ascii_to_ebcdic([H|Tail], Result) when H >= $a andalso H =< $i ->
-	ascii_to_ebcdic(Tail, [H - $a + 129|Result]);
-ascii_to_ebcdic([H|Tail], Result) when H >= $j andalso H =< $r ->
-	ascii_to_ebcdic(Tail, [H - $j + 145|Result]);
-ascii_to_ebcdic([H|Tail], Result) when H >= $s andalso H =< $z ->
-	ascii_to_ebcdic(Tail, [H - $s + 162|Result]);
-ascii_to_ebcdic([H|Tail], Result) when H >= $A andalso H =< $I ->
-	ascii_to_ebcdic(Tail, [H - $A + 193|Result]);
-ascii_to_ebcdic([H|Tail], Result) when H >= $J andalso H =< $R ->
-	ascii_to_ebcdic(Tail, [H - $J + 209|Result]);
-ascii_to_ebcdic([H|Tail], Result) when H >= $S andalso H =< $Z ->
-	ascii_to_ebcdic(Tail, [H - $S + 226|Result]);
-ascii_to_ebcdic([$ |Tail], Result) ->
-	ascii_to_ebcdic(Tail, [64|Result]);
-ascii_to_ebcdic([$.|Tail], Result) ->
-	ascii_to_ebcdic(Tail, [75|Result]);
-ascii_to_ebcdic([$<|Tail], Result) ->
-	ascii_to_ebcdic(Tail, [76|Result]);
-ascii_to_ebcdic([$(|Tail], Result) ->
-	ascii_to_ebcdic(Tail, [77|Result]);
-ascii_to_ebcdic([$+|Tail], Result) ->
-	ascii_to_ebcdic(Tail, [78|Result]);
-ascii_to_ebcdic([$||Tail], Result) ->
-	ascii_to_ebcdic(Tail, [79|Result]);
-ascii_to_ebcdic([$&|Tail], Result) ->
-	ascii_to_ebcdic(Tail, [80|Result]);
-ascii_to_ebcdic([$!|Tail], Result) ->
-	ascii_to_ebcdic(Tail, [90|Result]);
-ascii_to_ebcdic([$$|Tail], Result) ->
-	ascii_to_ebcdic(Tail, [91|Result]);
-ascii_to_ebcdic([$*|Tail], Result) ->
-	ascii_to_ebcdic(Tail, [92|Result]);
-ascii_to_ebcdic([$)|Tail], Result) ->
-	ascii_to_ebcdic(Tail, [93|Result]);
-ascii_to_ebcdic([$;|Tail], Result) ->
-	ascii_to_ebcdic(Tail, [94|Result]);
-ascii_to_ebcdic([$-|Tail], Result) ->
-	ascii_to_ebcdic(Tail, [96|Result]);
-ascii_to_ebcdic([$/|Tail], Result) ->
-	ascii_to_ebcdic(Tail, [97|Result]);
-ascii_to_ebcdic([$,|Tail], Result) ->
-	ascii_to_ebcdic(Tail, [107|Result]);
-ascii_to_ebcdic([$%|Tail], Result) ->
-	ascii_to_ebcdic(Tail, [108|Result]);
-ascii_to_ebcdic([$_|Tail], Result) ->
-	ascii_to_ebcdic(Tail, [109|Result]);
-ascii_to_ebcdic([$>|Tail], Result) ->
-	ascii_to_ebcdic(Tail, [110|Result]);
-ascii_to_ebcdic([$?|Tail], Result) ->
-	ascii_to_ebcdic(Tail, [111|Result]);
-ascii_to_ebcdic([$`|Tail], Result) ->
-	ascii_to_ebcdic(Tail, [121|Result]);
-ascii_to_ebcdic([$:|Tail], Result) ->
-	ascii_to_ebcdic(Tail, [122|Result]);
-ascii_to_ebcdic([$#|Tail], Result) ->
-	ascii_to_ebcdic(Tail, [123|Result]);
-ascii_to_ebcdic([$@|Tail], Result) ->
-	ascii_to_ebcdic(Tail, [124|Result]);
-ascii_to_ebcdic([$'|Tail], Result) ->
-	ascii_to_ebcdic(Tail, [125|Result]);
-ascii_to_ebcdic([$=|Tail], Result) ->
-	ascii_to_ebcdic(Tail, [126|Result]);
-ascii_to_ebcdic([$"|Tail], Result) ->
-	ascii_to_ebcdic(Tail, [127|Result]);
-ascii_to_ebcdic([$~|Tail], Result) ->
-	ascii_to_ebcdic(Tail, [161|Result]);
-ascii_to_ebcdic([$^|Tail], Result) ->
-	ascii_to_ebcdic(Tail, [176|Result]);
-ascii_to_ebcdic([$[|Tail], Result) ->
-	ascii_to_ebcdic(Tail, [186|Result]);
-ascii_to_ebcdic([$]|Tail], Result) ->
-	ascii_to_ebcdic(Tail, [187|Result]);
-ascii_to_ebcdic([${|Tail], Result) ->
-	ascii_to_ebcdic(Tail, [192|Result]);
-ascii_to_ebcdic([$}|Tail], Result) ->
-	ascii_to_ebcdic(Tail, [208|Result]);
-ascii_to_ebcdic([92|Tail], Result) ->
-	ascii_to_ebcdic(Tail, [224|Result]).
+ascii_to_ebcdic_char(H) when H >= $0 andalso H =< $9 ->
+	H - $0 + 240;
+ascii_to_ebcdic_char(H) when H >= $a andalso H =< $i ->
+	H - $a + 129;
+ascii_to_ebcdic_char(H) when H >= $j andalso H =< $r ->
+	H - $j + 145;
+ascii_to_ebcdic_char(H) when H >= $s andalso H =< $z ->
+	H - $s + 162;
+ascii_to_ebcdic_char(H) when H >= $A andalso H =< $I ->
+	H - $A + 193;
+ascii_to_ebcdic_char(H) when H >= $J andalso H =< $R ->
+	H - $J + 209;
+ascii_to_ebcdic_char(H) when H >= $S andalso H =< $Z ->
+	H - $S + 226;
+ascii_to_ebcdic_char($ ) ->
+	64;
+ascii_to_ebcdic_char($.) ->
+	75;
+ascii_to_ebcdic_char($<) ->
+	76;
+ascii_to_ebcdic_char($() ->
+	77;
+ascii_to_ebcdic_char($+) ->
+	78;
+ascii_to_ebcdic_char($|) ->
+	79;
+ascii_to_ebcdic_char($&) ->
+	80;
+ascii_to_ebcdic_char($!) ->
+	90;
+ascii_to_ebcdic_char($$) ->
+	91;
+ascii_to_ebcdic_char($*) ->
+	92;
+ascii_to_ebcdic_char($)) ->
+	93;
+ascii_to_ebcdic_char($;) ->
+	94;
+ascii_to_ebcdic_char($-) ->
+	96;
+ascii_to_ebcdic_char($/) ->
+	97;
+ascii_to_ebcdic_char($,) ->
+	107;
+ascii_to_ebcdic_char($%) ->
+	108;
+ascii_to_ebcdic_char($_) ->
+	109;
+ascii_to_ebcdic_char($>) ->
+	110;
+ascii_to_ebcdic_char($?) ->
+	111;
+ascii_to_ebcdic_char($`) ->
+	121;
+ascii_to_ebcdic_char($:) ->
+	122;
+ascii_to_ebcdic_char($#) ->
+	123;
+ascii_to_ebcdic_char($@) ->
+	124;
+ascii_to_ebcdic_char($') ->
+	125;
+ascii_to_ebcdic_char($=) ->
+	126;
+ascii_to_ebcdic_char($") ->
+	127;
+ascii_to_ebcdic_char($~) ->
+	161;
+ascii_to_ebcdic_char($^) ->
+	176;
+ascii_to_ebcdic_char($[) ->
+	186;
+ascii_to_ebcdic_char($]) ->
+	187;
+ascii_to_ebcdic_char(${) ->
+	192;
+ascii_to_ebcdic_char($}) ->
+	208;
+ascii_to_ebcdic_char(92) ->
+	224.
 
 ebcdic_to_ascii([], Result) ->
 	lists:reverse(Result);
