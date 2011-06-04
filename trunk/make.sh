@@ -5,6 +5,7 @@ mkdir $ERL8583_BUILD/ebin
 mkdir $ERL8583_BUILD/tbin
 echo "Compiling source"
 erlc -I include -o $ERL8583_BUILD/ebin src/*.erl
+cp src/erl8583.app $ERL8583_BUILD/ebin
 echo "Compiling tests"
 erlc -I include -o $ERL8583_BUILD/tbin test/*.erl
 erl -noshell -pa $ERL8583_BUILD/ebin -pa $ERL8583_BUILD/tbin -s test_all test $ERL8583_BUILD/tbin -s init stop
