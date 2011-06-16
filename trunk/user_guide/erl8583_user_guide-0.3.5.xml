@@ -736,7 +736,7 @@ get_encoding(?RETRIEVAL_REF_NUM) -&gt;
 -spec(marshal(iso8583message(), list(marshal_handler())) -&gt; list(byte())).
 
 marshal(Message, MarshalHandlers) -&gt;
-	OptionsRecord = parse_options(MarshalHaendlers, #marshal_options{}),
+	OptionsRecord = parse_options(MarshalHandlers, #marshal_options{}),
 	{Marshalled1, Message1} = init_marshalling(OptionsRecord, Message),
 	Marshalled2 = Marshalled1 ++ encode_mti(OptionsRecord, Message1),
 	{MarshalledBitmap, Message2} = encode_bitmap(OptionsRecord, Message1),
