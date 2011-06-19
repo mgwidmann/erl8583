@@ -34,7 +34,7 @@ test() ->
 
 % A pretty standard function to read data from a socket.
 do_recv(Sock, Bs) ->
-    {ok, B} = gen_tcp:recv(Sock, 0),
+	{ok, B} = gen_tcp:recv(Sock, 0),
 	UpdatedBs = Bs ++ B,
 	if
 		% There's a 4 byte length header. Use it to check if
