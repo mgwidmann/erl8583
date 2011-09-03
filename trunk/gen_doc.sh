@@ -1,7 +1,6 @@
 #!/usr/bin/env escript
 
 main([Dir]) ->
-	io:format("Generating edocs~n"),
 	{ok, Files} = file:list_dir("./src"),
 	ErlPred = fun(F) -> is_erl_file(F) end,
 	ErlFiles = lists:filter(ErlPred, Files),
