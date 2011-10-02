@@ -1,7 +1,7 @@
 {application, erl8583,
     [
         {description, "ISO 8583 library"},
-        {vsn, "0.3.5"},
+        {vsn, "0.3.6"},
         {modules,   [
                     erl8583_convert,
                     erl8583_fields,
