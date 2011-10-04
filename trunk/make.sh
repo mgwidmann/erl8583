@@ -1,5 +1,6 @@
 #! /bin/bash
-ERL8583_BUILD=erl8583-0.3.6
+VERSION=0.3.6
+ERL8583_BUILD=erl8583-$VERSION
 set -x
 mkdir $ERL8583_BUILD
 mkdir $ERL8583_BUILD/doc
@@ -24,4 +25,7 @@ if [ -f $ERL8583_BUILD.zip ]; then
 fi
 zip -q $ERL8583_BUILD.zip -r $ERL8583_BUILD
 rm -r $ERL8583_BUILD
-
+if [ -f ./user_guide/erl8583_user_guide.xml ]; then 
+    dblatex --pdf user_guide/erl8583_user_guide.xml
+    mv ././user_guide/erl8583_user_guide.pdf ./erl8583_user_guide-$VERSION.pdf
+fi
