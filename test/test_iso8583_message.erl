@@ -43,8 +43,7 @@ set_field_twice_test() ->
 
 set_field_not_integer_test() ->
 	Message = erl8583_message:new(),
-	?assertError
-	(_, erl8583_message:set(foo, "0210", Message)).
+	?assertError(_, erl8583_message:set(foo, "0210", Message)).
 
 set_negative_field_test() ->
 	Message = erl8583_message:new(),
@@ -258,3 +257,18 @@ update_list3_test() ->
 	[2, 3] = erl8583_message:get_fields(SubMessage),
 	"foo" = erl8583_message:get(2, SubMessage),
 	"bar" = erl8583_message:get([3, 1], SubMessage).
+
+get_numeric_test() ->
+	Message1 = erl8583_message:new(),
+	Message2 = erl8583_message:update([5, 2], "0123", Message1),
+	Message3 = erl8583_message:update(6, "77", Message2),
+	123 = erl8583_message:get_numeric([5, 2], Message3),
+	77 = erl8583_message:get_numeric(6, Message3).
+	
+set_numeric_test() ->
+	Message1 = erl8583_message:new(),
+	Message2 = erl8583_message:set_numeric([5, 2], 123, 12, Message1),
+	Message3 = erl8583_message:set_numeric(6, 77, 2, Message2),
+	"000000000123" = erl8583_message:get([5, 2], Message3),
+	"77" = erl8583_message:get(6, Message3).
+	
