@@ -88,7 +88,7 @@ marshal_field(FieldId, FieldValue, _EncodingRules) when is_binary(FieldValue) ->
 		"\" type=\"binary\" />\n";
 % if we drop through to here, Value is of type iso8583message().
 marshal_field(FieldId, FieldValue, _EncodingRules) ->
-	{iso8583_message, _, _} = FieldValue,
+	true = erl8583_message:is_message(FieldValue),
 	Id = integer_to_list(FieldId),
 	"<isomsg id=\"" ++ 
 		Id ++ 

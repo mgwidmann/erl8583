@@ -56,7 +56,8 @@
 		 response/2,
 		 remove_fields/2,
 		 set_mti/2,
-		 get_mti/1]).
+		 get_mti/1,
+		 is_message/1]).
 
 %%
 %% API Functions
@@ -336,7 +337,7 @@ remove_fields(FieldIds, Message) ->
 set_mti(Mti, Message) ->
 	set(0, Mti, Message).
 
-%% @doc A convenience method for getting the message type identifier (MTI)
+%% @doc A convenient function for getting the message type identifier (MTI)
 %%      of a message.
 %%
 %% @spec get_mti(iso8583message()) -> string()
@@ -345,6 +346,16 @@ set_mti(Mti, Message) ->
 get_mti(Message) ->
 	get(0, Message).
 
+%% @doc A function for checking whether the type of a message is an iso8583message().
+%%
+%% @spec is_message(any()) -> boolean()
+-spec(is_message(any()) -> boolean()).
+
+is_message({iso8583_message, _, _}) ->
+	true;
+is_message(_NonMessage) ->
+	false.
+	
 %%
 %% Local Functions
 %%
