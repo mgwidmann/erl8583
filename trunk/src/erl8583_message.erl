@@ -39,7 +39,9 @@
 		 new/1, 
 		 set/3, 
 		 set/2,
+		 set_numeric/4,
 		 get/2, 
+		 get_numeric/2,
 		 get_fields/1, 
 		 to_list/1, 
 		 from_list/1, 
@@ -100,7 +102,26 @@ set(FieldId, FieldValue, Message) when is_integer(FieldId) andalso FieldId >= 0 
 	{iso8583_message, Attrs, Dict} = Message,
 	false = dict:is_key(FieldId, Dict),
 	{iso8583_message, Attrs, dict:store(FieldId, FieldValue, Dict)}.
-	
+
+%% @doc Sets the value of a field in a message and returns an updated
+%%      message. The value must be an integer and is encoded as a string
+%%      of specified length; the value will be prepended with leading zeroes
+%%      if necessary.
+%%
+%%      If the value for the field is already set, an exception
+%%      is thrown. The field can be specified as an integer or as a
+%%      list of integers.  A list of integers indicates that
+%%      some field is a submessage; e.g. [127, 2] would indicate field 2
+%%      in field 127 of the original message.
+%%
+%% @spec set_numeric(FieldId::integer()|list(integer()), iso8583field_value(), integer(), iso8583message()) -> iso8583message()
+-spec(set_numeric(FieldId::integer()|list(integer()), iso8583field_value(), integer(), iso8583message()) -> iso8583message()).
+
+set_numeric(FieldId, FieldValue, FieldLength, Message) ->
+	Value = erl8583_convert:integer_to_string(FieldValue, FieldLength),
+	set(FieldId, Value, Message).
+
+
 %% @doc Sets the values of zero or more fields in a message and returns an updated
 %%      message. The field IDs and field values are passed as 2-tuples in 
 %%      a list.
@@ -130,6 +151,16 @@ get([FieldId|Tail], Message)  when is_integer(FieldId) ->
 get(FieldId, Message) when is_integer(FieldId) ->
 	{iso8583_message, _Attrs, Dict} = Message,
 	dict:fetch(FieldId, Dict).
+
+%% @doc Gets the integer value of a field from a message given a field ID or a list
+%%      of identifiers. A list of integers indicates that some field is a submessage; 
+%%      e.g. [127, 2] would indicate field 2 in field 127 of the original message.
+%%
+%% @spec get_numeric(FieldId::integer()|list(integer()), iso8583message()) -> integer()
+-spec(get_numeric(FieldId::integer()|list(integer()), iso8583message()) -> integer()).
+
+get_numeric(FieldId, Message) ->
+	list_to_integer(get(FieldId, Message)).
 
 %% @doc Gets the field IDs from a message; i.e. what fields exist in
 %%      a message.
