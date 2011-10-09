@@ -49,6 +49,7 @@
 		 get_attributes/1,
 		 update/3,
 		 update/2,
+		 update_numeric/4,
 		 repeat/1,
 		 clone_fields/2,
 		 response/1,
@@ -231,6 +232,7 @@ update(FieldId, FieldValue, Message) when is_integer(FieldId) andalso FieldId >=
 	{iso8583_message, Attrs, Dict} = Message,
 	{iso8583_message, Attrs, dict:store(FieldId, FieldValue, Dict)}.
 
+
 %% @doc Sets or updates the values of zero or more fields in a message and returns an updated
 %%      message. The field IDs and field values are passed as 2-tuples in 
 %%      a list.
@@ -243,6 +245,23 @@ update([], Message) ->
 update(FieldsList, Message) ->
 	[{FieldId, FieldValue}|Tail] = FieldsList,
 	update(Tail, update(FieldId, FieldValue, Message)).
+
+%% @doc Sets or updates the value of a field in a message and returns an updated
+%%      message. The value must be an integer and is encoded as a string
+%%      of specified length; the value will be prepended with leading zeroes
+%%      if necessary.
+%%
+%%      The field can be specified as an integer or as a
+%%      list of integers.  A list of integers indicates that
+%%      some field is a submessage; e.g. [127, 2] would indicate field 2
+%%      in field 127 of the original message.
+%%
+%% @spec update_numeric(FieldId::integer()|list(integer()), iso8583field_value(), integer(), iso8583message()) -> iso8583message()
+-spec(update_numeric(FieldId::integer()|list(integer()), iso8583field_value(), integer(), iso8583message()) -> iso8583message()).
+
+update_numeric(FieldId, FieldValue, FieldLength, Message) ->
+	Value = erl8583_convert:integer_to_string(FieldValue, FieldLength),
+	update(FieldId, Value, Message).
 	
 %% @doc Updates the message type of a message to indicate that it's a repeat.
 %%
