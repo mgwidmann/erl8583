@@ -132,8 +132,7 @@ set_numeric(FieldId, FieldValue, FieldLength, Message) ->
 
 set([], Message) ->
 	Message;
-set(FieldsList, Message) ->
-	[{FieldId, FieldValue}|Tail] = FieldsList,
+set([{FieldId, FieldValue}|Tail], Message) ->
 	set(Tail, set(FieldId, FieldValue, Message)).
 	
 %% @doc Gets the value of a field from a message given a field ID or a list
