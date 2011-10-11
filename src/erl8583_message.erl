@@ -77,7 +77,7 @@ new() ->
 -spec(new(list(iso8583attribute())) -> iso8583message()).
 
 new(Attributes) ->
-	{iso8583_message, Attributes, dict:new()}.
+	#iso8583_message{attributes=Attributes}.
 	
 %% @doc Sets the value of a field in a message and returns an updated
 %%      message. If the value for the field is already set, an exception
@@ -100,10 +100,9 @@ set([FieldId|Tail], FieldValue, Message) when is_integer(FieldId) ->
 	end,
 	Message3 = set(Tail, FieldValue, Message2),
 	update(FieldId, Message3, Message);
-set(FieldId, FieldValue, Message) when is_integer(FieldId) andalso FieldId >= 0 ->
-	{iso8583_message, Attrs, Dict} = Message,
+set(FieldId, FieldValue, #iso8583_message{values=Dict}=Message) when is_integer(FieldId) andalso FieldId >= 0 ->
 	false = dict:is_key(FieldId, Dict),
-	{iso8583_message, Attrs, dict:store(FieldId, FieldValue, Dict)}.
+	Message#iso8583_message{values=dict:store(FieldId, FieldValue, Dict)}.
 
 %% @doc Sets the value of a field in a message and returns an updated
 %%      message. The value must be an integer and is encoded as a string

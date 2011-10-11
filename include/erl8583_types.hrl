@@ -29,8 +29,8 @@
 %%
 %% @type iso8583message() = #iso8583_message{attributes=[iso8583attribute()], values=dict()}. An 
 %% encapsulation of an ISO 8583 message.
--record(iso8583message, {attributes :: [iso8583attribute()], values=dict:new()}).
--type(iso8583message() :: #iso8583message{}).
+-record(iso8583_message, {attributes=[], values=dict:new()}).
+-type(iso8583message() :: #iso8583_message{}).
 
 %% Valid types for the field of an ISO 8583 message.
 %%
