@@ -7,6 +7,7 @@
 %% Include files
 %%
 -include_lib("eunit/include/eunit.hrl").
+-include("../include/erl8583_types.hrl").
 
 %%
 %% Exported Functions
@@ -23,7 +24,7 @@
 
 %% Check that "new" creates the expected tuple.
 new_test() ->
-	{iso8583_message, _, _} = erl8583_message:new().
+	#iso8583_message{attributes=[]} = erl8583_message:new().
 
 %% Check that we can add a field with ID 0
 set_test() ->
@@ -76,7 +77,7 @@ to_list_test() ->
 
 from_list_test() ->
 	Message = erl8583_message:from_list([{0, "0200"}, {39, 0}]),
-	{iso8583_message, _, _} = Message,
+	#iso8583_message{attributes=[]} = Message,
 	[{0, "0200"}, {39, 0}] = erl8583_message:to_list(Message).
 
 get_attributes_test() ->
