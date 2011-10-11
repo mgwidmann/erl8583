@@ -149,8 +149,7 @@ get([FieldId], Message) when is_integer(FieldId) ->
 get([FieldId|Tail], Message)  when is_integer(FieldId) ->
 	Message2 = get(FieldId, Message),
 	get(Tail, Message2);
-get(FieldId, Message) when is_integer(FieldId) ->
-	{iso8583_message, _Attrs, Dict} = Message,
+get(FieldId, #iso8583_message{values=Dict}) when is_integer(FieldId) ->
 	dict:fetch(FieldId, Dict).
 
 %% @doc Gets the integer value of a field from a message given a field ID or a list
@@ -169,8 +168,7 @@ get_numeric(FieldId, Message) ->
 %% @spec get_fields(iso8583message()) -> list(integer())
 -spec(get_fields(iso8583message()) -> list(integer())).
 
-get_fields(Message) ->
-	{iso8583_message, _Attrs, Dict} = Message,
+get_fields(#iso8583_message{values=Dict}) ->
 	lists:sort(dict:fetch_keys(Dict)).
 
 %% @doc Returns an encoding of a message as a list of
@@ -179,8 +177,7 @@ get_fields(Message) ->
 %% @spec to_list(iso8583message()) -> list({integer(), iso8583field_value()})
 -spec(to_list(iso8583message()) -> list({integer(), iso8583field_value()})).
 
-to_list(Message) ->
-	{iso8583_message, _Attrs, Dict} = Message,
+to_list(#iso8583_message{values=Dict}) ->
 	dict:to_list(Dict).
 
 %% @doc Returns a list of attributes of a 
@@ -189,8 +186,7 @@ to_list(Message) ->
 %% @spec get_attributes(iso8583message()) -> list(iso8583attribute())
 -spec(get_attributes(iso8583message()) -> list(iso8583attribute())).
 
-get_attributes(Message) ->
-	{iso8583_message, Attrs, _Dict} = Message,
+get_attributes(#iso8583_message{attributes=Attrs}) ->
 	Attrs.
 									
 %% @doc Constructs an ISO 8583 message from a list
@@ -208,8 +204,7 @@ from_list(List) ->
 -spec(set_attributes(list(iso8583attribute()), iso8583message())-> iso8583message()).
 
 set_attributes(Attributes, Message) ->
-	{iso8583_message, [], Dict} = Message,
-	{iso8583_message, Attributes, Dict}.
+	Message#iso8583_message{attributes=Attributes}.
 
 %% @doc Sets or updates the value of a field in a message and returns an updated
 %%      message. The value for the field need not have been set previously.
@@ -228,9 +223,8 @@ update([FieldId|Tail], FieldValue, Message) when is_integer(FieldId) ->
 	end,
 	Message3 = update(Tail, FieldValue, Message2),
 	update(FieldId, Message3, Message);
-update(FieldId, FieldValue, Message) when is_integer(FieldId) andalso FieldId >= 0 ->
-	{iso8583_message, Attrs, Dict} = Message,
-	{iso8583_message, Attrs, dict:store(FieldId, FieldValue, Dict)}.
+update(FieldId, FieldValue, #iso8583_message{values=Dict}=Message) when is_integer(FieldId) andalso FieldId >= 0 ->
+	Message#iso8583_message{values=dict:store(FieldId, FieldValue, Dict)}.
 
 
 %% @doc Sets or updates the values of zero or more fields in a message and returns an updated
@@ -322,10 +316,9 @@ response(FieldIds, Message) ->
 %% @spec remove_fields(list(integer()), iso8583message()) -> iso8583message()
 -spec(remove_fields(list(integer()), iso8583message()) -> iso8583message()).
 
-remove_fields(FieldIds, Message) ->
-	{iso8583_message, Attributes, Dict} = Message,
+remove_fields(FieldIds, #iso8583_message{values=Dict}=Message) ->
 	UpdatedDict = remove_fields_from_dict(FieldIds, Dict),
-	{iso8583_message, Attributes, UpdatedDict}.
+	Message#iso8583_message{values=UpdatedDict}.
 	
 %% @doc A convenience method for setting the message type identifier (MTI)
 %%      of a message.
@@ -350,7 +343,7 @@ get_mti(Message) ->
 %% @spec is_message(any()) -> boolean()
 -spec(is_message(any()) -> boolean()).
 
-is_message({iso8583_message, _, _}) ->
+is_message(#iso8583_message{}) ->
 	true;
 is_message(_NonMessage) ->
 	false.
