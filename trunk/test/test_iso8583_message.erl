@@ -282,3 +282,8 @@ update_numeric_test() ->
 is_message_test() ->
 	false = erl8583_message:is_message(3),
 	true = erl8583_message:is_message(#iso8583_message{}).
+
+clone_with_attributes_test() ->
+	Msg1 = erl8583_message:new([{"foo", "bar"}]),
+	Msg2 = erl8583_message:clone_fields([], Msg1),
+	[{"foo", "bar"}] = erl8583_message:get_attributes(Msg2).

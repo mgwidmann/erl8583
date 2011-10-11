@@ -203,7 +203,7 @@ from_list(List) ->
 %% @spec set_attributes(list(iso8583attribute()), iso8583message())-> iso8583message()
 -spec(set_attributes(list(iso8583attribute()), iso8583message())-> iso8583message()).
 
-set_attributes(Attributes, Message) ->
+set_attributes(Attributes, #iso8583_message{attributes=[]}=Message) ->
 	Message#iso8583_message{attributes=Attributes}.
 
 %% @doc Sets or updates the value of a field in a message and returns an updated
@@ -236,8 +236,7 @@ update(FieldId, FieldValue, #iso8583_message{values=Dict}=Message) when is_integ
 
 update([], Message) ->
 	Message;
-update(FieldsList, Message) ->
-	[{FieldId, FieldValue}|Tail] = FieldsList,
+update([{FieldId, FieldValue}|Tail], Message) ->
 	update(Tail, update(FieldId, FieldValue, Message)).
 
 %% @doc Sets or updates the value of a field in a message and returns an updated
@@ -280,7 +279,7 @@ repeat(Message) ->
 -spec(clone_fields(list(integer()), iso8583message()) -> iso8583message()).
 
 clone_fields(FieldIds, Message) ->
-	clone_fields(FieldIds, Message, new()).
+	clone_fields(FieldIds, Message, new(get_attributes(Message))).
 
 %% @doc Creates a response message for a message where the response has
 %%      the same field values as the original message. The MTI is changed 
@@ -320,7 +319,7 @@ remove_fields(FieldIds, #iso8583_message{values=Dict}=Message) ->
 	UpdatedDict = remove_fields_from_dict(FieldIds, Dict),
 	Message#iso8583_message{values=UpdatedDict}.
 	
-%% @doc A convenience method for setting the message type identifier (MTI)
+%% @doc A convenient function for setting the message type identifier (MTI)
 %%      of a message.
 %%
 %% @spec set_mti(string(), iso8583message()) -> iso8583message()
