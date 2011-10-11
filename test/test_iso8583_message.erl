@@ -279,3 +279,6 @@ update_numeric_test() ->
 	Message3 = erl8583_message:update_numeric([5, 2], 77, 3, Message2),
 	"077" = erl8583_message:get([5, 2], Message3).
 	
+is_message_test() ->
+	false = erl8583_message:is_message(3),
+	true = erl8583_message:is_message(#iso8583_message{}).
