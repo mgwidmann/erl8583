@@ -552,9 +552,14 @@
       nested message instances. The API does not prevent you setting the value
       of a data element to be an atom, a tuple, a number, a fun or a unique identifier but
       those types will cause an exception to be raised if you try to marshal
-      (see section 3.4) the message. Note in particular that numeric
+      (see section 3.4) the message.</para>
+      
+      <para>Note in particular that numeric
       (<emphasis>n</emphasis>) values should be encoded as strings; e.g. set
-      the MTI as "0200" not as the integer 200.</para>
+      the MTI as "0200" not as the integer 200. However, the <emphasis role="bold">
+      get_numeric</emphasis> and <emphasis role="bold">set_numeric</emphasis> functions can 
+      be used to get and set integer values where the appropriate zero padding bytes are
+      removed or added.</para>
 
       <para>It may seem strange allowing data elements to be nested messages
       since ISO 8583 does not describe this scenario. However it is quite
