@@ -1,5 +1,5 @@
 #! /bin/bash
-VERSION=0.3.6
+VERSION=0.3.7
 ERL8583_BUILD=erl8583-$VERSION
 set -x
 mkdir $ERL8583_BUILD
