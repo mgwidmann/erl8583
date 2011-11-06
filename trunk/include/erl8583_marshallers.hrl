@@ -27,6 +27,12 @@
 							{mti_marshaller, erl8583_marshaller_ebcdic},
 							{end_marshaller, erl8583_marshaller_ebcdic}]).
 
+-define(MARSHALLER_JSON, [{field_marshaller, erl8583_marshaller_json}, 
+						  {bitmap_marshaller, erl8583_marshaller_json},
+						  {mti_marshaller, erl8583_marshaller_json},
+						  {init_marshaller, erl8583_marshaller_json},
+						  {end_marshaller, erl8583_marshaller_json}]).
+
 -define(MARSHALLER_XML, [{field_marshaller, erl8583_marshaller_xml}, 
 						 {bitmap_marshaller, erl8583_marshaller_xml},
 						 {mti_marshaller, erl8583_marshaller_xml},

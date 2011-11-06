@@ -33,7 +33,7 @@
 -type(iso8583message() :: #iso8583_message{}).
 
 %% Valid types for the field of an ISO 8583 message.
-%%
+%%she
 %% @type iso8583field_value() = string()|binary()|iso8583message(). Valid
 %% types for an ISO 8583 field. 
 -type(iso8583field_value() :: string()|binary()|iso8583message()).
