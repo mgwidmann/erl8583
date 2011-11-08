@@ -32,7 +32,8 @@
 %% Exported Functions
 %%
 -export([marshal/1,
-		 unmarshal/1]).
+		 unmarshal/1,
+		 unmarshal_mti/1]).
 
 %%
 %% API Functions
@@ -56,6 +57,15 @@ marshal(Message) ->
 unmarshal(Marshalled) ->
 	erl8583_marshaller:unmarshal(Marshalled, ?MARSHALLER_JSON).
 
+%% @doc Extracts the MTI from a JSON document.
+%%      The MTI and the XML document are 
+%%      returned as a 2-tuple.
+%%
+%% @spec unmarshal_mti(string()) -> {string(), string()}
+-spec(unmarshal_mti(string()) -> {string(), string()}).
+
+unmarshal_mti(Marshalled) ->
+	{"0210", Marshalled}.
 
 
 %%
