@@ -33,7 +33,8 @@
 %%
 -export([marshal/1,
 		 unmarshal/1,
-		 unmarshal_mti/1]).
+		 unmarshal_mti/1,
+		 unmarshal_bitmap/1]).
 
 %%
 %% API Functions
@@ -69,6 +70,20 @@ unmarshal_mti(Marshalled) ->
 	{struct, FieldsData} = proplists:get_value(<<"fields">>, JsonData),
 	MtiBin = proplists:get_value(<<"0">>, FieldsData),
 	{binary_to_list(MtiBin), Marshalled}.
+
+%% @doc Extracts a list of field IDs from a JSON 
+%%      representation of an ISO 8583 message. The result is returned
+%%      as a 2-tuple of the field IDs and the JSON document.
+%%
+%% @spec unmarshal_bitmap(string()) -> {list(integer()), string()}
+-spec(unmarshal_bitmap(string()) -> {list(integer()), string()}).
+
+unmarshal_bitmap(Marshalled) ->
+	{struct, JsonData} = mochijson2:decode(Marshalled),
+	{struct, FieldsData} = proplists:get_value(<<"fields">>, JsonData),
+	Fields = proplists:get_keys(FieldsData),
+	FieldIds = [list_to_integer(binary_to_list(Id)) || Id <- Fields] -- [0],
+	{lists:sort(FieldIds), Marshalled}.
 
 
 %%
