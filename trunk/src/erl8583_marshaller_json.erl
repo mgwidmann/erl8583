@@ -65,7 +65,10 @@ unmarshal(Marshalled) ->
 -spec(unmarshal_mti(string()) -> {string(), string()}).
 
 unmarshal_mti(Marshalled) ->
-	{"0210", Marshalled}.
+	{struct, JsonData} = mochijson2:decode(Marshalled),
+	{struct, FieldsData} = proplists:get_value(<<"fields">>, JsonData),
+	MtiBin = proplists:get_value(<<"0">>, FieldsData),
+	{binary_to_list(MtiBin), Marshalled}.
 
 
 %%

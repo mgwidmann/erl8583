@@ -19,4 +19,6 @@
 %%
 mti_unmarshall_test() ->
 	Msg = "{\"fields\" : {\"0\" : \"0210\"}}",
-	{"0210", _} = erl8583_marshaller_json:unmarshal_mti(Msg).
+	{"0210", Msg} = erl8583_marshaller_json:unmarshal_mti(Msg),
+	Msg2 = "{\"fields\" : {\"0\" : \"0200\"}}",
+	{"0200", Msg2} = erl8583_marshaller_json:unmarshal_mti(Msg2).
