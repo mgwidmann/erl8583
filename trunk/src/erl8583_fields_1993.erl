@@ -34,10 +34,12 @@
 %%
 
 %% @doc Returns how a field is encoded as a triple consisting of the content (e.g. ans, b, z, etc),
-%%      the format (e.g. llvar, lllvar or fixed) and the maximum length.
+%%      the format (e.g. llvar, lllvar or fixed) and the maximum length. The field can be passed as
+%%      an integer (e.g. 127 to determine how to encode field 127) or a list of integers (e.g. [127,2] to
+%%      determine how to encode subfield 127.2)
 %%
-%% @spec get_encoding(integer()) -> field_encoding()
--spec(get_encoding(integer()) -> field_encoding()).
+%% @spec get_encoding(FieldId::integer()|list(integer())) -> field_encoding()
+-spec(get_encoding(integer()|list(integer())) -> field_encoding()).
 
 get_encoding(?DATE_AND_TIME_LOCAL_TRAN) ->
 	{n, fixed, 12};
@@ -69,5 +71,7 @@ get_encoding(?ORIGINAL_DATA_ELEMENTS_1993) ->
 	{an, llvar, 35};
 get_encoding(?MESSAGE_SECURITY_CODE) ->
 	{an, llvar, 18};
+get_encoding([FieldId]) when is_integer(FieldId) ->
+	get_encoding(FieldId);
 get_encoding(FieldId) ->
 	erl8583_fields:get_encoding(FieldId).
