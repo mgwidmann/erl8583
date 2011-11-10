@@ -34,7 +34,8 @@
 -export([marshal/1,
 		 unmarshal/1,
 		 unmarshal_mti/1,
-		 unmarshal_bitmap/1]).
+		 unmarshal_bitmap/1,
+		 unmarshal_field/3]).
 
 %%
 %% API Functions
@@ -84,6 +85,19 @@ unmarshal_bitmap(Marshalled) ->
 	Fields = proplists:get_keys(FieldsData),
 	FieldIds = [list_to_integer(binary_to_list(Id)) || Id <- Fields] -- [0],
 	{lists:sort(FieldIds), Marshalled}.
+
+%% @doc Extracts a field value for a specified field from a JSON
+%%      document.  The field value and the JSON document are 
+%%      returned as a 2-tuple.
+%%
+%% @spec unmarshal_field(integer(), string(), module()) -> {iso8583field_value(), string()}
+-spec(unmarshal_field(integer(), string(), module()) -> {iso8583field_value(), string()}).
+
+unmarshal_field(FieldId, Marshalled, _EncodingRule) ->
+	{struct, JsonData} = mochijson2:decode(Marshalled),
+	{struct, FieldsProps} = proplists:get_value(<<"fields">>, JsonData),
+	FieldValue = proplists:get_value(list_to_binary(integer_to_list(FieldId)), FieldsProps),
+	{erlang:binary_to_list(FieldValue), Marshalled}.
 
 
 %%
