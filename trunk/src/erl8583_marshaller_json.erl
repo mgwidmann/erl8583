@@ -93,11 +93,17 @@ unmarshal_bitmap(Marshalled) ->
 %% @spec unmarshal_field(integer(), string(), module()) -> {iso8583field_value(), string()}
 -spec(unmarshal_field(integer(), string(), module()) -> {iso8583field_value(), string()}).
 
-unmarshal_field(FieldId, Marshalled, _EncodingRule) ->
+unmarshal_field(FieldId, Marshalled, EncodingRules) ->
 	{struct, JsonData} = mochijson2:decode(Marshalled),
 	{struct, FieldsProps} = proplists:get_value(<<"fields">>, JsonData),
 	FieldValue = proplists:get_value(list_to_binary(integer_to_list(FieldId)), FieldsProps),
-	{erlang:binary_to_list(FieldValue), Marshalled}.
+	case EncodingRules:get_encoding(FieldId) of
+		{b, _, _} ->
+			{erl8583_convert:ascii_hex_to_binary(binary_to_list(FieldValue)), Marshalled};
+		_ ->
+			{binary_to_list(FieldValue), Marshalled}
+	end.
+
 
 
 %%
