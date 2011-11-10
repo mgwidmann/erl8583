@@ -34,10 +34,12 @@
 %%
 
 %% @doc Returns how a field is encoded as a triple consisting of the content (e.g. ans, b, z, etc),
-%%      the format (e.g. llvar, lllvar or fixed) and the maximum length.
+%%      the format (e.g. llvar, lllvar or fixed) and the maximum length. The field can be passed as
+%%      an integer (e.g. 127 to determine how to encode field 127) or a list of integers (e.g. [127,2] to
+%%      determine how to encode subfield 127.2)
 %%
-%% @spec get_encoding(FieldId::integer()) -> field_encoding()
--spec(get_encoding(integer()) -> field_encoding()).
+%% @spec get_encoding(FieldId::integer()|list(integer())) -> field_encoding()
+-spec(get_encoding(integer()|list(integer())) -> field_encoding()).
 
 get_encoding(?MTI) ->
 	{n, fixed, 4};
@@ -250,4 +252,6 @@ get_encoding(?TRAN_DESCRIPTION) ->
 get_encoding(?MESSAGE_AUTHENTICATION_CODE2) ->
 	{b, fixed, 64};
 get_encoding(Id) when Id >= 105 andalso Id =< 127 ->
-	{ans, lllvar, 999}.
+	{ans, lllvar, 999};
+get_encoding([Id]) when is_integer(Id) ->
+	get_encoding(Id).
