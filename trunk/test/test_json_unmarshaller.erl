@@ -31,4 +31,12 @@ bitmap_unmarshal_2_test() ->
 	Msg = "{\"fields\" : {\"0\" : \"hello\", \"126\" : {\"0\" : \"good bye\"}}}",
 	{[126], Msg} = erl8583_marshaller_json:unmarshal_bitmap(Msg).
 
+field_unmarshal_test() ->
+	Msg = "{\"fields\" : {\"0\" : \"0200\", \"2\" : \"12345678\"}}",
+	{"12345678", Msg} = erl8583_marshaller_json:unmarshal_field(2, Msg, erl8583_fields).
+
+binary_field_unmarshal_test() ->
+	Msg = "{\"fields\" : {\"0\" : \"0200\", \"64\" : \"0011A0FF000000AA\"}}",
+	{<<0,17,160,255,0,0,0,170>>, Msg} = erl8583_marshaller_json:unmarshal_field(64, Msg, erl8583_fields).
+	
 	
