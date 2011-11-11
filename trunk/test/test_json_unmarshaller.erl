@@ -45,6 +45,7 @@ binary_field_unmarshal_test() ->
 complex_message_test() ->
 	Msg = "{\"fields\" : {\"0\" : \"0200\", \"127\" : {\"2\" : \"13579\"}}}",
 	{Field127, Msg} = erl8583_marshaller_json:unmarshal_field(127, Msg, ?MODULE),
-	"13579" = erl8583_message:get(2, Field127).
+	true = erl8583_message:is_message(Field127).
+	%"13579" = erl8583_message:get(2, Field127).
 
 	

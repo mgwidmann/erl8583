@@ -117,5 +117,7 @@ unmarshal_simple_field(FieldId, FieldValue, EncodingRules) ->
 			binary_to_list(FieldValue)
 	end.
 
-unmarshal_complex_field(FieldId, Message, PropList, EncodingRules) ->
-	ok.
+unmarshal_complex_field(_FieldId, Message, _PropList, _EncodingRules) ->
+	%SubFieldIds = proplists:get_keys(PropList),
+	%ok
+	Message.
