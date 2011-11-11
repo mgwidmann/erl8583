@@ -33,9 +33,11 @@
 %%
 -export([marshal/1,
 		 unmarshal/1,
+		 unmarshal_init/2,
 		 unmarshal_mti/1,
 		 unmarshal_bitmap/1,
-		 unmarshal_field/3]).
+		 unmarshal_field/3,
+		 unmarshal_end/2]).
 
 %%
 %% API Functions
@@ -58,6 +60,17 @@ marshal(Message) ->
 
 unmarshal(Marshalled) ->
 	erl8583_marshaller:unmarshal(Marshalled, ?MARSHALLER_JSON).
+
+%% @doc Creates an ISO 8583 message by extracting the attributes in a JSON
+%%      document and returns the message and the JSON document as 
+%%      a 2-tuple. No fields of the message are populated by this function; only
+%%      the attributes of the message are set.
+%%
+%% @spec unmarshal_init(string(), string()) -> {iso8583message(), string()}
+-spec(unmarshal_init(string(), string()) -> {iso8583message(), string()}).
+
+unmarshal_init(_Message, Marshalled) ->
+	{erl8583_message:new(), Marshalled}.
 
 %% @doc Extracts the MTI from a JSON document.
 %%      The MTI and the XML document are 
@@ -103,8 +116,16 @@ unmarshal_field(FieldId, Marshalled, EncodingRules) ->
 		_ ->
 			Value = unmarshal_simple_field(FieldId, FieldValue, EncodingRules)
 	end,
-	{Value, Marshalled}.
+	{Value, Marshalled, []}.
 
+%% @doc Finishes the unmarshalling of a message and returns the
+%%      message.
+%%
+%% @spec unmarshal_end(iso8583message(), string()) -> iso8583message()
+-spec(unmarshal_end(iso8583message(), string()) -> iso8583message()).
+
+unmarshal_end(Message, _Marshalled) ->
+	Message.
 
 %%
 %% Local Functions
