@@ -117,7 +117,11 @@ unmarshal_simple_field(FieldId, FieldValue, EncodingRules) ->
 			binary_to_list(FieldValue)
 	end.
 
-unmarshal_complex_field(_FieldId, Message, _PropList, _EncodingRules) ->
-	%SubFieldIds = proplists:get_keys(PropList),
-	%ok
-	Message.
+unmarshal_complex_field(_FieldId, Message, PropList, _EncodingRules) ->
+	ConstructMessageFun = fun(Id, MessageAccum) ->
+					  IdInt = list_to_integer(binary_to_list(Id)),
+					  Value = binary_to_list(proplists:get_value(Id, PropList)),
+					  erl8583_message:set(IdInt, Value, MessageAccum)
+			  end,
+	SubFieldIds = proplists:get_keys(PropList),
+	lists:foldl(ConstructMessageFun, Message, SubFieldIds).
