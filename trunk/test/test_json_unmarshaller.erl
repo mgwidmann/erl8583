@@ -42,31 +42,38 @@ bitmap_unmarshal_2_test() ->
 
 field_unmarshal_test() ->
 	Msg = "{\"fields\" : {\"0\" : \"0200\", \"2\" : \"12345678\"}}",
-	{"12345678", Msg} = erl8583_marshaller_json:unmarshal_field(2, Msg, erl8583_fields).
+	{"12345678", Msg, []} = erl8583_marshaller_json:unmarshal_field(2, Msg, erl8583_fields).
 
 binary_field_unmarshal_test() ->
-	Msg = "{\"fields\" : {\"0\" : \"0200\", \"64\" : \"0011A0FF000000AA\"}}",
-	{<<0,17,160,255,0,0,0,170>>, Msg} = erl8583_marshaller_json:unmarshal_field(64, Msg, erl8583_fields).
+	Msg = "{\"fields\" : {\"0\" : \"0200\", \"1\" : \"1234567890\", \"64\" : \"0011A0FF000000AA\"}}",
+	{<<0,17,160,255,0,0,0,170>>, Msg, []} = erl8583_marshaller_json:unmarshal_field(64, Msg, erl8583_fields).
 	
 complex_message_test() ->
 	Msg = "{\"fields\" : {\"0\" : \"0200\", \"127\" : {\"2\" : \"13579\"}}}",
-	{Field127, Msg} = erl8583_marshaller_json:unmarshal_field(127, Msg, ?MODULE),
+	{Field127, Msg, []} = erl8583_marshaller_json:unmarshal_field(127, Msg, ?MODULE),
 	true = erl8583_message:is_message(Field127),
 	"13579" = erl8583_message:get(2, Field127).
 
 complex_message2_test() ->
 	Msg = "{\"fields\" : {\"0\" : \"0200\", \"126\" : {\"3\" : \"a100fe\"}}}",
-	{Field126, Msg} = erl8583_marshaller_json:unmarshal_field(126, Msg, ?MODULE),
+	{Field126, Msg, []} = erl8583_marshaller_json:unmarshal_field(126, Msg, ?MODULE),
 	true = erl8583_message:is_message(Field126),
 	<<161,0,254>> = erl8583_message:get(3, Field126).
 
 complex_message3_test() ->
 	Msg = "{\"fields\" : {\"0\" : \"0200\", \"126\" : {\"3\" : \"a100fe\", \"4\" : {\"3\" : \"hello\", \"2\" : \"good bye\"}}}}",
-	{Field126, Msg} = erl8583_marshaller_json:unmarshal_field(126, Msg, ?MODULE),
+	{Field126, Msg, []} = erl8583_marshaller_json:unmarshal_field(126, Msg, ?MODULE),
 	true = erl8583_message:is_message(Field126),
 	<<161,0,254>> = erl8583_message:get(3, Field126),
 	[2,3] = erl8583_message:get_fields(erl8583_message:get(4, Field126)),
 	"hello" = erl8583_message:get([4,3], Field126),
 	"good bye" = erl8583_message:get([4,2], Field126).
+
+unmarshal_message_test() ->
+	Msg = "{\"fields\" : {\"0\" : \"0200\", \"2\" : \"1234567890\", \"64\" : \"0011A0FF000000AA\"}}",
+	{[2,64], Msg} = erl8583_marshaller_json:unmarshal_bitmap(Msg),
+	Unmarshalled = erl8583_marshaller_json:unmarshal(Msg),
+	"1234567890" = erl8583_message:get(2, Unmarshalled),
+	<<0,17,160,255,0,0,0,170>> = erl8583_message:get(64, Unmarshalled).
 
 	
