@@ -97,17 +97,25 @@ unmarshal_field(FieldId, Marshalled, EncodingRules) ->
 	{struct, JsonData} = mochijson2:decode(Marshalled),
 	{struct, FieldsProps} = proplists:get_value(<<"fields">>, JsonData),
 	FieldValue = proplists:get_value(list_to_binary(integer_to_list(FieldId)), FieldsProps),
-	io:format("~p~n", [FieldValue]),
-	case EncodingRules:get_encoding(FieldId) of
-		{b, _, _} ->
-			{erl8583_convert:ascii_hex_to_binary(binary_to_list(FieldValue)), Marshalled};
+	case FieldValue of
+		{struct, PropList} ->
+			Value = unmarshal_complex_field([FieldId], erl8583_message:new(), PropList, EncodingRules);
 		_ ->
-			{binary_to_list(FieldValue), Marshalled}
-	end.
-
+			Value = unmarshal_simple_field(FieldId, FieldValue, EncodingRules)
+	end,
+	{Value, Marshalled}.
 
 
 %%
 %% Local Functions
 %%
+unmarshal_simple_field(FieldId, FieldValue, EncodingRules) ->
+	case EncodingRules:get_encoding(FieldId) of
+		{b, _, _} ->
+			erl8583_convert:ascii_hex_to_binary(binary_to_list(FieldValue));
+		_ ->
+			binary_to_list(FieldValue)
+	end.
 
+unmarshal_complex_field(FieldId, Message, PropList, EncodingRules) ->
+	ok.
