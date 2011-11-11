@@ -119,10 +119,21 @@ unmarshal_simple_field(FieldId, FieldValue, EncodingRules) ->
 
 unmarshal_complex_field(FieldId, Message, PropList, EncodingRules) ->
 	ConstructMessageFun = fun(Id, MessageAccum) ->
-					  IdInt = list_to_integer(binary_to_list(Id)),
-					  FieldValue = proplists:get_value(Id, PropList),
-					  Value = unmarshal_simple_field(FieldId ++ [IdInt], FieldValue, EncodingRules),
-					  erl8583_message:set(IdInt, Value, MessageAccum)
+								  IdInt = list_to_integer(binary_to_list(Id)),
+								  UpdatedId = FieldId ++ [IdInt],
+					  			  FieldValue = proplists:get_value(Id, PropList),
+								  case FieldValue of
+									  {struct, PropList2} ->
+										  Value = unmarshal_complex_field(UpdatedId, 
+																		  erl8583_message:new(),
+																		  PropList2, 
+																		  EncodingRules);
+									  _ ->
+										  Value = unmarshal_simple_field(UpdatedId, 
+																		 FieldValue, 
+																		 EncodingRules)
+								  end,
+					  			  erl8583_message:set(IdInt, Value, MessageAccum)
 			  end,
 	SubFieldIds = proplists:get_keys(PropList),
 	lists:foldl(ConstructMessageFun, Message, SubFieldIds).
