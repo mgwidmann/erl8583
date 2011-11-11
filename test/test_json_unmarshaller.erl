@@ -17,6 +17,12 @@
 %%
 %% API Functions
 %%
+get_encoding([126,3]) ->
+	{b, fixed, 3};
+get_encoding([126,4,2]) ->
+	{ans, llvar, 13};
+get_encoding([126,4,3]) ->
+	{ans, llvar, 13};
 get_encoding([127,2]) ->
 	{n, llvar, 20}.
 
@@ -47,5 +53,20 @@ complex_message_test() ->
 	{Field127, Msg} = erl8583_marshaller_json:unmarshal_field(127, Msg, ?MODULE),
 	true = erl8583_message:is_message(Field127),
 	"13579" = erl8583_message:get(2, Field127).
+
+complex_message2_test() ->
+	Msg = "{\"fields\" : {\"0\" : \"0200\", \"126\" : {\"3\" : \"a100fe\"}}}",
+	{Field126, Msg} = erl8583_marshaller_json:unmarshal_field(126, Msg, ?MODULE),
+	true = erl8583_message:is_message(Field126),
+	<<161,0,254>> = erl8583_message:get(3, Field126).
+
+complex_message3_test() ->
+	Msg = "{\"fields\" : {\"0\" : \"0200\", \"126\" : {\"3\" : \"a100fe\", \"4\" : {\"3\" : \"hello\", \"2\" : \"good bye\"}}}}",
+	{Field126, Msg} = erl8583_marshaller_json:unmarshal_field(126, Msg, ?MODULE),
+	true = erl8583_message:is_message(Field126),
+	<<161,0,254>> = erl8583_message:get(3, Field126),
+	[2,3] = erl8583_message:get_fields(erl8583_message:get(4, Field126)),
+	"hello" = erl8583_message:get([4,3], Field126),
+	"good bye" = erl8583_message:get([4,2], Field126).
 
 	
