@@ -12,11 +12,14 @@
 %%
 %% Exported Functions
 %%
--export([]).
+-export([get_encoding/1]).
 
 %%
 %% API Functions
 %%
+get_encoding([127,2]) ->
+	{n, llvar, 20}.
+
 mti_unmarshal_test() ->
 	Msg = "{\"fields\" : {\"0\" : \"0210\"}}",
 	{"0210", Msg} = erl8583_marshaller_json:unmarshal_mti(Msg),
@@ -39,4 +42,9 @@ binary_field_unmarshal_test() ->
 	Msg = "{\"fields\" : {\"0\" : \"0200\", \"64\" : \"0011A0FF000000AA\"}}",
 	{<<0,17,160,255,0,0,0,170>>, Msg} = erl8583_marshaller_json:unmarshal_field(64, Msg, erl8583_fields).
 	
+complex_message_test() ->
+	Msg = "{\"fields\" : {\"0\" : \"0200\", \"127\" : {\"0\" : \"13579\"}}}",
+	Field127 = erl8583_marshaller_json:unmarshal_field(127, Msg, ?MODULE),
+	"13579" = erl8583_message:get(2, Field127).
+
 	
