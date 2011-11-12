@@ -57,7 +57,8 @@
 		 remove_fields/2,
 		 set_mti/2,
 		 get_mti/1,
-		 is_message/1]).
+		 is_message/1,
+		 get_attribute/2]).
 
 %%
 %% API Functions
@@ -179,15 +180,23 @@ get_fields(#iso8583_message{values=Dict}) ->
 to_list(#iso8583_message{values=Dict}) ->
 	dict:to_list(Dict).
 
-%% @doc Returns a list of attributes of a 
-%%      message.
+%% @doc Returns a list of attributes of a message.
 %%
 %% @spec get_attributes(iso8583message()) -> list(iso8583attribute())
 -spec(get_attributes(iso8583message()) -> list(iso8583attribute())).
 
 get_attributes(#iso8583_message{attributes=Attrs}) ->
 	Attrs.
-									
+
+%% @doc Gets the value of an attribute of a message.
+%%
+%% @spec get_attribute(string(), iso8583message()) -> string()
+-spec(get_attribute(string(), iso8583message()) -> string()).
+
+get_attribute(Key, #iso8583_message{attributes=Attrs}) ->
+	[Result] = [Value || {KeyId, Value} <- Attrs, KeyId =:= Key],
+	Result.
+	
 %% @doc Constructs an ISO 8583 message from a list
 %%      of {Id, Value} pairs.
 %%

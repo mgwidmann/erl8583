@@ -287,3 +287,8 @@ clone_with_attributes_test() ->
 	Msg1 = erl8583_message:new([{"foo", "bar"}]),
 	Msg2 = erl8583_message:clone_fields([], Msg1),
 	[{"foo", "bar"}] = erl8583_message:get_attributes(Msg2).
+
+get_attribute_test() ->
+	Msg = erl8583_message:new([{"foo", "bar"}, {"bar", "baz"}]),
+	"bar" = erl8583_message:get_attribute("foo", Msg),
+	"baz" = erl8583_message:get_attribute("bar", Msg).
