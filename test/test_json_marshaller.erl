@@ -25,7 +25,10 @@ marshal_string_test() ->
 	MarshalledField = erl8583_marshaller_json:marshal_field(2, "0123456789", ?MODULE),
 	"\"2\" : \"0123456789\", " = MarshalledField.
 	
-
+marshal_binary_test() ->
+	MarshalledField = erl8583_marshaller_json:marshal_field(64, <<0,1,16,255>>, ?MODULE),
+	"\"64\" : \"000110FF\", " = MarshalledField.
+	
 %%
 %% Local Functions
 %%
