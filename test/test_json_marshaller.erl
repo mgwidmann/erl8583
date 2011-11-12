@@ -21,7 +21,10 @@ marshal_init_test() ->
 	Msg = erl8583_message:new(),
 	{[], Msg} = erl8583_marshaller_json:marshal_init(Msg).
 
-
+marshal_string_test() ->
+	MarshalledField = erl8583_marshaller_json:marshal_field(2, "0123456789", ?MODULE),
+	"\"2\" : \"0123456789\", " = MarshalledField.
+	
 
 %%
 %% Local Functions

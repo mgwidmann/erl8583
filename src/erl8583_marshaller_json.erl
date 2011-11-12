@@ -35,8 +35,10 @@
 		 unmarshal/1,
 		 marshal_init/1,
 		 unmarshal_init/2,
+		 marshal_mti/1,
 		 unmarshal_mti/1,
 		 unmarshal_bitmap/1,
+		 marshal_field/3,
 		 unmarshal_field/3,
 		 unmarshal_end/2]).
 
@@ -105,6 +107,14 @@ unmarshal_mti(Marshalled) ->
 	MtiBin = proplists:get_value(<<"0">>, FieldsData),
 	{binary_to_list(MtiBin), Marshalled}.
 
+%% @doc Marshals the MTI into a JSON field.
+%%
+%% @spec marshal_mti(string()) -> string()
+-spec(marshal_mti(string()) -> string()).
+
+marshal_mti(Mti) ->
+	marshal_field(0, Mti, erl8583_fields).
+
 %% @doc Extracts a list of field IDs from a JSON 
 %%      representation of an ISO 8583 message. The result is returned
 %%      as a 2-tuple of the field IDs and the JSON document.
@@ -138,6 +148,15 @@ unmarshal_field(FieldId, Marshalled, EncodingRules) ->
 			Value = unmarshal_simple_field(FieldId, FieldValue, EncodingRules)
 	end,
 	{Value, Marshalled, []}.
+
+%% @doc Marshals a field value into a JSON field. The
+%%      encoding rules module argument is ignored.
+%%
+%% @spec marshal_field(integer(), iso8583field_value(), module()) -> string()
+-spec(marshal_field(integer(), iso8583field_value(), module()) -> string()).
+
+marshal_field(FieldId, FieldValue, _EncodingRules) when is_list(FieldValue)->
+	"\""++ erlang:integer_to_list(FieldId) ++ "\" : \"" ++ FieldValue ++ "\", ".
 
 %% @doc Finishes the unmarshalling of a message and returns the
 %%      message.
