@@ -109,13 +109,14 @@ marshal_field(FieldId, FieldValue, EncodingRules) ->
 	Pattern = EncodingRules:get_encoding(FieldId),
 	marshal_data_element(Pattern, FieldValue).
 
-%% @doc Extracts a field value from the start of a string.  The field value 
-%%      and the rest of the unmarshalled string is returned as a 2-tuple.
+%% @doc Extracts a field value from the start of a string.  The field value,
+%%      the rest of the unmarshalled string and a list of additional field IDs 
+%%      that need to be unmarshalled is returned as a 3-tuple.
 %%      A module that specifies how the field is encoded must be passed
 %%      as an argument.
 %%
-%% @spec unmarshal_field(integer(), string(), module()) -> {iso8583field_value(), string()}
--spec(unmarshal_field(integer(), string(), module()) -> {iso8583field_value(), string()}).
+%% @spec unmarshal_field(integer(), string(), module()) -> {iso8583field_value(), string(), list(integer())}
+-spec(unmarshal_field(integer(), string(), module()) -> {iso8583field_value(), string(), list(integer())}).
 
 unmarshal_field(1, AsciiFields, _EncodingRules) ->
 	{Value, Rest} = unmarshal_data_element({b, fixed, 64}, AsciiFields),
