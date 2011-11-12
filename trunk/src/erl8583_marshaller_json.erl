@@ -219,10 +219,8 @@ encode_id(Id) ->
 encode_value(Value) when is_list(Value) ->
 	"\"" ++ Value ++ "\"";
 encode_value(Value) when is_binary(Value) ->
-	"\"" ++ erl8583_convert:binary_to_ascii_hex(Value) ++ "\"".
-
-	
-	
-	
-
-
+	"\"" ++ erl8583_convert:binary_to_ascii_hex(Value) ++ "\"";
+encode_value(Value) ->
+	true = erl8583_message:is_message(Value),
+	KeyValueList = erl8583_message:to_list(Value),
+	"{" ++ encode_values(KeyValueList, []) ++ "}".
