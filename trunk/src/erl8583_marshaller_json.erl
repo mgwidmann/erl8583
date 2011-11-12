@@ -113,7 +113,7 @@ unmarshal_mti(Marshalled) ->
 -spec(marshal_mti(string()) -> string()).
 
 marshal_mti(Mti) ->
-	marshal_field(0, Mti, erl8583_fields).
+	encode_id(0) ++ " : " ++ encode_value(Mti).
 
 %% @doc Extracts a list of field IDs from a JSON 
 %%      representation of an ISO 8583 message. The result is returned
@@ -155,10 +155,15 @@ unmarshal_field(FieldId, Marshalled, EncodingRules) ->
 %% @spec marshal_field(integer(), iso8583field_value(), module()) -> string()
 -spec(marshal_field(integer(), iso8583field_value(), module()) -> string()).
 
-marshal_field(FieldId, FieldValue, _EncodingRules) when is_list(FieldValue)->
-	"\""++ integer_to_list(FieldId) ++ "\" : \"" ++ FieldValue ++ "\", ";
-marshal_field(FieldId, FieldValue, _EncodingRules) when is_binary(FieldValue)->
-	"\""++ erlang:integer_to_list(FieldId) ++ "\" : \"" ++ erl8583_convert:binary_to_ascii_hex(FieldValue) ++ "\", ".
+marshal_field(FieldId, FieldValue, _EncodingRules) when is_list(FieldValue) ->
+	", " ++ encode_id(FieldId) ++ " : " ++ encode_value(FieldValue);
+marshal_field(FieldId, FieldValue, _EncodingRules) when is_binary(FieldValue) ->
+	", " ++ encode_id(FieldId) ++ " : " ++ encode_value(FieldValue);
+marshal_field(FieldId, FieldValue, _EncodingRules) ->
+	true = erl8583_message:is_message(FieldValue),
+	KeyValueList = erl8583_message:to_list(FieldValue),
+	", " ++ encode_id(FieldId) ++ " : " ++ "{" ++ encode_values(KeyValueList, []) ++ "}".
+
 
 %% @doc Finishes the unmarshalling of a message and returns the
 %%      message.
@@ -200,3 +205,24 @@ unmarshal_complex_field(FieldId, Message, PropList, EncodingRules) ->
 			  end,
 	SubFieldIds = proplists:get_keys(PropList),
 	lists:foldl(ConstructMessageFun, Message, SubFieldIds).
+
+encode_values([], Result) ->
+	Result;
+encode_values([{Id, Value}|Tail], []) ->
+	encode_values(Tail, encode_id(Id) ++ " : " ++ encode_value(Value));
+encode_values([{Id, Value}|Tail], Result) ->
+	encode_values(Tail,  Result ++ ", " ++ encode_id(Id) ++ " : " ++ encode_value(Value)).
+
+encode_id(Id) ->
+	"\"" ++ integer_to_list(Id) ++ "\"".
+
+encode_value(Value) when is_list(Value) ->
+	"\"" ++ Value ++ "\"";
+encode_value(Value) when is_binary(Value) ->
+	"\"" ++ erl8583_convert:binary_to_ascii_hex(Value) ++ "\"".
+
+	
+	
+	
+
+
