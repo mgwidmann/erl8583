@@ -108,12 +108,13 @@ unmarshal_bitmap(Marshalled) ->
 	FieldIds = [list_to_integer(binary_to_list(Id)) || Id <- Fields] -- [0],
 	{lists:sort(FieldIds), Marshalled}.
 
-%% @doc Extracts a field value for a specified field from a JSON
-%%      document.  The field value and the JSON document are 
-%%      returned as a 2-tuple.
+%% @doc Extracts a field value from a JSON document.  The field value,
+%%      the document and an empty list is returned as a 3-tuple.
+%%      A module that specifies how the field is encoded must be passed
+%%      as an argument.
 %%
-%% @spec unmarshal_field(integer(), string(), module()) -> {iso8583field_value(), string()}
--spec(unmarshal_field(integer(), string(), module()) -> {iso8583field_value(), string()}).
+%% @spec unmarshal_field(integer(), string(), module()) -> {iso8583field_value(), string(), list(integer())}
+-spec(unmarshal_field(integer(), string(), module()) -> {iso8583field_value(), string(), list(integer())}).
 
 unmarshal_field(FieldId, Marshalled, EncodingRules) ->
 	{struct, JsonData} = mochijson2:decode(Marshalled),
