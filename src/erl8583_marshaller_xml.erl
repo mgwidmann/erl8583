@@ -98,13 +98,13 @@ marshal_field(FieldId, FieldValue, _EncodingRules) ->
 		erl8583_marshaller:marshal(FieldValue, [{field_marshaller, ?MODULE}, {mti_marshaller, ?MODULE}]) ++
 		"</isomsg>\n".
 
-%% @doc Extracts a field value for a specified field from an XML
-%%      document.  The field value and the XML document are 
-%%      returned as a 2-tuple. The argument specifying the
-%%      encoding rules argument is ignored.
+%% @doc Extracts a field value from an XML document.  The field value,
+%%      the document and an empty list is returned as a 3-tuple.
+%%      A module that specifies how the field is encoded must be passed
+%%      as an argument.
 %%
-%% @spec unmarshal_field(integer(), string(), module()) -> {iso8583field_value(), string()}
--spec(unmarshal_field(integer(), string(), module()) -> {iso8583field_value(), string()}).
+%% @spec unmarshal_field(integer(), string(), module()) -> {iso8583field_value(), string(), list(integer())}
+-spec(unmarshal_field(integer(), string(), module()) -> {iso8583field_value(), string(), list(integer())}).
 
 unmarshal_field(FieldId, Marshalled, _EncodingRule) ->
 	{Xml, []} = xmerl_scan:string(Marshalled),
