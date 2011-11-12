@@ -181,7 +181,7 @@ get_fields(#iso8583_message{values=Dict}) ->
 -spec(to_list(iso8583message()) -> list({integer(), iso8583field_value()})).
 
 to_list(#iso8583_message{values=Dict}) ->
-	dict:to_list(Dict).
+	lists:sort(dict:to_list(Dict)).
 
 %% @doc Returns a list of attributes of a message.
 %%
