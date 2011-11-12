@@ -69,6 +69,18 @@ complex_message3_test() ->
 	"hello" = erl8583_message:get([4,3], Field126),
 	"good bye" = erl8583_message:get([4,2], Field126).
 
+unmarshal_init_no_attrs_test() ->
+	Marshalled = "{\"fields\" : {\"0\" : \"0200\", \"2\" : \"1234567890\", \"64\" : \"0011A0FF000000AA\"}}",
+	Message = erl8583_message:new(),
+	{Message, Marshalled} = erl8583_marshaller_json:unmarshal_init(Message, Marshalled).
+
+unmarshal_init_with_attrs_test() ->
+	Marshalled = "{\"attributes\" : {\"foo\" : \"bar\"}, \"fields\" : {\"0\" : \"0200\", \"2\" : \"1234567890\", \"64\" : \"0011A0FF000000AA\"}}",
+	Message = erl8583_message:new(),
+	{Message2, Marshalled} = erl8583_marshaller_json:unmarshal_init(Message, Marshalled),
+	[{"foo", "bar"}] = erl8583_message:get_attributes(Message2).
+
+	
 unmarshal_message_test() ->
 	Msg = "{\"fields\" : {\"0\" : \"0200\", \"2\" : \"1234567890\", \"64\" : \"0011A0FF000000AA\"}}",
 	{[2,64], Msg} = erl8583_marshaller_json:unmarshal_bitmap(Msg),
