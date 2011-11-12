@@ -292,3 +292,10 @@ get_attribute_test() ->
 	Msg = erl8583_message:new([{"foo", "bar"}, {"bar", "baz"}]),
 	"bar" = erl8583_message:get_attribute("foo", Msg),
 	"baz" = erl8583_message:get_attribute("bar", Msg).
+
+set_attribute_test() ->
+	Msg1 = erl8583_message:new([{"foo", "bar"}, {"bar", "baz"}]),
+	Msg2 = erl8583_message:set_attribute("baz", "3", Msg1),
+	"3" = erl8583_message:get_attribute("baz", Msg2),
+	?assertError(_, erl8583_message:set_attribute("bar", "3", Msg2)).
+	
