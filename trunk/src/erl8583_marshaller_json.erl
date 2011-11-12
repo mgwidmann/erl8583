@@ -156,7 +156,9 @@ unmarshal_field(FieldId, Marshalled, EncodingRules) ->
 -spec(marshal_field(integer(), iso8583field_value(), module()) -> string()).
 
 marshal_field(FieldId, FieldValue, _EncodingRules) when is_list(FieldValue)->
-	"\""++ erlang:integer_to_list(FieldId) ++ "\" : \"" ++ FieldValue ++ "\", ".
+	"\""++ integer_to_list(FieldId) ++ "\" : \"" ++ FieldValue ++ "\", ";
+marshal_field(FieldId, FieldValue, _EncodingRules) when is_binary(FieldValue)->
+	"\""++ erlang:integer_to_list(FieldId) ++ "\" : \"" ++ erl8583_convert:binary_to_ascii_hex(FieldValue) ++ "\", ".
 
 %% @doc Finishes the unmarshalling of a message and returns the
 %%      message.
