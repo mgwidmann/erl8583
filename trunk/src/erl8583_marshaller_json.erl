@@ -33,6 +33,7 @@
 %%
 -export([marshal/1,
 		 unmarshal/1,
+		 marshal_init/1,
 		 unmarshal_init/2,
 		 unmarshal_mti/1,
 		 unmarshal_bitmap/1,
@@ -81,8 +82,18 @@ unmarshal_init(Message, Marshalled) ->
 			{erl8583_message:set_attributes(Attrs, Message), Marshalled}
 	end.
 
+%% @doc Starts the marshalling of a message and returns the
+%%      initial marshalled data and message as a 2-tuple.
+%%
+%% @spec marshal_init(iso8583message()) -> {string(), iso8583message()}
+-spec(marshal_init(iso8583message()) -> {string(), iso8583message()}).
+
+marshal_init(Message) ->
+	{[], Message}.
+
+
 %% @doc Extracts the MTI from a JSON document.
-%%      The MTI and the XML document are 
+%%      The MTI and the JSON document are 
 %%      returned as a 2-tuple.
 %%
 %% @spec unmarshal_mti(string()) -> {string(), string()}
