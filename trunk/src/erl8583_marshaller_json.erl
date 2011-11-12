@@ -69,8 +69,17 @@ unmarshal(Marshalled) ->
 %% @spec unmarshal_init(string(), string()) -> {iso8583message(), string()}
 -spec(unmarshal_init(string(), string()) -> {iso8583message(), string()}).
 
-unmarshal_init(_Message, Marshalled) ->
-	{erl8583_message:new(), Marshalled}.
+unmarshal_init(Message, Marshalled) ->
+	{struct, JsonData} = mochijson2:decode(Marshalled),
+	case proplists:is_defined(<<"attributes">>, JsonData) of
+		false ->
+			{Message, Marshalled};
+		true ->
+			{struct, Attributes} = proplists:get_value(<<"attributes">>, JsonData),
+			Keys = proplists:get_keys(Attributes),
+			Attrs =[{binary_to_list(Key), binary_to_list(proplists:get_value(Key, Attributes))} || Key <- Keys],
+			{erl8583_message:set_attributes(Attrs, Message), Marshalled}
+	end.
 
 %% @doc Extracts the MTI from a JSON document.
 %%      The MTI and the XML document are 
