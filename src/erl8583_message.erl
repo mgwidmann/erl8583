@@ -60,7 +60,8 @@
 		 is_message/1,
 		 get_attribute/2,
 		 set_attribute/3,
-		 update_attribute/3]).
+		 update_attribute/3,
+		 delete_attribute/2]).
 
 %%
 %% API Functions
@@ -215,9 +216,19 @@ set_attribute(Key, Value, #iso8583_message{attributes=Attrs} = Message) ->
 %% @spec update_attribute(string(), string(), iso8583message()) -> iso8583message()
 -spec(update_attribute(string(), string(), iso8583message()) -> iso8583message()).
 
-update_attribute(Key, Value, #iso8583_message{attributes=Attrs} = Message) ->
+update_attribute(Key, Value, Message) ->
+	UpdatedMessage = delete_attribute(Key, Message),
+	set_attribute(Key, Value, UpdatedMessage).
+	
+%% @doc Updates or sets the value of an attribute of a message. The attribute need
+%%      not have been previously set.
+%%
+%% @spec delete_attribute(string(), iso8583message()) -> iso8583message()
+-spec(delete_attribute(string(), iso8583message()) -> iso8583message()).
+
+delete_attribute(Key, #iso8583_message{attributes=Attrs} = Message) ->
 	UpdatedAttrs = [{KeyId, Val} || {KeyId, Val} <- Attrs, KeyId =/= Key],
-	Message#iso8583_message{attributes=[{Key, Value}] ++ UpdatedAttrs}.
+	Message#iso8583_message{attributes=UpdatedAttrs}.
 	
 
 %% @doc Constructs an ISO 8583 message from a list

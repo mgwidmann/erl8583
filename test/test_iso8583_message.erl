@@ -305,3 +305,9 @@ update_attribute_test() ->
 	Msg3 = erl8583_message:update_attribute("foo", "3", Msg2),
 	"3" = erl8583_message:get_attribute("baz", Msg3),
 	"3" = erl8583_message:get_attribute("foo", Msg3).
+
+delete_attribute_test() ->
+	Msg1 = erl8583_message:new([{"foo", "bar"}, {"bar", "baz"}]),
+	Msg2 = erl8583_message:delete_attribute("bar", Msg1),
+	"baz" = erl8583_message:get_attribute("bar", Msg1),
+	?assertError(_, erl8583_message:get_attribute("bar", Msg2)).
