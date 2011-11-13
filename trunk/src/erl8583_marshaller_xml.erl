@@ -160,7 +160,7 @@ unmarshal_init(Message, Marshalled) ->
 	Msg = erl8583_message:set_attributes(attributes_to_list(Attrs, []), Message),
 	{Msg, Marshalled}.
 
-%% @doc Returns an empty string.
+%% @doc Returns an empty string and the message as a 2-tuple.
 %%
 %% @spec marshal_bitmap(list(integer())) -> string()
 -spec(marshal_bitmap(list(integer())) -> string()).

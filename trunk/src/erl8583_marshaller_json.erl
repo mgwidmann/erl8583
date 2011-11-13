@@ -37,6 +37,7 @@
 		 unmarshal_init/2,
 		 marshal_mti/1,
 		 unmarshal_mti/1,
+		 marshal_bitmap/1,
 		 unmarshal_bitmap/1,
 		 marshal_field/3,
 		 unmarshal_field/3,
@@ -128,6 +129,14 @@ unmarshal_bitmap(Marshalled) ->
 	Fields = proplists:get_keys(FieldsData),
 	FieldIds = [list_to_integer(binary_to_list(Id)) || Id <- Fields] -- [0],
 	{lists:sort(FieldIds), Marshalled}.
+
+%% @doc Returns an empty string and the message as a 2-tuple.
+%%
+%% @spec marshal_bitmap(list(integer())) -> string()
+-spec(marshal_bitmap(list(integer())) -> string()).
+
+marshal_bitmap(Message) ->
+	{[], Message}.
 
 %% @doc Extracts a field value from a JSON document.  The field value,
 %%      the document and an empty list is returned as a 3-tuple.
