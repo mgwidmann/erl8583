@@ -55,6 +55,14 @@ marshal_message_4_test() ->
 	MarshalledField = erl8583_marshaller_json:marshal_field(62, FieldValue4, ?MODULE),
 	", \"62\" : {\"1\" : \"hello\", \"2\" : {}, \"3\" : \"05\"}" = MarshalledField.
 
+marshal_message_5_test() ->
+	FieldValue1 = erl8583_message:new(),
+	FieldValue2 = erl8583_message:set(1, "hello", FieldValue1),
+	FieldValue3 = erl8583_message:set(3, <<5>>, FieldValue2),
+	FieldValue5 = erl8583_message:set([2, 7], "123", FieldValue3),
+	MarshalledField = erl8583_marshaller_json:marshal_field(62, FieldValue5, ?MODULE),
+	", \"62\" : {\"1\" : \"hello\", \"2\" : {\"7\" : \"123\"}, \"3\" : \"05\"}" = MarshalledField.
+
 %%
 %% Local Functions
 %%
