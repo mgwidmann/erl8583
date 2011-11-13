@@ -505,6 +505,14 @@
       <emphasis role="bold">make.sh</emphasis> bash script.</para>
 
       <para></para>
+      <section>
+      	<title>Dependencies</title>
+      	<para>Erl8583 has no unusual dependencies unless you want to be able to marshal ISO 8583 messages in the 
+      	proprietary JSON format. The JSON marshaller uses the <emphasis role="bold">mochijson2</emphasis> module
+      	of the MochiWeb server. The MochiWeb library can be downloaded from
+      	<ulink url="https://github.com/mochi/mochiweb">https://github.com/mochi/mochiweb</ulink>. 
+		</para>      
+      </section>
     </section>
 
     <section>
@@ -810,7 +818,7 @@ marshal(Message, MarshalHandlers) -&gt;
 
     <para>The first example in this section shows the use of the most commonly
     used functions in the <emphasis role="bold">erl8583_message</emphasis>
-    module. The remaining six samples show how to marshal and unmarshal
+    module. The remaining seven samples show how to marshal and unmarshal
     messages.</para>
 
     <para></para>
@@ -1919,6 +1927,10 @@ test() -&gt;
       <para></para>
 
       <para></para>
+    </section>
+
+    <section>
+      <title>Storing an ISO8583 Message as a JSON Document in MongoDB</title>
     </section>
   </section>
 
