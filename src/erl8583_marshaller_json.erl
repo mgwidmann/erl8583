@@ -41,6 +41,7 @@
 		 unmarshal_bitmap/1,
 		 marshal_field/3,
 		 unmarshal_field/3,
+		 marshal_end/2,
 		 unmarshal_end/2]).
 
 %%
@@ -182,6 +183,15 @@ marshal_field(FieldId, FieldValue, _EncodingRules) ->
 
 unmarshal_end(Message, _Marshalled) ->
 	Message.
+
+%% @doc Wraps the marshalled fields into an enclosing element
+%%      and returns the marshalled result.
+%%
+%% @spec marshal_end(iso8583message(), string()) -> string()
+-spec(marshal_end(iso8583message(), string()) -> string()).
+
+marshal_end(_Message, Marshalled) ->
+	"{\"fields\" : {" ++ Marshalled ++ "}}".
 
 %%
 %% Local Functions
