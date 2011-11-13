@@ -1,23 +1,10 @@
-%% Author: carl
-%% Created: 13 Nov 2011
-%% Description: TODO: Add description to example_8_json_mongodb
+%% A module to test JSON marshalling.
 -module(example_8_json_mongodb).
 
-%%
-%% Include files
-%%
-
-%%
-%% Exported Functions
-%%
 -export([test/0]).
 
-%%
-%% API Functions
-%%
 test() ->
-	% Unmarshal this message which caused problems for
-	% someone on a jPOS forum.
+	% A Postilion message that we want to convert to JSON.
 	Marshalled = "30323030F23E049508E0810000000000" ++
 					 "04000022313630353730303130353132" ++
 					 "32393839383433313030303030303030" ++
@@ -44,31 +31,28 @@ test() ->
 	Message = example_7_unmarshaller:unmarshal(Marshalled),
 	JsonDocument = erl8583_marshaller_json:marshal(Message),
 	
-	%% Create a connection to the MongoDB server. We assume that the server is
-	%% running on the local host on the default port (27017).
+	% Create a connection to the MongoDB server. We assume that the server is
+	% running on the local host on the default port (27017).
 	application:start(emongo),
 	emongo:add_pool(test_pool, "localhost", 27017, "test", 1),
+	
+	% Use mochijson and a little munging to get the document
+	% into the form that emongo needs it.
 	{struct, JsonData} = mochijson2:decode(JsonDocument),
-	MongoData = translate_value(JsonData),
+	MongoData = munge_json(JsonData),
+	
+	% Update the database.
 	emongo:insert(test_pool, "erl8583", MongoData).
 	
-translate_value({Key, Value}) when is_binary(Key) andalso is_binary(Value) ->
+%% Function to munge the mochijson data for emongo.
+munge_json({Key, {struct, Value}}) ->
+	munge_json({Key, Value});
+munge_json({Key, Value}) when is_binary(Value) ->
 	{binary_to_list(Key), binary_to_list(Value)};
-translate_value({Key, {struct, Value}}) ->
-	translate_value({Key, Value});
-translate_value([]) ->
+munge_json({Key, Value}) when is_list(Value) ->
+	{binary_to_list(Key), munge_json(Value)};
+munge_json([]) ->
 	[];
-translate_value([H|T]) ->
-	[translate_value(H)] ++ translate_value(T);
-translate_value({Key, Value}) when is_binary(Key) andalso is_list(Value) ->
-	{binary_to_list(Key), translate_value(Value)}.
+munge_json([H|T]) ->
+	[munge_json(H)] ++ munge_json(T).
 	
-
-
-	
-
-
-%%
-%% Local Functions
-%%
-
