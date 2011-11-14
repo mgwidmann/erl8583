@@ -190,8 +190,8 @@ unmarshal_end(Message, _Marshalled) ->
 %% @spec marshal_end(iso8583message(), string()) -> string()
 -spec(marshal_end(iso8583message(), string()) -> string()).
 
-marshal_end(_Message, Marshalled) ->
-	"{\"fields\" : {" ++ Marshalled ++ "}}".
+marshal_end(Message, Marshalled) ->
+	"{\"fields\" : {" ++ Marshalled ++ "}" ++ marshal_attributes(Message) ++ "}".
 
 %%
 %% Local Functions
@@ -243,3 +243,19 @@ encode_value(Value) ->
 	true = erl8583_message:is_message(Value),
 	KeyValueList = erl8583_message:to_list(Value),
 	"{" ++ encode_values(KeyValueList, []) ++ "}".
+
+marshal_attributes(Message) ->
+	Attrs = erl8583_message:get_attributes(Message),
+	case Attrs of
+		[] ->
+			[];
+		_ ->
+			", \"attributes\" : {" ++ marshal_attributes_list(Attrs) ++ "}"
+	end.
+
+marshal_attributes_list([{Key, Value}]) ->
+	"\"" ++ Key ++ "\" : \"" ++ Value ++ "\"";
+marshal_attributes_list([{Key, Value}|Tail]) ->
+	"\"" ++ Key ++ "\" : \"" ++ Value ++ "\", " ++ marshal_attributes_list(Tail).
+
+
