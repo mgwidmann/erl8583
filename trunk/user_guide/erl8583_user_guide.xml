@@ -666,7 +666,7 @@ get_encoding(?RETRIEVAL_REF_NUM) -&gt;
       that must be transformed to a list of bytes. Implementers of the ISO
       8583 standard encode messages differently and there are a multitude of
       ways to marshal a message into a wire-level encoding. To cater for the
-      most common encodings of messages, erl8583 provides the following four
+      most common scenarios, erl8583 provides the following five
       modules:<itemizedlist>
           <listitem>
             <para><emphasis role="bold">erl8583_marshaller_ascii</emphasis>
@@ -692,10 +692,17 @@ get_encoding(?RETRIEVAL_REF_NUM) -&gt;
             Transforms a message to an XML document. The XML schema is
             (intended to be) the same as that used by jPOS.</para>
           </listitem>
+
+          <listitem>
+            <para><emphasis role="bold">erl8583_marshaller_json</emphasis>
+            Transforms a message to a proprietary JSON document format. This format is
+            not primarily intended to be used for exchanging messages bur rather for
+            storing messages in document database like MongoDB or CouchDB.</para>
+          </listitem>
         </itemizedlist></para>
 
-      <para>Unfortunately, the above four marshalling modules are usually
-      insufficient. Erl8583 provides the <emphasis
+      <para>Unfortunately, the above marshalling modules are insufficient to cater for every
+      requirement. Erl8583 provides the <emphasis
       role="bold">erl8583_marshaller</emphasis> module that can be used as a
       generic marshaller to implement other marshallers. This generic
       marshalling module can be passed a list of modules that will be called
@@ -762,7 +769,7 @@ marshal(Message, MarshalHandlers) -&gt;
       <emphasis role="bold">erl8583_marshaller</emphasis> to implement various
       marshalling schemes.</para>
 
-      <para>As an aside, the ASCII, binary, EBCDIC and XML marshaller use the
+      <para>As an aside, the ASCII, binary, EBCDIC, JSON and XML marshaller use the
       generic marshaller; these marshallers invoke the generic marshaller but
       pass themselves as the modules to be called back for marshalling the
       MTI, bitmap, etc.</para>
@@ -1931,6 +1938,7 @@ test() -&gt;
 
     <section>
       <title>Storing an ISO8583 Message as a JSON Document in MongoDB</title>
+      <para>Document databases like MongoDB and CouchDB have become popular in recent years.</para>
     </section>
   </section>
 

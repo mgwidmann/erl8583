@@ -1,6 +1,3 @@
-%% Author: carl
-%% Created: 12 Nov 2011
-%% Description: TODO: Add description to test_json_marshaller
 -module(test_json_marshaller).
 
 %%
