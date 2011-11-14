@@ -80,6 +80,15 @@ marshal_unmarshal_complex_test() ->
 	Marshalled = erl8583_marshaller_json:marshal(Message5),
 	Message5 = erl8583_marshaller_json:unmarshal(Marshalled).
 
+marshal_end_test() ->
+	Message1 = erl8583_message:new(),
+	"{\"fields\" : {}}" = erl8583_marshaller_json:marshal_end(Message1, "").
+
+marshal_end_attrs_test() ->
+	Message1 = erl8583_message:new(),
+	Message2 = erl8583_message:set_attributes([{"foo", "1"}, {"bar", "2"}], Message1),
+	"{\"fields\" : {}, \"attributes\" : {\"foo\" : \"1\", \"bar\", \"2\"}}" = erl8583_marshaller_json:marshal_end(Message2, "").
+	
 %%
 %% Local Functions
 %%
