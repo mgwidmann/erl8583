@@ -697,11 +697,11 @@ get_encoding(?RETRIEVAL_REF_NUM) -&gt;
             <para><emphasis role="bold">erl8583_marshaller_json</emphasis>
             Transforms a message to a proprietary JSON document format. This format is
             not primarily intended to be used for exchanging messages bur rather for
-            storing messages in document database like MongoDB or CouchDB.</para>
+            storing messages in document databases like MongoDB or CouchDB.</para>
           </listitem>
         </itemizedlist></para>
 
-      <para>Unfortunately, the above marshalling modules are insufficient to cater for every
+      <para>Unfortunately, the five marshalling modules are insufficient to cater for every
       requirement. Erl8583 provides the <emphasis
       role="bold">erl8583_marshaller</emphasis> module that can be used as a
       generic marshaller to implement other marshallers. This generic
@@ -775,6 +775,32 @@ marshal(Message, MarshalHandlers) -&gt;
       MTI, bitmap, etc.</para>
 
       <para></para>
+      <section>
+      <title>The JSON Document Marshaller</title>
+      <para>The ASCII, binary, EBCDIC and XML marshallers are intended to be useful for exchanging 
+      transaction messages. The JSON marshaller, however, uses a proprietary format which would make it of
+      limited use except for transferring messages to another party using the Erl8583 library. The JSON 
+      message packaging should be used for storage rather than transmission of transactions. As an aside,
+      since the module for packing messages into JSON is intended for storage rather than transmission,
+      the module serilaizes rather than marshals a message. It would be more accurate to have named the module 
+      <emphasis role="bold">erl8583_serializer_json</emphasis> rather than
+      <emphasis role="bold">erl8583_marshaller_json</emphasis>.
+      </para>
+      
+      <para>
+      ISO 8583 messages are typically sparse, i.e. most fields are unpopulated. This sparseness could make 
+      a relational database schema for storing transactions wasteful since most database fields would be populated with
+      nulls. Since document databases like MongoDB do not require a schema for storing documents, JSON can
+      provide a compact encapsulation of an ISO 8583 message.
+      </para>
+      <para>
+       Example 4.8 
+      gives some detail on the proprietary JSON format and shows how to store a JSON-marshalled message in the
+      MongoDB document database. 
+      </para>
+      
+      <para></para>
+      </section>
     </section>
 
     <section>
@@ -1938,7 +1964,8 @@ test() -&gt;
 
     <section>
       <title>Storing an ISO8583 Message as a JSON Document in MongoDB</title>
-      <para>Document databases like MongoDB and CouchDB have become popular in recent years.</para>
+      <para>Document databases like MongoDB and CouchDB have become popular in recent years with the 
+      advent of the NoSQL movement.</para>
     </section>
   </section>
 
