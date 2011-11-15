@@ -15,7 +15,7 @@
       </affiliation>
     </author>
 
-    <pubdate>May 2011</pubdate>
+    <pubdate>November 2011</pubdate>
   </articleinfo>
 
   <section>
@@ -1965,7 +1965,21 @@ test() -&gt;
     <section>
       <title>Storing an ISO8583 Message as a JSON Document in MongoDB</title>
       <para>Document databases like MongoDB and CouchDB have become popular in recent years with the 
-      advent of the NoSQL movement.</para>
+      advent of the NoSQL movement. In this example we unmarshal the Postilion message of the previous two
+      sections, repackage the message as a JSON document and store the document in a MongoDB database.</para>
+      
+      <para>It is necessary to install some software for this example:<itemizedlist>
+      <listitem><para>MongoDB, available from <ulink
+      url="http://www.mongodb.org">www.mongodb.org</ulink>.</para></listitem>
+      <listitem><para>
+      The emongo Erlang driver that can be downloaded from <ulink url="https://bitbucket.org/rumataestor/emongo">bitbucket</ulink>. 
+      </para>
+      </listitem>
+      </itemizedlist>
+      </para>
+      
+      <para>
+      </para>
     </section>
   </section>
 
