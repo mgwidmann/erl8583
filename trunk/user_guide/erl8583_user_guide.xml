@@ -2042,6 +2042,12 @@ munge_json([H|T]) -&gt;
 	      </programlisting>
       <para>
       </para>
+      <para>The previous program makes several assumptions:
+      <itemizedlist><listitem>That you are running the MongoDB server on your local machine 
+ 		</listitem>
+ 		<listitem>That the server is listening on its default port (27017).</listitem>
+ 		<listitem>That you have database called "test".</listitem>
+      </itemizedlist></para>
     </section>
   </section>
 
