@@ -2043,11 +2043,25 @@ munge_json([H|T]) -&gt;
       <para>
       </para>
       <para>The previous program makes several assumptions:
-      <itemizedlist><listitem>That you are running the MongoDB server on your local machine 
- 		</listitem>
- 		<listitem>That the server is listening on its default port (27017).</listitem>
- 		<listitem>That you have database called "test".</listitem>
+      <itemizedlist><listitem><para>That you are running the MongoDB server on your local machine 
+ 		</para></listitem>
+ 		<listitem><para>That the server is listening on its default port (27017).</para></listitem>
+ 		<listitem><para>That you have database called "test".</para></listitem>
       </itemizedlist></para>
+      
+      <para>
+      The Erlang code is straightforward apart from the munging function to translate output of
+      from the mochijson module to the input format required by emongo. Mochijson outputs a list
+      of binaries while emongo requires a list of strings and the local function translates
+      from the one format to the other.
+      </para>
+      
+      <para>
+      Assuming that MongoDB is running and that the Erlang dependencies are satisfied, running
+      <emphasis role="bold">example_8_json_mongodb:test()</emphasis> should output the atom "ok".
+      If we start up the <emphasis role="bold">mongo</emphasis> client shell and issue the query
+      <emphasis role="bold">db.erl8583.find()</emphasis> produces the output:
+      </para>
     </section>
   </section>
 
