@@ -2067,40 +2067,42 @@ munge_json([H|T]) -&gt;
 		<para><computeroutput>{ </computeroutput></para>
 		<para><computeroutput>	"_id" : ObjectId("4ec40970bd1ebe77718e47d5"),</computeroutput></para> 
 		<para><computeroutput>	"fields" : { </computeroutput></para>
-		<para><computeroutput>	"0" : "0200",</computeroutput></para> 
-		<para><computeroutput>	"2" : "0570010512298984", </computeroutput></para>
-		<para><computeroutput>	"3" : "310000", </computeroutput></para>
-		<para><computeroutput>	"4" : "000000000000", </computeroutput></para>
-		<para><computeroutput>	"7" : "1012134735", </computeroutput></para>
-		<para><computeroutput>	"11" : "000011", </computeroutput></para>
-		<para><computeroutput>	"12" : "134735", </computeroutput></para>
-		<para><computeroutput>	"13" : "1012", </computeroutput></para>
-		<para><computeroutput>	"14" : "0712", </computeroutput></para>
-		<para><computeroutput>	"15" : "1011", </computeroutput></para>
-		<para><computeroutput>	"22" : "001", </computeroutput></para>
-		<para><computeroutput>	"25" : "00", </computeroutput></para>
-		<para><computeroutput>	"28" : "C00000000", </computeroutput></para>
-		<para><computeroutput>	"30" : "C00000000", </computeroutput></para>
-		<para><computeroutput>	"32" : "627629", </computeroutput></para>
-		<para><computeroutput>	"37" : "000000387020", </computeroutput></para>
-		<para><computeroutput>	"41" : "10570011", </computeroutput></para>
-		<para><computeroutput>	"42" : "001            ", </computeroutput></para>
-		<para><computeroutput>	"43" : "ZIB Head Office ATM    V/I Lagos    01NG",</computeroutput></para> 
-		<para><computeroutput>	"49" : "566", </computeroutput></para>
-		<para><computeroutput>	"56" : "1510", </computeroutput></para>
-		<para><computeroutput>	"102" : "4090126659", </computeroutput></para>
-		<para><computeroutput>	"123" : "211201203144002", </computeroutput></para>
-		<para><computeroutput>	"127" : { </computeroutput></para>
+		<para><computeroutput>	  "0" : "0200",</computeroutput></para> 
+		<para><computeroutput>	  "2" : "0570010512298984", </computeroutput></para>
+		<para><computeroutput>	  "3" : "310000", </computeroutput></para>
+		<para><computeroutput>	  "4" : "000000000000", </computeroutput></para>
+		<para><computeroutput>	  "7" : "1012134735", </computeroutput></para>
+		<para><computeroutput>	  "11" : "000011", </computeroutput></para>
+		<para><computeroutput>	  "12" : "134735", </computeroutput></para>
+		<para><computeroutput>	  "13" : "1012", </computeroutput></para>
+		<para><computeroutput>	  "14" : "0712", </computeroutput></para>
+		<para><computeroutput>	  "15" : "1011", </computeroutput></para>
+		<para><computeroutput>	  "22" : "001", </computeroutput></para>
+		<para><computeroutput>	  "25" : "00", </computeroutput></para>
+		<para><computeroutput>	  "28" : "C00000000", </computeroutput></para>
+		<para><computeroutput>	  "30" : "C00000000", </computeroutput></para>
+		<para><computeroutput>	  "32" : "627629", </computeroutput></para>
+		<para><computeroutput>	  "37" : "000000387020", </computeroutput></para>
+		<para><computeroutput>	  "41" : "10570011", </computeroutput></para>
+		<para><computeroutput>	  "42" : "001            ", </computeroutput></para>
+		<para><computeroutput>	  "43" : "ZIB Head Office ATM    V/I Lagos    01NG",</computeroutput></para> 
+		<para><computeroutput>	  "49" : "566", </computeroutput></para>
+		<para><computeroutput>	  "56" : "1510", </computeroutput></para>
+		<para><computeroutput>	  "102" : "4090126659", </computeroutput></para>
+		<para><computeroutput>	  "123" : "211201203144002", </computeroutput></para>
+		<para><computeroutput>	  "127" : { </computeroutput></para>
 		<para><computeroutput>		"2" : "0000387020", </computeroutput></para>
 		<para><computeroutput>		"3" : "ZenithATMscrZIBeTranzSnk000002000011ZenithTG    ", </computeroutput></para> 
 		<para><computeroutput>		"12" : "ZIBeTranzSnk", </computeroutput></para>
 		<para><computeroutput>		"13" : "01234100001   566", </computeroutput></para>
 		<para><computeroutput>		"14" : "ZENITH B", </computeroutput></para>
 		<para><computeroutput>		"20" : "20060921" </computeroutput></para>
-		<para><computeroutput>	} </computeroutput></para>
+		<para><computeroutput>	  } </computeroutput></para>
 		<para><computeroutput>} </computeroutput></para>
 	<para><computeroutput>}</computeroutput></para>
-      
+	
+	<para>The response from this query shows how Erl8583 marshals messages as a JSON document. Notice, in particular,
+	how subfileds like 127.2, 127.3, etc. are marshalled.</para>
     </section>
   </section>
 
