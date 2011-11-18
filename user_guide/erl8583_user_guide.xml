@@ -507,7 +507,7 @@
       <para></para>
       <section>
       	<title>Dependencies</title>
-      	<para>Erl8583 has no unusual dependencies unless you want to be able to marshal ISO 8583 messages in the 
+      	<para>Erl8583 has no unusual dependencies unless you want to marshal ISO 8583 messages in the 
       	proprietary JSON format. The JSON marshaller uses the <emphasis role="bold">mochijson2</emphasis> module
       	of the MochiWeb server. The MochiWeb library can be downloaded from
       	<ulink url="https://github.com/mochi/mochiweb">https://github.com/mochi/mochiweb</ulink>. 
@@ -779,12 +779,8 @@ marshal(Message, MarshalHandlers) -&gt;
       <title>The JSON Document Marshaller</title>
       <para>The ASCII, binary, EBCDIC and XML marshallers are intended to be useful for exchanging 
       transaction messages. The JSON marshaller, however, uses a proprietary format which would make it of
-      limited use except for transferring messages to another party using the Erl8583 library. The JSON 
-      message packaging should be used for storage rather than transmission of transactions. As an aside,
-      since the module for packing messages into JSON is intended for storage rather than transmission,
-      the module serilaizes rather than marshals a message. It would be more accurate to have named the module 
-      <emphasis role="bold">erl8583_serializer_json</emphasis> rather than
-      <emphasis role="bold">erl8583_marshaller_json</emphasis>.
+      limited use except for transferring messages with another party using the Erl8583 library. The JSON 
+      message packing should be used for storage rather than transmission of transactions.
       </para>
       
       <para>
@@ -794,9 +790,8 @@ marshal(Message, MarshalHandlers) -&gt;
       provide a compact encapsulation of an ISO 8583 message.
       </para>
       <para>
-       Example 4.8 
-      gives some detail on the proprietary JSON format and shows how to store a JSON-marshalled message in the
-      MongoDB document database. 
+       Example 4.8 packs a message in the JSON format and shows how to store a JSON-marshalled message in the
+      MongoDB document database.
       </para>
       
       <para></para>
@@ -2046,7 +2041,7 @@ munge_json([H|T]) -&gt;
       <itemizedlist><listitem><para>That you are running the MongoDB server on your local machine 
  		</para></listitem>
  		<listitem><para>That the server is listening on its default port (27017).</para></listitem>
- 		<listitem><para>That you have database called "test".</para></listitem>
+ 		<listitem><para>That you have a database called "test".</para></listitem>
       </itemizedlist></para>
       
       <para>
