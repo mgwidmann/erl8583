@@ -85,9 +85,9 @@ set_attributes_test() ->
 
 update_test() ->
 	Msg = erl8583_message:new(),
-	UpdatedMsg = erl8583_message:update(3, "foo", Msg),
+	UpdatedMsg = erl8583_message:set(3, "foo", Msg),
 	"foo" = erl8583_message:get(3, UpdatedMsg),
-	ChangedMsg = erl8583_message:update(3, "bar", UpdatedMsg),
+	ChangedMsg = erl8583_message:set(3, "bar", UpdatedMsg),
 	"bar" = erl8583_message:get(3, ChangedMsg).
 
 repeat_test() ->
@@ -203,14 +203,14 @@ set_list2_test() ->
 update_list1_test() ->
 	Message1 = erl8583_message:new(),
 	Message2 = erl8583_message:set([4], "baz", Message1),
-	Message3 = erl8583_message:update([4], "foobar", Message2),
+	Message3 = erl8583_message:set([4], "foobar", Message2),
 	"foobar" = erl8583_message:get([4], Message3).
 
 update_list2_test() ->
 	Message1 = erl8583_message:set(5, erl8583_message:new(), erl8583_message:new()),
 	Message2 = erl8583_message:set([5, 2], "foobar", Message1),
 	"foobar" = erl8583_message:get([5, 2], Message2),
-	Message3 = erl8583_message:update([5, 2], "foobar2", Message2),
+	Message3 = erl8583_message:set([5, 2], "foobar2", Message2),
 	"foobar2" = erl8583_message:get([5, 2], Message3).
 
 set_list3_test() ->
@@ -224,8 +224,8 @@ set_list3_test() ->
 
 update_list3_test() ->
 	Message1 = erl8583_message:new(),
-	Message2 = erl8583_message:update([5, 2], "foo", Message1),
-	Message3 = erl8583_message:update([5, 3, 1], "bar", Message2),
+	Message2 = erl8583_message:set([5, 2], "foo", Message1),
+	Message3 = erl8583_message:set([5, 3, 1], "bar", Message2),
 	SubMessage = erl8583_message:get(5, Message3),
 	[2, 3] = erl8583_message:get_fields(SubMessage),
 	"foo" = erl8583_message:get(2, SubMessage),
@@ -233,8 +233,8 @@ update_list3_test() ->
 
 get_numeric_test() ->
 	Message1 = erl8583_message:new(),
-	Message2 = erl8583_message:update([5, 2], "0123", Message1),
-	Message3 = erl8583_message:update(6, "77", Message2),
+	Message2 = erl8583_message:set([5, 2], "0123", Message1),
+	Message3 = erl8583_message:set(6, "77", Message2),
 	123 = erl8583_message:get_numeric([5, 2], Message3),
 	77 = erl8583_message:get_numeric(6, Message3).
 	
@@ -248,7 +248,7 @@ set_numeric_test() ->
 update_numeric_test() ->
 	Message1 = erl8583_message:new(),
 	Message2 = erl8583_message:set_numeric([5, 2], 123, 12, Message1),
-	Message3 = erl8583_message:update_numeric([5, 2], 77, 3, Message2),
+	Message3 = erl8583_message:set_numeric([5, 2], 77, 3, Message2),
 	"077" = erl8583_message:get([5, 2], Message3).
 	
 is_message_test() ->

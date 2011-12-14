@@ -34,7 +34,7 @@ marshal_mti(Value) ->
 
 marshal_bitmap(Message) ->
 	[0, 2,3] = erl8583_message:get_fields(Message),
-	{"bitmap = 123", erl8583_message:update(1, "1", Message)}.
+	{"bitmap = 123", erl8583_message:set(1, "1", Message)}.
 
 marshal_end(_Message, Marshalled) ->
 	"Start" ++ Marshalled ++ "End".
@@ -43,7 +43,7 @@ unmarshal_end(Message, _Marshalled) ->
 	erl8583_message:remove_fields([1], Message).
 
 marshal_init(Message) ->
-	{"X", erl8583_message:update(0, "0110", Message)}.
+	{"X", erl8583_message:set(0, "0110", Message)}.
 
 unmarshal_init(Message, Marshalled) ->
 	{Message, lists:sublist(Marshalled, 2, length(Marshalled)-2)}.
