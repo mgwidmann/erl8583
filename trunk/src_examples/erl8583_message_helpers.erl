@@ -22,15 +22,35 @@
 %%
 %% Include files
 %%
+%% @headerfile "../include/erl8583_types.hrl"
+-include("erl8583_types.hrl").
+-include("erl8583_field_ids.hrl").
 
 %%
 %% Exported Functions
 %%
--export([]).
+-export([
+		 repeat/1
+		]).
 
 %%
 %% API Functions
 %%
+%% @doc Updates the message type of a message to indicate that it's a repeat.
+%%
+%% @spec repeat(iso8583message()) -> iso8583message()
+-spec(repeat(iso8583message()) -> iso8583message()).
+
+repeat(Message) ->
+	[M1, M2, M3, M4] = erl8583_message:get(?MTI, Message),
+	if 
+		M4 =:= $0 orelse M4 =:= $2 orelse M4 =:= $4 ->
+			M4Updated = M4 + 1;
+		M4 =:= $1 orelse M4 =:= $3 orelse M4 =:= $5 ->
+			M4Updated = M4
+	end,
+	erl8583_message:set(?MTI, [M1, M2, M3, M4Updated], Message).
+
 
 
 

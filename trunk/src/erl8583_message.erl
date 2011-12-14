@@ -39,20 +39,19 @@
 		 new/1, 
 		 set/3, 
 		 set_numeric/4,
+		 set_mti/2,
 		 get/2, 
 		 get_numeric/2,
+		 get_mti/1,
 		 get_fields/1, 
 		 to_list/1, 
 		 from_list/1, 
 		 set_attributes/2, 
 		 get_attributes/1,
-		 repeat/1,
 		 clone_fields/2,
 		 response/1,
 		 response/2,
 		 remove_fields/2,
-		 set_mti/2,
-		 get_mti/1,
 		 is_message/1,
 		 get_attribute/2,
 		 set_attribute/3,
@@ -230,21 +229,6 @@ from_list(List) ->
 
 set_attributes(Attributes, #iso8583_message{attributes=[]}=Message) ->
 	Message#iso8583_message{attributes=Attributes}.
-
-%% @doc Updates the message type of a message to indicate that it's a repeat.
-%%
-%% @spec repeat(iso8583message()) -> iso8583message()
--spec(repeat(iso8583message()) -> iso8583message()).
-
-repeat(Message) ->
-	[M1, M2, M3, M4] = get(?MTI, Message),
-	if 
-		M4 =:= $0 orelse M4 =:= $2 orelse M4 =:= $4 ->
-			M4Updated = M4 + 1;
-		M4 =:= $1 orelse M4 =:= $3 orelse M4 =:= $5 ->
-			M4Updated = M4
-	end,
-	set(?MTI, [M1, M2, M3, M4Updated], Message).
 
 %% @doc Creates a new message from an old one where the new message has
 %%      the same field values as the original message for a list of
