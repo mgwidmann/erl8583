@@ -38,7 +38,6 @@
 -export([new/0, 
 		 new/1, 
 		 set/3, 
-		 set/2,
 		 set_numeric/4,
 		 get/2, 
 		 get_numeric/2,
@@ -127,18 +126,6 @@ set_numeric(FieldId, FieldValue, FieldLength, Message) ->
 	set(FieldId, Value, Message).
 
 
-%% @doc Sets the values of zero or more fields in a message and returns an updated
-%%      message. The field IDs and field values are passed as 2-tuples in 
-%%      a list.
-%%
-%% @spec set(list({integer(), iso8583field_value()}), iso8583message()) -> iso8583message()
--spec(set(list({integer(), iso8583field_value()}), iso8583message()) -> iso8583message()).
-
-set([], Message) ->
-	Message;
-set([{FieldId, FieldValue}|Tail], Message) ->
-	set(Tail, set(FieldId, FieldValue, Message)).
-	
 %% @doc Gets the value of a field from a message given a field ID or a list
 %%      of identifiers. A list of integers indicates that
 %%      some field is a submessage; e.g. [127, 2] would indicate field 2
