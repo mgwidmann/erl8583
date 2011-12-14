@@ -46,8 +46,6 @@
 		 from_list/1, 
 		 set_attributes/2, 
 		 get_attributes/1,
-		 update/3,
-		 update_numeric/4,
 		 repeat/1,
 		 clone_fields/2,
 		 response/1,
@@ -91,8 +89,19 @@ new(Attributes) ->
 %% @spec set(FieldId::integer()|list(integer()), iso8583field_value(), iso8583message()) -> iso8583message()
 -spec(set(FieldId::integer()|list(integer()), iso8583field_value(), iso8583message()) -> iso8583message()).
 
-set(A, B, C) ->
-	update(A, B, C).
+set([FieldId], FieldValue, Message) when is_integer(FieldId) ->
+	set(FieldId, FieldValue, Message);
+set([FieldId|Tail], FieldValue, Message) when is_integer(FieldId) ->
+	case lists:member(FieldId, get_fields(Message)) of
+		true ->
+			Message2 = get(FieldId, Message);
+		false ->
+			Message2 = new()
+	end,
+	Message3 = set(Tail, FieldValue, Message2),
+	set(FieldId, Message3, Message);
+set(FieldId, FieldValue, #iso8583_message{values=Dict}=Message) when is_integer(FieldId) andalso FieldId >= 0 ->
+	Message#iso8583_message{values=dict:store(FieldId, FieldValue, Dict)}.
 
 %% @doc Sets the value of a field in a message and returns an updated
 %%      message. The value must be an integer and is encoded as a string
@@ -110,7 +119,7 @@ set(A, B, C) ->
 
 set_numeric(FieldId, FieldValue, FieldLength, Message) when is_integer(FieldValue) ->
 	Value = erl8583_convert:integer_to_string(FieldValue, FieldLength),
-	update(FieldId, Value, Message).
+	set(FieldId, Value, Message).
 
 
 %% @doc Gets the value of a field from a message given a field ID or a list
@@ -222,44 +231,6 @@ from_list(List) ->
 set_attributes(Attributes, #iso8583_message{attributes=[]}=Message) ->
 	Message#iso8583_message{attributes=Attributes}.
 
-%% @doc Sets or updates the value of a field in a message and returns an updated
-%%      message. The value for the field need not have been set previously.
-%%
-%% @spec update(FieldId::integer()|list(integer()), iso8583field_value(), iso8583message()) -> iso8583message()
--spec(update(FieldId::integer()|list(integer()), iso8583field_value(), iso8583message()) -> iso8583message()).
-
-update([FieldId], FieldValue, Message) when is_integer(FieldId) ->
-	update(FieldId, FieldValue, Message);
-update([FieldId|Tail], FieldValue, Message) when is_integer(FieldId) ->
-	case lists:member(FieldId, get_fields(Message)) of
-		true ->
-			Message2 = get(FieldId, Message);
-		false ->
-			Message2 = new()
-	end,
-	Message3 = update(Tail, FieldValue, Message2),
-	update(FieldId, Message3, Message);
-update(FieldId, FieldValue, #iso8583_message{values=Dict}=Message) when is_integer(FieldId) andalso FieldId >= 0 ->
-	Message#iso8583_message{values=dict:store(FieldId, FieldValue, Dict)}.
-
-
-%% @doc Sets or updates the value of a field in a message and returns an updated
-%%      message. The value must be an integer and is encoded as a string
-%%      of specified length; the value will be prepended with leading zeroes
-%%      if necessary.
-%%
-%%      The field can be specified as an integer or as a
-%%      list of integers.  A list of integers indicates that
-%%      some field is a submessage; e.g. [127, 2] would indicate field 2
-%%      in field 127 of the original message.
-%%
-%% @spec update_numeric(FieldId::integer()|list(integer()), iso8583field_value(), integer(), iso8583message()) -> iso8583message()
--spec(update_numeric(FieldId::integer()|list(integer()), iso8583field_value(), integer(), iso8583message()) -> iso8583message()).
-
-update_numeric(FieldId, FieldValue, FieldLength, Message) ->
-	Value = erl8583_convert:integer_to_string(FieldValue, FieldLength),
-	update(FieldId, Value, Message).
-	
 %% @doc Updates the message type of a message to indicate that it's a repeat.
 %%
 %% @spec repeat(iso8583message()) -> iso8583message()
@@ -273,7 +244,7 @@ repeat(Message) ->
 		M4 =:= $1 orelse M4 =:= $3 orelse M4 =:= $5 ->
 			M4Updated = M4
 	end,
-	update(?MTI, [M1, M2, M3, M4Updated], Message).
+	set(?MTI, [M1, M2, M3, M4Updated], Message).
 
 %% @doc Creates a new message from an old one where the new message has
 %%      the same field values as the original message for a list of
@@ -309,7 +280,7 @@ response(FieldIds, Message) ->
 	if
 		M3 =:= $0 orelse M3 =:= $2 orelse M3 =:= $4 ->
 			% Ignore repeats.
-			update(?MTI, [M1, M2, M3 + 1, (M4 div 2) * 2], Clone)
+			set(?MTI, [M1, M2, M3 + 1, (M4 div 2) * 2], Clone)
 	end.
 
 %% @doc Creates a new message from an old message where the new message
@@ -362,7 +333,7 @@ from_list([{Key, Value}|Tail], Result) ->
 clone_fields([], _Msg, Result) ->
 	Result;
 clone_fields([FieldId|Tail], Msg, Result) ->
-	clone_fields(Tail, Msg, update(FieldId, get(FieldId, Msg), Result)).
+	clone_fields(Tail, Msg, set(FieldId, get(FieldId, Msg), Result)).
 	
 remove_fields_from_dict([], Dict) ->
 	Dict;
