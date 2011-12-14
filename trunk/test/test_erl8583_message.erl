@@ -36,12 +36,6 @@ set_negative_id_test() ->
 	Message = erl8583_message:new(),
 	?assertError(_, erl8583_message:set_field(-1, "0200", Message)).
 	
-%% Check that we can't add a field more than once.
-set_field_twice_test() ->
-	Message = erl8583_message:new(),
-	Message2 = erl8583_message:set(0, "0200", Message),
-	?assertError(_, erl8583_message:set(0, "0210", Message2)).
-
 set_field_not_integer_test() ->
 	Message = erl8583_message:new(),
 	?assertError(_, erl8583_message:set(foo, "0210", Message)).
@@ -216,7 +210,6 @@ update_list2_test() ->
 	Message1 = erl8583_message:set(5, erl8583_message:new(), erl8583_message:new()),
 	Message2 = erl8583_message:set([5, 2], "foobar", Message1),
 	"foobar" = erl8583_message:get([5, 2], Message2),
-	?assertError(_, erl8583_message:set([5, 2], "foobar2", Message2)),
 	Message3 = erl8583_message:update([5, 2], "foobar2", Message2),
 	"foobar2" = erl8583_message:get([5, 2], Message3).
 

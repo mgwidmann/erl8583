@@ -91,20 +91,8 @@ new(Attributes) ->
 %% @spec set(FieldId::integer()|list(integer()), iso8583field_value(), iso8583message()) -> iso8583message()
 -spec(set(FieldId::integer()|list(integer()), iso8583field_value(), iso8583message()) -> iso8583message()).
 
-set([FieldId], FieldValue, Message) when is_integer(FieldId) ->
-	set(FieldId, FieldValue, Message);
-set([FieldId|Tail], FieldValue, Message) when is_integer(FieldId) ->
-	case lists:member(FieldId, get_fields(Message)) of
-		true ->
-			Message2 = get(FieldId, Message);
-		false ->
-			Message2 = new()
-	end,
-	Message3 = set(Tail, FieldValue, Message2),
-	update(FieldId, Message3, Message);
-set(FieldId, FieldValue, #iso8583_message{values=Dict}=Message) when is_integer(FieldId) andalso FieldId >= 0 ->
-	false = dict:is_key(FieldId, Dict),
-	Message#iso8583_message{values=dict:store(FieldId, FieldValue, Dict)}.
+set(A, B, C) ->
+	update(A, B, C).
 
 %% @doc Sets the value of a field in a message and returns an updated
 %%      message. The value must be an integer and is encoded as a string
@@ -120,9 +108,9 @@ set(FieldId, FieldValue, #iso8583_message{values=Dict}=Message) when is_integer(
 %% @spec set_numeric(FieldId::integer()|list(integer()), iso8583field_value(), integer(), iso8583message()) -> iso8583message()
 -spec(set_numeric(FieldId::integer()|list(integer()), iso8583field_value(), integer(), iso8583message()) -> iso8583message()).
 
-set_numeric(FieldId, FieldValue, FieldLength, Message) ->
+set_numeric(FieldId, FieldValue, FieldLength, Message) when is_integer(FieldValue) ->
 	Value = erl8583_convert:integer_to_string(FieldValue, FieldLength),
-	set(FieldId, Value, Message).
+	update(FieldId, Value, Message).
 
 
 %% @doc Gets the value of a field from a message given a field ID or a list
