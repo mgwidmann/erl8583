@@ -47,7 +47,6 @@
 		 set_attributes/2, 
 		 get_attributes/1,
 		 update/3,
-		 update/2,
 		 update_numeric/4,
 		 repeat/1,
 		 clone_fields/2,
@@ -255,18 +254,6 @@ update([FieldId|Tail], FieldValue, Message) when is_integer(FieldId) ->
 update(FieldId, FieldValue, #iso8583_message{values=Dict}=Message) when is_integer(FieldId) andalso FieldId >= 0 ->
 	Message#iso8583_message{values=dict:store(FieldId, FieldValue, Dict)}.
 
-
-%% @doc Sets or updates the values of zero or more fields in a message and returns an updated
-%%      message. The field IDs and field values are passed as 2-tuples in 
-%%      a list.
-%%
-%% @spec update(list({integer(), iso8583field_value()}), iso8583message()) -> iso8583message()
--spec(update(list({integer(), iso8583field_value()}), iso8583message()) -> iso8583message()).
-
-update([], Message) ->
-	Message;
-update([{FieldId, FieldValue}|Tail], Message) ->
-	update(Tail, update(FieldId, FieldValue, Message)).
 
 %% @doc Sets or updates the value of a field in a message and returns an updated
 %%      message. The value must be an integer and is encoded as a string
