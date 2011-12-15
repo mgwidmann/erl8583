@@ -48,8 +48,6 @@
 		 set_attributes/2, 
 		 get_attributes/1,
 		 clone_fields/2,
-		 %response/1,
-		 %response/2,
 		 remove_fields/2,
 		 is_message/1,
 		 get_attribute/2,
