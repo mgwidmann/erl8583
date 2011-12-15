@@ -36,7 +36,6 @@
 %% Exported Functions
 %%
 -export([new/0, 
-		 new/1, 
 		 set/3, 
 		 set_numeric/4,
 		 set_mti/2,
@@ -67,16 +66,8 @@
 -spec(new() -> iso8583message()).
 
 new() ->
-	new([]).
+	#iso8583_message{attributes=[]}.
 
-%% @doc Returns an empty ISO 8583 message with a set of attributes.
-%%
-%% @spec new(list(iso8583attribute())) -> iso8583message()
--spec(new(list(iso8583attribute())) -> iso8583message()).
-
-new(Attributes) ->
-	#iso8583_message{attributes=Attributes}.
-	
 %% @doc Sets the value of a field in a message and returns an updated
 %%      message. If the value for the field is already set, an exception
 %%      is thrown. The field can be specified as an integer or as a
@@ -217,7 +208,8 @@ set_attributes(Attributes, #iso8583_message{attributes=[]}=Message) ->
 -spec(clone_fields(list(integer()), iso8583message()) -> iso8583message()).
 
 clone_fields(FieldIds, Message) ->
-	clone_fields(FieldIds, Message, new(get_attributes(Message))).
+	Clone = clone_fields(FieldIds, Message, new()),
+	erl8583_message:set_attributes(get_attributes(Message), Clone).
 
 %% @doc Creates a response message for a message where the response has
 %%      the same field values as the original message. The MTI is changed 

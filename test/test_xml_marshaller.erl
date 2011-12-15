@@ -31,10 +31,11 @@ xml_marshal_complex_test() ->
 	IsoMsg = erl8583_marshaller:unmarshal(Marshalled, ?MARSHALLER_XML).
 
 xml_marshal_with_attributes_test() ->
-	IsoMsg = erl8583_message:new([{"outgoing", "true"}]),
-	IsoMsg2 = erl8583_message:set(0, "0110", IsoMsg),
-	Marshalled = erl8583_marshaller:marshal(IsoMsg2, ?MARSHALLER_XML),
-	IsoMsg2 = erl8583_marshaller:unmarshal(Marshalled, ?MARSHALLER_XML).
+	IsoMsg = erl8583_message:new(),
+	IsoMsg2 = erl8583_message:set_attribute("outgoing", "true", IsoMsg),
+	IsoMsg3 = erl8583_message:set(0, "0110", IsoMsg2),
+	Marshalled = erl8583_marshaller:marshal(IsoMsg3, ?MARSHALLER_XML),
+	IsoMsg3 = erl8583_marshaller:unmarshal(Marshalled, ?MARSHALLER_XML).
 
 xml_marshal_complex_attributes_test() ->
 	BitMap = erl8583_message:from_list([{1, "foo"}, {2, "bar"}]),

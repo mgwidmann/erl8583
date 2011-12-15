@@ -57,7 +57,7 @@ get_field_test() ->
 
 %% Test that we can get fields.
 get_fields_test() ->
-	Message = erl8583_message:new([{mapper, ?MODULE}]),
+	Message = erl8583_message:new(),
 	Message2 = erl8583_message:set(180, "hello", Message),
 	Message3 = erl8583_message:set(0, "0200", Message2),
 	?assertEqual([0, 180], erl8583_message:get_fields(Message3)).
@@ -75,8 +75,10 @@ from_list_test() ->
 	[{0, "0200"}, {39, 0}] = erl8583_message:to_list(Message).
 
 get_attributes_test() ->
-	Message = erl8583_message:new([{"foo", "bar"}, {"hello", "world"}]),
-	[{"foo", "bar"}, {"hello", "world"}] = erl8583_message:get_attributes(Message).
+	Msg1 = erl8583_message:new(),
+	Msg2 = erl8583_message:set_attribute("foo", "bar", Msg1),
+	Msg3 = erl8583_message:set_attribute("hello", "world", Msg2),
+	[{"hello", "world"}, {"foo", "bar"}] = erl8583_message:get_attributes(Msg3).
 
 set_attributes_test() ->
 	Msg = erl8583_message:new(),
@@ -91,7 +93,7 @@ update_test() ->
 	"bar" = erl8583_message:get(3, ChangedMsg).
 
 clone_fields_test() ->
-	Message = erl8583_message:new([{mapper, ?MODULE}]),
+	Message = erl8583_message:new(),
 	Message2 = erl8583_message:set(10, "hello", Message),
 	Message3 = erl8583_message:set(0, "0200", Message2),
 	Message4 = erl8583_message:set(2, "hello2", Message3),
@@ -103,7 +105,7 @@ clone_fields_test() ->
 	"0200" = erl8583_message:get(0, Clone2).
 
 response_1_test() ->
-	Message = erl8583_message:new([{mapper, ?MODULE}]),
+	Message = erl8583_message:new(),
 	Message2 = erl8583_message:set(10, "hello", Message),
 	Message3 = erl8583_message:set(0, "0200", Message2),
 	Message4 = erl8583_message:set(2, "hello2", Message3),
@@ -117,7 +119,7 @@ response_1_test() ->
 	"0210" = erl8583_message:get(0, Response2).
 	
 response_2_test() ->
-	Message = erl8583_message:new([{mapper, ?MODULE}]),
+	Message = erl8583_message:new(),
 	Message2 = erl8583_message:set(10, "hello", Message),
 	Message3 = erl8583_message:set(0, "0220", Message2),
 	Message4 = erl8583_message:set(2, "hello2", Message3),
@@ -128,7 +130,7 @@ response_2_test() ->
 
 % response shouldn't use the keep the repeat digit.
 response_3_test() ->
-	Message = erl8583_message:new([{mapper, ?MODULE}]),
+	Message = erl8583_message:new(),
 	Message2 = erl8583_message:set(10, "hello", Message),
 	Message3 = erl8583_message:set(0, "0221", Message2),
 	Response = erl8583_message:response(Message3),
@@ -138,14 +140,14 @@ response_3_test() ->
 	
 % response shouldn't use the keep the repeat digit.
 response_4_test() ->
-	Message = erl8583_message:new([{mapper, ?MODULE}]),
+	Message = erl8583_message:new(),
 	Message2 = erl8583_message:set(0, "0423", Message),
 	Response = erl8583_message:response(Message2),
 	[0] = erl8583_message:get_fields(Response),
 	"0432" = erl8583_message:get(0, Response).
 	
 remove_fields_test() ->
-	Message = erl8583_message:new([{mapper, ?MODULE}]),
+	Message = erl8583_message:new(),
 	Message2 = erl8583_message:set(10, "hello", Message),
 	Message3 = erl8583_message:set(0, "0220", Message2),
 	Message4 = erl8583_message:set(2, "hello2", Message3),
@@ -235,24 +237,29 @@ is_message_test() ->
 	true = erl8583_message:is_message(#iso8583_message{}).
 
 clone_with_attributes_test() ->
-	Msg1 = erl8583_message:new([{"foo", "bar"}]),
-	Msg2 = erl8583_message:clone_fields([], Msg1),
-	[{"foo", "bar"}] = erl8583_message:get_attributes(Msg2).
+	Msg1 = erl8583_message:new(),
+	Msg2 = erl8583_message:set_attribute("foo", "bar", Msg1),
+	Msg3 = erl8583_message:clone_fields([], Msg2),
+	[{"foo", "bar"}] = erl8583_message:get_attributes(Msg3).
 
 get_attribute_test() ->
-	Msg = erl8583_message:new([{"foo", "bar"}, {"bar", "baz"}]),
-	"bar" = erl8583_message:get_attribute("foo", Msg),
-	"baz" = erl8583_message:get_attribute("bar", Msg).
+	Msg1 = erl8583_message:new(),
+	Msg2 = erl8583_message:set_attribute("foo", "bar", Msg1),
+	Msg3 = erl8583_message:set_attribute("bar", "baz", Msg2),
+	"bar" = erl8583_message:get_attribute("foo", Msg3),
+	"baz" = erl8583_message:get_attribute("bar", Msg3).
 
 set_attribute_test() ->
-	Msg1 = erl8583_message:new([{"foo", "bar"}, {"bar", "baz"}]),
+	Msg1 = erl8583_message:new(),
 	Msg2 = erl8583_message:set_attribute("baz", "3", Msg1),
 	"3" = erl8583_message:get_attribute("baz", Msg2).
 
 update_attribute_test() ->
-	Msg1 = erl8583_message:new([{"foo", "bar"}, {"bar", "baz"}]),
-	Msg2 = erl8583_message:set_attribute("baz", "3", Msg1),
-	Msg3 = erl8583_message:set_attribute("foo", "3", Msg2),
-	"3" = erl8583_message:get_attribute("baz", Msg3),
-	"3" = erl8583_message:get_attribute("foo", Msg3).
+	Msg1 = erl8583_message:new(),
+	Msg2 = erl8583_message:set_attribute("foo", "bar", Msg1),
+	Msg3 = erl8583_message:set_attribute("bar", "baz", Msg2),
+	Msg4 = erl8583_message:set_attribute("baz", "3", Msg3),
+	Msg5 = erl8583_message:set_attribute("foo", "3", Msg4),
+	"3" = erl8583_message:get_attribute("baz", Msg5),
+	"3" = erl8583_message:get_attribute("foo", Msg5).
 
