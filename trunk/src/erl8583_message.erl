@@ -48,8 +48,8 @@
 		 set_attributes/2, 
 		 get_attributes/1,
 		 clone_fields/2,
-		 response/1,
-		 response/2,
+		 %response/1,
+		 %response/2,
 		 remove_fields/2,
 		 is_message/1,
 		 get_attribute/2,
@@ -210,33 +210,6 @@ set_attributes(Attributes, #iso8583_message{attributes=[]}=Message) ->
 clone_fields(FieldIds, Message) ->
 	Clone = clone_fields(FieldIds, Message, new()),
 	erl8583_message:set_attributes(get_attributes(Message), Clone).
-
-%% @doc Creates a response message for a message where the response has
-%%      the same field values as the original message. The MTI is changed 
-%%      to indicate that the message is a response.
-%%
-%% @spec response(iso8583message()) -> iso8583message()
--spec(response(iso8583message()) -> iso8583message()).
-
-response(Message) ->
-	response(get_fields(Message), Message).
-
-%% @doc Creates a response message for a message where the response has
-%%      the same field values as the original message for a list of
-%%      specified field IDs. The MTI is changed to indicate that
-%%      the message is a response.
-%%
-%% @spec response(list(integer()), iso8583message()) -> iso8583message()
--spec(response(list(integer()), iso8583message()) -> iso8583message()).
-
-response(FieldIds, Message) ->
-	Clone = clone_fields(FieldIds, Message),
-	[M1, M2, M3, M4] = get(?MTI, Message),
-	if
-		M3 =:= $0 orelse M3 =:= $2 orelse M3 =:= $4 ->
-			% Ignore repeats.
-			set(?MTI, [M1, M2, M3 + 1, (M4 div 2) * 2], Clone)
-	end.
 
 %% @doc Creates a new message from an old message where the new message
 %%      has the same field values as the original except for a

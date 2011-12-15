@@ -30,7 +30,9 @@
 %% Exported Functions
 %%
 -export([
-		 repeat/1
+		 repeat/1,
+		 response/1,
+		 response/2
 		]).
 
 %%
@@ -50,6 +52,33 @@ repeat(Message) ->
 			M4Updated = M4
 	end,
 	erl8583_message:set(?MTI, [M1, M2, M3, M4Updated], Message).
+
+%% @doc Creates a response message for a message where the response has
+%%      the same field values as the original message. The MTI is changed 
+%%      to indicate that the message is a response.
+%%
+%% @spec response(iso8583message()) -> iso8583message()
+-spec(response(iso8583message()) -> iso8583message()).
+
+response(Message) ->
+	response(erl8583_message:get_fields(Message), Message).
+
+%% @doc Creates a response message for a message where the response has
+%%      the same field values as the original message for a list of
+%%      specified field IDs. The MTI is changed to indicate that
+%%      the message is a response.
+%%
+%% @spec response(list(integer()), iso8583message()) -> iso8583message()
+-spec(response(list(integer()), iso8583message()) -> iso8583message()).
+
+response(FieldIds, Message) ->
+	Clone = erl8583_message:clone_fields(FieldIds, Message),
+	[M1, M2, M3, M4] = erl8583_message:get(?MTI, Message),
+	if
+		M3 =:= $0 orelse M3 =:= $2 orelse M3 =:= $4 ->
+			% Ignore repeats.
+			erl8583_message:set(?MTI, [M1, M2, M3 + 1, (M4 div 2) * 2], Clone)
+	end.
 
 
 
