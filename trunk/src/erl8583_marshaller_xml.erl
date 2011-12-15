@@ -265,7 +265,9 @@ unmarshal_field(FieldElement) ->
 		isomsg ->
 			AttrsExceptId = AttributesList -- [{"id", Id}],
 			ChildNodes = FieldElement#xmlElement.content,
-			unmarshal_complex(ChildNodes, erl8583_message:new(AttrsExceptId))
+			Message1 = erl8583_message:new(),
+			Message2 = erl8583_message:set_attributes(AttrsExceptId, Message1),
+			unmarshal_complex(ChildNodes, Message2)
 	end.	
 
 unmarshal_complex([], Iso8583Msg) ->

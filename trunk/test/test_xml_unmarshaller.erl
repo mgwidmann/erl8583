@@ -84,9 +84,6 @@ foo() ->
 	Marshalled = erl8583_marshaller_xml:marshal(IsoMsg4),
 	ok = gen_tcp:send(Sock, Marshalled),
 	ok = gen_tcp:send(Sock, "\n").
-	%receive {tcp, _, IsoResp} -> IsoResp end,
-	%IsoResp1 = erl8583_marshaller_xml:unmarshal(IsoResp),
-	%erl8583_message:get(39, IsoResp1).	
 
 unmarshal_wrapping_test() ->
 	Marshalled = "<isomsg foo=\"bar\" baz=\"2\"></isomsg>",
