@@ -216,8 +216,8 @@ clone_fields(FieldIds, Message) ->
 
 remove([FieldId], Message) ->
 	remove(FieldId, Message);
-remove([FieldId|Tail], Message) ->
-	case contains(FieldId, Message) of
+remove([FieldId|Tail], #iso8583_message{values=Dict}=Message) ->
+	case dict:is_key(FieldId, Dict) of
 		false ->
 			Message;
 		true ->
@@ -278,11 +278,3 @@ clone_fields([FieldId|Tail], Msg, Result) ->
 delete_attribute(Key, #iso8583_message{attributes=Attrs} = Message) ->
 	UpdatedAttrs = [{KeyId, Val} || {KeyId, Val} <- Attrs, KeyId =/= Key],
 	Message#iso8583_message{attributes=UpdatedAttrs}.
-	
-
-contains(FieldId, Message) ->
-	F = fun(Element, Accum) ->
-				Accum or (Element =:= FieldId)
-		end,
-	Fields = get_fields(Message),
-	lists:foldl(F, false, Fields).
