@@ -51,8 +51,7 @@
 		 get_attribute/2,
 		 set_attributes/2, 
 		 set_attribute/3,
-		 clone_fields/2,
-		 remove_fields/2
+		 clone_fields/2
 		]).
 
 %%
@@ -218,29 +217,23 @@ clone_fields(FieldIds, Message) ->
 remove([FieldId], Message) ->
 	remove(FieldId, Message);
 remove([FieldId|Tail], Message) ->
-	UpdatedSubfield = remove(Tail, erl8583_message:get(FieldId, Message)),
-	case get_fields(UpdatedSubfield) of
-		[] ->
-			remove(FieldId, Message);
-		_ ->
-			set(FieldId, UpdatedSubfield, Message)
+	case contains(FieldId, Message) of
+		false ->
+			Message;
+		true ->
+			UpdatedSubfield = remove(Tail, erl8583_message:get(FieldId, Message)),
+			case get_fields(UpdatedSubfield) of
+				[] ->
+					remove(FieldId, Message);
+		_ 		->
+					set(FieldId, UpdatedSubfield, Message)
+			end
 	end;
 remove(FieldId, #iso8583_message{values=Dict}=Message) ->
 	UpdatedDict = dict:erase(FieldId, Dict),
 	Message#iso8583_message{values=UpdatedDict}.
 	
 
-%% @doc Creates a new message from an old message where the new message
-%%      has the same field values as the original except for a
-%%      specified list of IDs that are omitted.
-%%
-%% @spec remove_fields(list(integer()), iso8583message()) -> iso8583message()
--spec(remove_fields(list(integer()), iso8583message()) -> iso8583message()).
-
-remove_fields(FieldIds, #iso8583_message{values=Dict}=Message) ->
-	UpdatedDict = remove_fields_from_dict(FieldIds, Dict),
-	Message#iso8583_message{values=UpdatedDict}.
-	
 %% @doc A convenient function for setting the message type identifier (MTI)
 %%      of a message.
 %%
@@ -282,13 +275,14 @@ clone_fields([], _Msg, Result) ->
 clone_fields([FieldId|Tail], Msg, Result) ->
 	clone_fields(Tail, Msg, set(FieldId, get(FieldId, Msg), Result)).
 	
-remove_fields_from_dict([], Dict) ->
-	Dict;
-remove_fields_from_dict([FieldId|Tail], Dict) ->
-	remove_fields_from_dict(Tail, dict:erase(FieldId, Dict)).
-
 delete_attribute(Key, #iso8583_message{attributes=Attrs} = Message) ->
 	UpdatedAttrs = [{KeyId, Val} || {KeyId, Val} <- Attrs, KeyId =/= Key],
 	Message#iso8583_message{attributes=UpdatedAttrs}.
 	
 
+contains(FieldId, Message) ->
+	F = fun(Element, Accum) ->
+				Accum or (Element =:= FieldId)
+		end,
+	Fields = get_fields(Message),
+	lists:foldl(F, false, Fields).
