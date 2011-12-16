@@ -219,7 +219,12 @@ remove([FieldId], Message) ->
 	remove(FieldId, Message);
 remove([FieldId|Tail], Message) ->
 	UpdatedSubfield = remove(Tail, erl8583_message:get(FieldId, Message)),
-	set(FieldId, UpdatedSubfield, Message);
+	case get_fields(UpdatedSubfield) of
+		[] ->
+			remove(FieldId, Message);
+		_ ->
+			set(FieldId, UpdatedSubfield, Message)
+	end;
 remove(FieldId, #iso8583_message{values=Dict}=Message) ->
 	UpdatedDict = dict:erase(FieldId, Dict),
 	Message#iso8583_message{values=UpdatedDict}.

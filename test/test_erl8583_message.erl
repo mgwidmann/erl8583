@@ -238,3 +238,13 @@ remove_2_test() ->
 	[2, 10] = erl8583_message:get_fields(Message5),
 	?assertError(_, erl8583_message:get([10, 1], Message5)).
 	
+% Removing all the subfields, should remove the field.
+remove_3_test() ->
+	Message = erl8583_message:new(),
+	Message2 = erl8583_message:set([10, 1], "hello", Message),
+	Message3 = erl8583_message:set([10, 3], "0200", Message2),
+	Message4 = erl8583_message:set(2, "hello2", Message3),
+	Message5 = erl8583_message:remove([10, 1], Message4),
+	Message6 = erl8583_message:remove([10, 3], Message5),
+	[2] = erl8583_message:get_fields(Message6).
+	
