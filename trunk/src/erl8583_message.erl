@@ -42,16 +42,17 @@
 		 get/2, 
 		 get_numeric/2,
 		 get_mti/1,
-		 get_fields/1, 
+		 get_fields/1,
+		 remove/2,
 		 to_list/1, 
 		 from_list/1, 
-		 set_attributes/2, 
-		 get_attributes/1,
-		 clone_fields/2,
-		 remove_fields/2,
 		 is_message/1,
+		 get_attributes/1,
 		 get_attribute/2,
-		 set_attribute/3
+		 set_attributes/2, 
+		 set_attribute/3,
+		 clone_fields/2,
+		 remove_fields/2
 		]).
 
 %%
@@ -208,6 +209,21 @@ set_attributes(Attributes, #iso8583_message{attributes=[]}=Message) ->
 clone_fields(FieldIds, Message) ->
 	Clone = clone_fields(FieldIds, Message, new()),
 	erl8583_message:set_attributes(get_attributes(Message), Clone).
+
+%% @doc Removes a field from a message and returns the updated message.
+%%
+%% @spec remove(FieldId::integer()|list(integer()), iso8583message()) -> iso8583message()
+-spec(remove(FieldId::integer()|list(integer()), iso8583message()) -> iso8583message()).
+
+remove([FieldId], Message) ->
+	remove(FieldId, Message);
+remove([FieldId|Tail], Message) ->
+	UpdatedSubfield = remove(Tail, erl8583_message:get(FieldId, Message)),
+	set(FieldId, UpdatedSubfield, Message);
+remove(FieldId, #iso8583_message{values=Dict}=Message) ->
+	UpdatedDict = dict:erase(FieldId, Dict),
+	Message#iso8583_message{values=UpdatedDict}.
+	
 
 %% @doc Creates a new message from an old message where the new message
 %%      has the same field values as the original except for a

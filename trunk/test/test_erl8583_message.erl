@@ -221,3 +221,20 @@ update_attribute_test() ->
 	"3" = erl8583_message:get_attribute("baz", Msg5),
 	"3" = erl8583_message:get_attribute("foo", Msg5).
 
+remove_1_test() ->
+	Message = erl8583_message:new(),
+	Message2 = erl8583_message:set(10, "hello", Message),
+	Message3 = erl8583_message:set(0, "0200", Message2),
+	Message4 = erl8583_message:set(2, "hello2", Message3),
+	Message5 = erl8583_message:remove(2, Message4),
+	[0, 10] = erl8583_message:get_fields(Message5).
+
+remove_2_test() ->
+	Message = erl8583_message:new(),
+	Message2 = erl8583_message:set([10, 1], "hello", Message),
+	Message3 = erl8583_message:set([10, 3], "0200", Message2),
+	Message4 = erl8583_message:set(2, "hello2", Message3),
+	Message5 = erl8583_message:remove([10, 1], Message4),
+	[2, 10] = erl8583_message:get_fields(Message5),
+	?assertError(_, erl8583_message:get([10, 1], Message5)).
+	
