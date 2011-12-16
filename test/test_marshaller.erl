@@ -40,7 +40,7 @@ marshal_end(_Message, Marshalled) ->
 	"Start" ++ Marshalled ++ "End".
 
 unmarshal_end(Message, _Marshalled) ->
-	erl8583_message:remove_fields([1], Message).
+	erl8583_message:remove(1, Message).
 
 marshal_init(Message) ->
 	{"X", erl8583_message:set(0, "0110", Message)}.

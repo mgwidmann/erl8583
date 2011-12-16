@@ -157,7 +157,7 @@ marshal_end(_Message, Marshalled) ->
 -spec(unmarshal_end(iso8583message(), Marshalled::list(byte())) -> iso8583message()).
 
 unmarshal_end(Message, []) ->
-	erl8583_message:remove_fields([1], Message).
+	erl8583_message:remove(1, Message).
 
 %%
 %% Local Functions

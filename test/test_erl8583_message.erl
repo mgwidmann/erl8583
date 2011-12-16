@@ -104,17 +104,6 @@ clone_fields_test() ->
 	"hello" = erl8583_message:get(10, Clone2),
 	"0200" = erl8583_message:get(0, Clone2).
 
-remove_fields_test() ->
-	Message = erl8583_message:new(),
-	Message2 = erl8583_message:set(10, "hello", Message),
-	Message3 = erl8583_message:set(0, "0220", Message2),
-	Message4 = erl8583_message:set(2, "hello2", Message3),
-	Message5 = erl8583_message:set(3, "hello3", Message4),
-	UpdatedMessage = erl8583_message:remove_fields([2, 3], Message5),
-	[0, 10] = erl8583_message:get_fields(UpdatedMessage),
-	"hello" = erl8583_message:get(10, UpdatedMessage),
-	"0220" = erl8583_message:get(0, UpdatedMessage).
-
 get_list1_test() ->
 	Message1 = erl8583_message:new(),
 	Message2 = erl8583_message:set(4, "baz", Message1),
@@ -247,4 +236,10 @@ remove_3_test() ->
 	Message5 = erl8583_message:remove([10, 1], Message4),
 	Message6 = erl8583_message:remove([10, 3], Message5),
 	[2] = erl8583_message:get_fields(Message6).
-	
+
+% Removing a non-existent field is not an error.
+remove_4_test() ->
+	Message = erl8583_message:new(),
+	erl8583_message:remove(1, Message),
+	erl8583_message:remove([1], Message),	
+	erl8583_message:remove([1, 2], Message).
