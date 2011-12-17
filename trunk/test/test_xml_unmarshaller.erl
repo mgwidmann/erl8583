@@ -57,12 +57,12 @@ xml_unmarshal_complex_test() ->
 
 xml_unmarshal_with_attributes_test() ->
 	Message = erl8583_marshaller:unmarshal("<isomsg foo=\"bar\"""><field id=\"0\" value=\"0100\"/></isomsg>", ?MARSHALLER_XML),
-	[{"foo", "bar"}] = erl8583_message:get_attributes(Message).
+	["foo"] = erl8583_message:get_attribute_keys(Message).
 
 xml_unmarshal_with_attributes2_test() ->
 	Message = erl8583_marshaller:unmarshal("<isomsg><field id=\"0\" value=\"0200\"/><isomsg id=\"48\" foo=\"bar\"""/></isomsg>", ?MARSHALLER_XML),
 	Field = erl8583_message:get(48, Message),
-	[{"foo", "bar"}] = erl8583_message:get_attributes(Field).
+	["foo"] = erl8583_message:get_attribute_keys(Field).
 	
 xml_unmarshal_complex2_test() ->
 	Message = erl8583_marshaller:unmarshal("<isomsg><field id=\"0\" value=\"0100\"/><isomsg id=\"48\"><isomsg id=\"105\" baz=\"hello\"""/></isomsg></isomsg>", ?MARSHALLER_XML),
@@ -71,7 +71,7 @@ xml_unmarshal_complex2_test() ->
 	[105] = erl8583_message:get_fields(Message2),
 	Message3 = erl8583_message:get(105, Message2),
 	[] = erl8583_message:get_fields(Message3),
-	[{"baz", "hello"}] = erl8583_message:get_attributes(Message3).
+	["baz"] = erl8583_message:get_attribute_keys(Message3).
 	
 foo() ->
 	{ok, Sock} = gen_tcp:connect("localhost", 8000, [list, {packet, 0}, {active, true}]),
@@ -88,8 +88,8 @@ foo() ->
 unmarshal_wrapping_test() ->
 	Marshalled = "<isomsg foo=\"bar\" baz=\"2\"></isomsg>",
 	{Message, Marshalled} = erl8583_marshaller_xml:unmarshal_init(erl8583_message:new(), Marshalled),
-	2 = length(erl8583_message:get_attributes(Message)),
-	[] = erl8583_message:get_attributes(Message) -- [{"foo", "bar"}, {"baz", "2"}].
+	2 = length(erl8583_message:get_attribute_keys(Message)),
+	[] = erl8583_message:get_attribute_keys(Message) -- ["foo", "baz"].
 
 unmarshal_bitmap_test() ->
 	Marshalled = "<isomsg><field id=\"0\" value=\"3\"/><!-- hello --><field id=\"2\" value=\"3\"/><field id=\"50\" value=\"3\"/></isomsg>",
