@@ -25,8 +25,8 @@ xml_marshal_simple_test() ->
 	IsoMsg2 = erl8583_marshaller:unmarshal(Marshalled, ?MARSHALLER_XML).
 
 xml_marshal_complex_test() ->
-	BitMap = erl8583_message:from_list([{1, "foo"}, {2, "bar"}]),
-	IsoMsg = erl8583_message:from_list([{0, "0100"}, {1, "0200"}, {3, "333333"}, {48, BitMap} ]),
+	BitMap = from_list([{1, "foo"}, {2, "bar"}]),
+	IsoMsg = from_list([{0, "0100"}, {1, "0200"}, {3, "333333"}, {48, BitMap} ]),
 	Marshalled = erl8583_marshaller:marshal(IsoMsg, ?MARSHALLER_XML),
 	IsoMsg = erl8583_marshaller:unmarshal(Marshalled, ?MARSHALLER_XML).
 
@@ -38,9 +38,9 @@ xml_marshal_with_attributes_test() ->
 	IsoMsg3 = erl8583_marshaller:unmarshal(Marshalled, ?MARSHALLER_XML).
 
 xml_marshal_complex_attributes_test() ->
-	BitMap = erl8583_message:from_list([{1, "foo"}, {2, "bar"}]),
+	BitMap = from_list([{1, "foo"}, {2, "bar"}]),
 	BitMap2 = erl8583_message:set_attributes([{"foo","bar"},{"hello","world"}], BitMap),
-	IsoMsg = erl8583_message:from_list([{1, "0200"}, {3, "333333"}, {48, BitMap2} ]),
+	IsoMsg = from_list([{1, "0200"}, {3, "333333"}, {48, BitMap2} ]),
 	IsoMsg2 = erl8583_message:set(0, "0110", IsoMsg),
 	Marshalled = erl8583_marshaller:marshal(IsoMsg2, ?MARSHALLER_XML),
 	IsoMsg3 = erl8583_marshaller:unmarshal(Marshalled, ?MARSHALLER_XML),
@@ -48,9 +48,9 @@ xml_marshal_complex_attributes_test() ->
 	BitMap2 = erl8583_message:get(48, IsoMsg3).
 
 xml_marshal_complex_attributes_b_test() ->
-	BitMap = erl8583_message:from_list([{1, "foo"}, {2, "bar"}]),
+	BitMap = from_list([{1, "foo"}, {2, "bar"}]),
 	BitMap2 = erl8583_message:set_attributes([{"foo","bar"},{"hello","world"}], BitMap),
-	IsoMsg = erl8583_message:from_list([{1, "0200"}, {3, "333333"}, {48, BitMap2} ]),
+	IsoMsg = from_list([{1, "0200"}, {3, "333333"}, {48, BitMap2} ]),
 	IsoMsg2 = erl8583_message:set(0, "0110", IsoMsg),
 	Marshalled = erl8583_marshaller_xml:marshal(IsoMsg2),
 	IsoMsg3 = erl8583_marshaller_xml:unmarshal(Marshalled),
@@ -67,4 +67,11 @@ xml_marshal_binary_test() ->
 %%
 %% Local Functions
 %%
+from_list(List) ->
+	from_list(List, erl8583_message:new()).
+
+from_list([], Message) ->
+	Message;
+from_list([{Key, Value} | Tail], Message) ->
+	from_list(Tail, erl8583_message:set(Key, Value, Message)).
 
