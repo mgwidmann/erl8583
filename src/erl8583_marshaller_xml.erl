@@ -90,10 +90,12 @@ marshal_field(FieldId, FieldValue, _EncodingRules) when is_binary(FieldValue) ->
 marshal_field(FieldId, FieldValue, _EncodingRules) ->
 	true = erl8583_message:is_message(FieldValue),
 	Id = integer_to_list(FieldId),
+	AttrKeys = erl8583_message:get_attribute_keys(FieldValue),
+	Attrs = [{Key, erl8583_message:get_attribute(Key, FieldValue)} || Key <- AttrKeys],
 	"<isomsg id=\"" ++ 
 		Id ++ 
 		"\"" ++
-		encode_attributes(erl8583_message:get_attributes(FieldValue)) ++
+		encode_attributes(Attrs) ++
 		">\n" ++
 		erl8583_marshaller:marshal(FieldValue, [{field_marshaller, ?MODULE}, {mti_marshaller, ?MODULE}]) ++
 		"</isomsg>\n".
@@ -121,8 +123,10 @@ unmarshal_field(FieldId, Marshalled, _EncodingRule) ->
 -spec(marshal_end(iso8583message(), string()) -> string()).
 
 marshal_end(Message, Marshalled) ->
+	AttrKeys = erl8583_message:get_attribute_keys(Message),
+	Attrs = [{Key, erl8583_message:get_attribute(Key, Message)} || Key <- AttrKeys],
 	"<isomsg" ++ 
-		encode_attributes(erl8583_message:get_attributes(Message)) ++ 
+		encode_attributes(Attrs) ++ 
 		">\n" ++ 
 		Marshalled ++ 
 		"</isomsg>\n".

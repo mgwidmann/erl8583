@@ -44,7 +44,7 @@
 		 remove/2,
 		 set_attribute/3,
 		 get_attribute/2,
-		 get_attributes/1,
+		 get_attribute_keys/1,
 		 is_message/1
 		]).
 
@@ -110,33 +110,32 @@ get(FieldId, #iso8583_message{values=Dict}) when is_integer(FieldId) ->
 get_fields(#iso8583_message{values=Dict}) ->
 	lists:sort(dict:fetch_keys(Dict)).
 
-%% @doc Returns a list of attributes of a message.
+%% @doc Returns a list of attribute keys for a message.
 %%
-%% @spec get_attributes(iso8583message()) -> list(iso8583attribute())
--spec(get_attributes(iso8583message()) -> list(iso8583attribute())).
+%% @spec get_attribute_keys(iso8583message()) -> list(any())
+-spec(get_attribute_keys(iso8583message()) -> list(any())).
 
-get_attributes(#iso8583_message{attributes=Attrs}) ->
-	Attrs.
+get_attribute_keys(#iso8583_message{attributes=Attrs}) ->
+	[Key || {Key, _Value} <- Attrs].
 
 %% @doc Gets the value of an attribute of a message.
 %%
-%% @spec get_attribute(string(), iso8583message()) -> string()
--spec(get_attribute(string(), iso8583message()) -> string()).
+%% @spec get_attribute(any(), iso8583message()) -> any()
+-spec(get_attribute(any(), iso8583message()) -> any()).
 
 get_attribute(Key, #iso8583_message{attributes=Attrs}) ->
 	[Result] = [Value || {KeyId, Value} <- Attrs, KeyId =:= Key],
 	Result.
 
-%% @doc Sets the value of an attribute of a message. The attribute must
-%%      not have been previously set.
+%% @doc Sets the value of an attribute of a message.
 %%
-%% @spec set_attribute(string(), string(), iso8583message()) -> iso8583message()
--spec(set_attribute(string(), string(), iso8583message()) -> iso8583message()).
+%% @spec set_attribute(any(), any(), iso8583message()) -> iso8583message()
+-spec(set_attribute(any(), any(), iso8583message()) -> iso8583message()).
 
 set_attribute(Key, Value, Message) ->
 	UpdatedMessage = delete_attribute(Key, Message),
 	Attrs = UpdatedMessage#iso8583_message.attributes,
-	UpdatedMessage#iso8583_message{attributes=[{Key, Value}] ++ Attrs}.
+	UpdatedMessage#iso8583_message{attributes=Attrs ++ [{Key, Value}]}.
 	
 %% @doc Removes a field from a message and returns the updated message.
 %%

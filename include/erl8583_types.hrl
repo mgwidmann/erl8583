@@ -19,12 +19,6 @@
 %% How a field is encoded.
 -type(field_encoding() :: {n|b|an|ans|x_n|ns|z, fixed|llvar|lllvar, max_length()}).
 
-%% An attribute of an ISO 8583 message is a {Key, Value} pair.
-%%
-%% @type iso8583attribute() = {string(), string()}. An attribute expressed as
-%% a {Key, Value} pair.
--type(iso8583attribute() :: {string(), string()}).
-
 %% An encapsulation of an ISO 8583 message.
 %%
 %% @type iso8583message() = #iso8583_message{attributes=[iso8583attribute()], values=dict()}. An 

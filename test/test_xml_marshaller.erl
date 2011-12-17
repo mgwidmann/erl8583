@@ -46,8 +46,8 @@ xml_marshal_complex_attributes_test() ->
 	IsoMsg3 = erl8583_marshaller:unmarshal(Marshalled, ?MARSHALLER_XML),
 	[0, 1, 3, 48] = erl8583_message:get_fields(IsoMsg3),
 	BitMap2b = erl8583_message:get(48, IsoMsg3),
-	Attrs2b = lists:sort(erl8583_message:get_attributes(BitMap2b)),
-	Attrs2b = lists:sort(erl8583_message:get_attributes(BitMap2)).
+	Attrs2b = lists:sort(erl8583_message:get_attribute_keys(BitMap2b)),
+	Attrs2b = lists:sort(erl8583_message:get_attribute_keys(BitMap2)).
 
 
 xml_marshal_complex_attributes_b_test() ->
@@ -59,8 +59,8 @@ xml_marshal_complex_attributes_b_test() ->
 	IsoMsg3 = erl8583_marshaller_xml:unmarshal(Marshalled),
 	[0, 1, 3, 48] = erl8583_message:get_fields(IsoMsg3),
 	BitMap2b = erl8583_message:get(48, IsoMsg3),
-	Attrs2b = lists:sort(erl8583_message:get_attributes(BitMap2b)),
-	Attrs2b = lists:sort(erl8583_message:get_attributes(BitMap2)).
+	Attrs2b = lists:sort(erl8583_message:get_attribute_keys(BitMap2b)),
+	Attrs2b = lists:sort(erl8583_message:get_attribute_keys(BitMap2)).
 
 xml_marshal_binary_test() ->
 	IsoMsg1 = erl8583_message:new(),

@@ -62,12 +62,6 @@ get_fields_test() ->
 	Message3 = erl8583_message:set(0, "0200", Message2),
 	?assertEqual([0, 180], erl8583_message:get_fields(Message3)).
 
-get_attributes_test() ->
-	Msg1 = erl8583_message:new(),
-	Msg2 = erl8583_message:set_attribute("foo", "bar", Msg1),
-	Msg3 = erl8583_message:set_attribute("hello", "world", Msg2),
-	[{"hello", "world"}, {"foo", "bar"}] = erl8583_message:get_attributes(Msg3).
-
 update_test() ->
 	Msg = erl8583_message:new(),
 	UpdatedMsg = erl8583_message:set(3, "foo", Msg),
@@ -208,3 +202,13 @@ bad_field_value_3_test() ->
 bad_field_value_4_test() ->
 	Message = erl8583_message:new(),
 	?assertThrow(_, erl8583_message:set(1, [3, 2, a, 7], Message)).
+
+% Attributes must be returned in the order that they're stored.
+get_attributes_ordering_test() ->
+	Message1 = erl8583_message:new(),
+	Message2 = erl8583_message:set_attribute("b", "1", Message1),
+	Message3 = erl8583_message:set_attribute("a", "1", Message2),
+	Message4 = erl8583_message:set_attribute("c", "1", Message3),
+	["b", "a", "c"] = erl8583_message:get_attribute_keys(Message4).
+
+	

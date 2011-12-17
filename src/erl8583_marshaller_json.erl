@@ -247,11 +247,12 @@ encode_value(Value) ->
 	"{" ++ encode_values(KeyValueList, []) ++ "}".
 
 marshal_attributes(Message) ->
-	Attrs = erl8583_message:get_attributes(Message),
-	case Attrs of
+	AttrKeys = erl8583_message:get_attribute_keys(Message),
+	case AttrKeys of
 		[] ->
 			[];
 		_ ->
+			Attrs = lists:reverse([{Key, erl8583_message:get_attribute(Key, Message)} || Key <- AttrKeys]),
 			", \"attributes\" : {" ++ marshal_attributes_list(Attrs) ++ "}"
 	end.
 
