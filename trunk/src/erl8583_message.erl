@@ -62,11 +62,11 @@ new() ->
 	#iso8583_message{attributes=[]}.
 
 %% @doc Sets the value of a field in a message and returns an updated
-%%      message. If the value for the field is already set, an exception
-%%      is thrown. The field can be specified as an integer or as a
+%%      message. The field can be specified as an integer or as a
 %%      list of integers.  A list of integers indicates that
 %%      some field is a submessage; e.g. [127, 2] would indicate field 2
-%%      in field 127 of the original message.
+%%      in field 127 of the original message. The value must be a 
+%%      string, a binary or a nested message.
 %%
 %% @spec set(FieldId::integer()|list(integer()), iso8583field_value(), iso8583message()) -> iso8583message()
 -spec(set(FieldId::integer()|list(integer()), iso8583field_value(), iso8583message()) -> iso8583message()).
@@ -83,6 +83,7 @@ set([FieldId|Tail], FieldValue, Message) when is_integer(FieldId) ->
 	Message3 = set(Tail, FieldValue, Message2),
 	set(FieldId, Message3, Message);
 set(FieldId, FieldValue, #iso8583_message{values=Dict}=Message) when is_integer(FieldId) andalso FieldId >= 0 ->
+	ok = validate_field_value(FieldValue),
 	Message#iso8583_message{values=dict:store(FieldId, FieldValue, Dict)}.
 
 %% @doc Gets the value of a field from a message given a field ID or a list
@@ -205,3 +206,22 @@ is_message(_NonMessage) ->
 delete_attribute(Key, #iso8583_message{attributes=Attrs} = Message) ->
 	UpdatedAttrs = [{KeyId, Val} || {KeyId, Val} <- Attrs, KeyId =/= Key],
 	Message#iso8583_message{attributes=UpdatedAttrs}.
+
+validate_field_value(Value) when is_binary(Value) ->
+	ok;
+validate_field_value([]) ->
+	ok;
+validate_field_value([Char|Tail]) ->
+	case is_integer(Char) andalso (Char >= 0) of
+		true ->
+			validate_field_value(Tail);
+		false ->
+			throw({"Invalid erl8583_message value.", Char})
+	end;
+validate_field_value(Value) ->
+	case is_message(Value) of
+		true ->
+			ok;
+		false ->
+			throw({"Invalid erl8583_message value.", Value})
+	end.
