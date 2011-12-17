@@ -62,17 +62,10 @@ get_fields_test() ->
 	Message3 = erl8583_message:set(0, "0200", Message2),
 	?assertEqual([0, 180], erl8583_message:get_fields(Message3)).
 
-%% Test to_list.
-to_list_test() ->
-	Message = erl8583_message:new(),
-	Message2 = erl8583_message:set(0, "0200", Message),
-	Message3 = erl8583_message:set(39, 0, Message2),
-	[{0, "0200"}, {39, 0}] = erl8583_message:to_list(Message3).
-
 from_list_test() ->
 	Message = erl8583_message:from_list([{0, "0200"}, {39, 0}]),
-	#iso8583_message{attributes=[]} = Message,
-	[{0, "0200"}, {39, 0}] = erl8583_message:to_list(Message).
+	#iso8583_message{attributes=[]} = Message.
+	%[{0, "0200"}, {39, 0}] = erl8583_message:to_list(Message).
 
 get_attributes_test() ->
 	Msg1 = erl8583_message:new(),

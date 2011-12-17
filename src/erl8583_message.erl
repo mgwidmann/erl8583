@@ -44,7 +44,6 @@
 		 get_mti/1,
 		 get_fields/1,
 		 remove/2,
-		 to_list/1, 
 		 from_list/1, 
 		 is_message/1,
 		 get_attributes/1,
@@ -143,15 +142,6 @@ get_numeric(FieldId, Message) ->
 
 get_fields(#iso8583_message{values=Dict}) ->
 	lists:sort(dict:fetch_keys(Dict)).
-
-%% @doc Returns an encoding of a message as a list of
-%%      {Field, Value} pairs.
-%%
-%% @spec to_list(iso8583message()) -> list({integer(), iso8583field_value()})
--spec(to_list(iso8583message()) -> list({integer(), iso8583field_value()})).
-
-to_list(#iso8583_message{values=Dict}) ->
-	lists:sort(dict:to_list(Dict)).
 
 %% @doc Returns a list of attributes of a message.
 %%
