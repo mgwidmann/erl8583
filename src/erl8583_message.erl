@@ -45,6 +45,7 @@
 		 set_attribute/3,
 		 get_attribute/2,
 		 get_attribute_keys/1,
+		 remove_attribute/2,
 		 is_message/1
 		]).
 
@@ -133,7 +134,7 @@ get_attribute(Key, #iso8583_message{attributes=Attrs}) ->
 -spec(set_attribute(any(), any(), iso8583message()) -> iso8583message()).
 
 set_attribute(Key, Value, Message) ->
-	UpdatedMessage = delete_attribute(Key, Message),
+	UpdatedMessage = remove_attribute(Key, Message),
 	Attrs = UpdatedMessage#iso8583_message.attributes,
 	UpdatedMessage#iso8583_message{attributes=Attrs ++ [{Key, Value}]}.
 	
@@ -161,6 +162,14 @@ remove(FieldId, #iso8583_message{values=Dict}=Message) ->
 	UpdatedDict = dict:erase(FieldId, Dict),
 	Message#iso8583_message{values=UpdatedDict}.
 	
+%% @doc Removes an attribute of a message.
+%%
+%% @spec remove_attribute(any(), iso8583message()) -> iso8583message()
+-spec(remove_attribute(any(), iso8583message()) -> iso8583message()).
+
+remove_attribute(Key, #iso8583_message{attributes=Attrs} = Message) ->
+	UpdatedAttrs = [{KeyId, Val} || {KeyId, Val} <- Attrs, KeyId =/= Key],
+	Message#iso8583_message{attributes=UpdatedAttrs}.
 
 %% @doc A convenient function for setting the message type identifier (MTI)
 %%      of a message.
@@ -193,10 +202,6 @@ is_message(_NonMessage) ->
 %%
 %% Local Functions
 %%
-delete_attribute(Key, #iso8583_message{attributes=Attrs} = Message) ->
-	UpdatedAttrs = [{KeyId, Val} || {KeyId, Val} <- Attrs, KeyId =/= Key],
-	Message#iso8583_message{attributes=UpdatedAttrs}.
-
 validate_field_value(Value) when is_binary(Value) ->
 	ok;
 validate_field_value([]) ->
