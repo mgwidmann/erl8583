@@ -44,7 +44,7 @@
 		 get_mti/1,
 		 get_fields/1,
 		 remove/2,
-		 from_list/1, 
+		 %from_list/1, 
 		 is_message/1,
 		 get_attributes/1,
 		 get_attribute/2,
@@ -171,15 +171,6 @@ set_attribute(Key, Value, Message) ->
 	Attrs = UpdatedMessage#iso8583_message.attributes,
 	UpdatedMessage#iso8583_message{attributes=[{Key, Value}] ++ Attrs}.
 	
-%% @doc Constructs an ISO 8583 message from a list
-%%      of {Id, Value} pairs.
-%%
-%% @spec from_list({integer(), iso8583field_value()})-> iso8583message()
--spec(from_list({integer(), iso8583field_value()})-> iso8583message()).
-
-from_list(List) ->
-	from_list(List, new()).
-
 %% @doc Sets the attributes for a message.
 %%
 %% @spec set_attributes(list(iso8583attribute()), iso8583message())-> iso8583message()
@@ -255,11 +246,6 @@ is_message(_NonMessage) ->
 %%
 %% Local Functions
 %%
-from_list([], Result) ->
-	Result;
-from_list([{Key, Value}|Tail], Result) ->
-	from_list(Tail, set(Key, Value, Result)).
-
 clone_fields([], _Msg, Result) ->
 	Result;
 clone_fields([FieldId|Tail], Msg, Result) ->
