@@ -211,4 +211,12 @@ get_attributes_ordering_test() ->
 	Message4 = erl8583_message:set_attribute("c", "1", Message3),
 	["b", "a", "c"] = erl8583_message:get_attribute_keys(Message4).
 
+remove_attributes_test() ->
+	Message1 = erl8583_message:new(),
+	Message2 = erl8583_message:set_attribute("b", "1", Message1),
+	Message3 = erl8583_message:set_attribute("a", "1", Message2),
+	Message4 = erl8583_message:set_attribute("c", "1", Message3),
+	Message5 = erl8583_message:set_attribute("d", "1", Message4),
+	Message6 = erl8583_message:remove_attribute("c", Message5),
+	["b", "a", "d"] = erl8583_message:get_attribute_keys(Message6).
 	
