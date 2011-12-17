@@ -193,3 +193,23 @@ remove_4_test() ->
 	erl8583_message:remove(1, Message),
 	erl8583_message:remove([1], Message),	
 	erl8583_message:remove([1, 2], Message).
+
+% The value of a field can't be an atom
+bad_field_value_1_test() ->
+	Message = erl8583_message:new(),
+	?assertThrow(_, erl8583_message:set(1, foobar, Message)).
+
+% The value of a field can't be an integer
+bad_field_value_2_test() ->
+	Message = erl8583_message:new(),
+	?assertThrow(_, erl8583_message:set(1, 3, Message)).
+
+% The value of a field can't be a list with negative values
+bad_field_value_3_test() ->
+	Message = erl8583_message:new(),
+	?assertThrow(_, erl8583_message:set(1, [3, 2, -5, 7], Message)).
+
+% The value of a field can't be a list with non-integer values
+bad_field_value_4_test() ->
+	Message = erl8583_message:new(),
+	?assertThrow(_, erl8583_message:set(1, [3, 2, a, 7], Message)).

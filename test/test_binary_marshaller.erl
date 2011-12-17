@@ -18,9 +18,9 @@
 %%
 %% API Functions
 %%
-marshal_field(3, 3, _EncodingRules) ->
+marshal_field(3, "3", _EncodingRules) ->
 	[3];
-marshal_field(4, 4, _EncodingRules) ->
+marshal_field(4, "4", _EncodingRules) ->
 	[4];
 marshal_field(0, "0200", _EncodingRules) ->
 	[255];
@@ -179,16 +179,16 @@ field_101_test() ->
 custom_marshaller_test() ->
 	Msg1 = erl8583_message:new(),
 	Msg2 = erl8583_message:set(0, "0200", Msg1),
-	Msg3 = erl8583_message:set(3, 3, Msg2),
-	Msg4 = erl8583_message:set(4, 4, Msg3),
+	Msg3 = erl8583_message:set(3, "3", Msg2),
+	Msg4 = erl8583_message:set(4, "4", Msg3),
 	[255, 48, 0, 0, 0, 0, 0, 0, 0, 3, 4] 
 		= erl8583_marshaller:marshal(Msg4, [{mti_marshaller, ?MODULE}, {field_marshaller, ?MODULE}, {bitmap_marshaller, erl8583_marshaller_binary}]).
 
 custom_bitmap_test() ->
 	Msg1 = erl8583_message:new(),
 	Msg2 = erl8583_message:set(0, "0200", Msg1),
-	Msg3 = erl8583_message:set(3, 3, Msg2),
-	Msg4 = erl8583_message:set(4, 4, Msg3),
+	Msg3 = erl8583_message:set(3, "3", Msg2),
+	Msg4 = erl8583_message:set(4, "4", Msg3),
 	[255, 254, 3, 4] 
 		= erl8583_marshaller:marshal(Msg4, [{mti_marshaller, ?MODULE}, {field_marshaller, ?MODULE}, {bitmap_marshaller, ?MODULE}]).
 	
