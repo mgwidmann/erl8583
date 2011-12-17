@@ -80,18 +80,6 @@ update_test() ->
 	ChangedMsg = erl8583_message:set(3, "bar", UpdatedMsg),
 	"bar" = erl8583_message:get(3, ChangedMsg).
 
-clone_fields_test() ->
-	Message = erl8583_message:new(),
-	Message2 = erl8583_message:set(10, "hello", Message),
-	Message3 = erl8583_message:set(0, "0200", Message2),
-	Message4 = erl8583_message:set(2, "hello2", Message3),
-	Clone1 = erl8583_message:clone_fields([0, 2, 10], Message4),
-	[0, 2, 10] = erl8583_message:get_fields(Clone1),
-	Clone2 = erl8583_message:clone_fields([0, 10], Message4),
-	[0, 10] = erl8583_message:get_fields(Clone2),
-	"hello" = erl8583_message:get(10, Clone2),
-	"0200" = erl8583_message:get(0, Clone2).
-
 get_list1_test() ->
 	Message1 = erl8583_message:new(),
 	Message2 = erl8583_message:set(4, "baz", Message1),
@@ -170,12 +158,6 @@ update_numeric_test() ->
 is_message_test() ->
 	false = erl8583_message:is_message(3),
 	true = erl8583_message:is_message(#iso8583_message{}).
-
-clone_with_attributes_test() ->
-	Msg1 = erl8583_message:new(),
-	Msg2 = erl8583_message:set_attribute("foo", "bar", Msg1),
-	Msg3 = erl8583_message:clone_fields([], Msg2),
-	[{"foo", "bar"}] = erl8583_message:get_attributes(Msg3).
 
 get_attribute_test() ->
 	Msg1 = erl8583_message:new(),
