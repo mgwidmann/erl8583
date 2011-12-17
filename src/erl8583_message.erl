@@ -44,13 +44,11 @@
 		 get_mti/1,
 		 get_fields/1,
 		 remove/2,
-		 %from_list/1, 
 		 is_message/1,
 		 get_attributes/1,
 		 get_attribute/2,
 		 set_attributes/2, 
-		 set_attribute/3,
-		 clone_fields/2
+		 set_attribute/3
 		]).
 
 %%
@@ -179,17 +177,6 @@ set_attribute(Key, Value, Message) ->
 set_attributes(Attributes, #iso8583_message{attributes=[]}=Message) ->
 	Message#iso8583_message{attributes=Attributes}.
 
-%% @doc Creates a new message from an old one where the new message has
-%%      the same field values as the original message for a list of
-%%      specified field IDs.
-%%
-%% @spec clone_fields(list(integer()), iso8583message()) -> iso8583message()
--spec(clone_fields(list(integer()), iso8583message()) -> iso8583message()).
-
-clone_fields(FieldIds, Message) ->
-	Clone = clone_fields(FieldIds, Message, new()),
-	erl8583_message:set_attributes(get_attributes(Message), Clone).
-
 %% @doc Removes a field from a message and returns the updated message.
 %%
 %% @spec remove(FieldId::integer()|list(integer()), iso8583message()) -> iso8583message()
@@ -246,11 +233,6 @@ is_message(_NonMessage) ->
 %%
 %% Local Functions
 %%
-clone_fields([], _Msg, Result) ->
-	Result;
-clone_fields([FieldId|Tail], Msg, Result) ->
-	clone_fields(Tail, Msg, set(FieldId, get(FieldId, Msg), Result)).
-	
 delete_attribute(Key, #iso8583_message{attributes=Attrs} = Message) ->
 	UpdatedAttrs = [{KeyId, Val} || {KeyId, Val} <- Attrs, KeyId =/= Key],
 	Message#iso8583_message{attributes=UpdatedAttrs}.

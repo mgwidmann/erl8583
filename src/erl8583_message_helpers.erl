@@ -72,7 +72,7 @@ response(Message) ->
 -spec(response(list(integer()), iso8583message()) -> iso8583message()).
 
 response(FieldIds, Message) ->
-	Clone = erl8583_message:clone_fields(FieldIds, Message),
+	Clone = clone_fields(FieldIds, Message),
 	[M1, M2, M3, M4] = erl8583_message:get(?MTI, Message),
 	if
 		M3 =:= $0 orelse M3 =:= $2 orelse M3 =:= $4 ->
@@ -86,4 +86,12 @@ response(FieldIds, Message) ->
 %%
 %% Local Functions
 %%
+clone_fields(FieldIds, Message) ->
+	Clone = clone_fields(FieldIds, Message, erl8583_message:new()),
+	erl8583_message:set_attributes(erl8583_message:get_attributes(Message), Clone).
 
+clone_fields([], _Msg, Result) ->
+	Result;
+clone_fields([FieldId|Tail], Msg, Result) ->
+	clone_fields(Tail, Msg, erl8583_message:set(FieldId, erl8583_message:get(FieldId, Msg), Result)).
+	
