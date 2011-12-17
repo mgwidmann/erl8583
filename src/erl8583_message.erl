@@ -42,11 +42,10 @@
 		 get_mti/1,
 		 get_fields/1,
 		 remove/2,
-		 is_message/1,
-		 get_attributes/1,
+		 set_attribute/3,
 		 get_attribute/2,
-		 set_attributes/2, 
-		 set_attribute/3
+		 get_attributes/1,
+		 is_message/1
 		]).
 
 %%
@@ -139,14 +138,6 @@ set_attribute(Key, Value, Message) ->
 	Attrs = UpdatedMessage#iso8583_message.attributes,
 	UpdatedMessage#iso8583_message{attributes=[{Key, Value}] ++ Attrs}.
 	
-%% @doc Sets the attributes for a message.
-%%
-%% @spec set_attributes(list(iso8583attribute()), iso8583message())-> iso8583message()
--spec(set_attributes(list(iso8583attribute()), iso8583message())-> iso8583message()).
-
-set_attributes(Attributes, #iso8583_message{attributes=[]}=Message) ->
-	Message#iso8583_message{attributes=Attributes}.
-
 %% @doc Removes a field from a message and returns the updated message.
 %%
 %% @spec remove(FieldId::integer()|list(integer()), iso8583message()) -> iso8583message()

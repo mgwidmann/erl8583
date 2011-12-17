@@ -68,11 +68,6 @@ get_attributes_test() ->
 	Msg3 = erl8583_message:set_attribute("hello", "world", Msg2),
 	[{"hello", "world"}, {"foo", "bar"}] = erl8583_message:get_attributes(Msg3).
 
-set_attributes_test() ->
-	Msg = erl8583_message:new(),
-	UpdatedMsg = erl8583_message:set_attributes([{"foo", "bar"}, {"hello", "world"}], Msg),
-	[{"foo", "bar"}, {"hello", "world"}] = erl8583_message:get_attributes(UpdatedMsg).
-
 update_test() ->
 	Msg = erl8583_message:new(),
 	UpdatedMsg = erl8583_message:set(3, "foo", Msg),
