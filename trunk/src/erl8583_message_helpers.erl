@@ -87,8 +87,7 @@ response(FieldIds, Message) ->
 %% Local Functions
 %%
 clone_fields(FieldIds, Message) ->
-	Clone = clone_fields(FieldIds, Message, erl8583_message:new()),
-	erl8583_message:set_attributes(erl8583_message:get_attributes(Message), Clone).
+	clone_fields(FieldIds, Message, erl8583_message:new()).
 
 clone_fields([], _Msg, Result) ->
 	Result;

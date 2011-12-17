@@ -157,7 +157,7 @@ unmarshal_init(Message, Marshalled) ->
 	{Xml, []} = xmerl_scan:string(Marshalled),
 	isomsg = Xml#xmlElement.name,
 	Attrs = Xml#xmlElement.attributes,
-	Msg = erl8583_message:set_attributes(attributes_to_list(Attrs, []), Message),
+	Msg = set_attributes(lists:reverse(attributes_to_list(Attrs, [])), Message),
 	{Msg, Marshalled}.
 
 %% @doc Returns an empty string and the message as a 2-tuple.
@@ -218,6 +218,11 @@ attributes_to_list([H|T], Result) ->
 	Value = H#xmlAttribute.value,
 	attributes_to_list(T, [{Id, Value} | Result]).
 
+set_attributes([], Message) ->
+	Message;
+set_attributes([{Key, Value} | Tail], Message) ->
+	set_attributes(Tail, erl8583_message:set_attribute(Key, Value, Message)).
+
 get_attribute_value(Key, [{Key, Value} | _Tail]) ->
 	Value;
 get_attribute_value(Key, [_Head|Tail]) ->
@@ -266,7 +271,7 @@ unmarshal_field(FieldElement) ->
 			AttrsExceptId = AttributesList -- [{"id", Id}],
 			ChildNodes = FieldElement#xmlElement.content,
 			Message1 = erl8583_message:new(),
-			Message2 = erl8583_message:set_attributes(AttrsExceptId, Message1),
+			Message2 = set_attributes(lists:reverse(AttrsExceptId), Message1),
 			unmarshal_complex(ChildNodes, Message2)
 	end.	
 

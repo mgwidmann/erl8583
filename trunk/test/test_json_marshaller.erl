@@ -83,14 +83,14 @@ marshal_end_test() ->
 
 marshal_end_attrs_test() ->
 	Message1 = erl8583_message:new(),
-	Message2 = erl8583_message:set_attributes([{"foo", "1"}, {"bar", "2"}], Message1),
+	Message2 = set_attributes(lists:reverse([{"foo", "1"}, {"bar", "2"}]), Message1),
 	"{\"fields\" : {}, \"attributes\" : {\"foo\" : \"1\", \"bar\" : \"2\"}}" = erl8583_marshaller_json:marshal_end(Message2, "").
 
 marshal_unmarshal_attrs_test() ->
 	Message1 = erl8583_message:new(),
 	Message2 = erl8583_message:set(0, "0200", Message1),
 	Message3 = erl8583_message:set(2, "12345678", Message2),
-	Message4 = erl8583_message:set_attributes([{"foo", "1"}, {"bar", "2"}], Message3),
+	Message4 = set_attributes(lists:reverse([{"foo", "1"}, {"bar", "2"}]), Message3),
 	Marshalled = erl8583_marshaller_json:marshal(Message4),
 	Message4 = erl8583_marshaller_json:unmarshal(Marshalled).
 
@@ -98,4 +98,7 @@ marshal_unmarshal_attrs_test() ->
 %%
 %% Local Functions
 %%
-
+set_attributes([], Message) ->
+	Message;
+set_attributes([{Key, Value} | Tail], Message) ->
+	set_attributes(Tail, erl8583_message:set_attribute(Key, Value, Message)).

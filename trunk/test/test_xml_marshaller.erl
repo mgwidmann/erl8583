@@ -39,23 +39,28 @@ xml_marshal_with_attributes_test() ->
 
 xml_marshal_complex_attributes_test() ->
 	BitMap = from_list([{1, "foo"}, {2, "bar"}]),
-	BitMap2 = erl8583_message:set_attributes([{"foo","bar"},{"hello","world"}], BitMap),
+	BitMap2 = set_attributes([{"foo","bar"},{"hello","world"}], BitMap),
 	IsoMsg = from_list([{1, "0200"}, {3, "333333"}, {48, BitMap2} ]),
 	IsoMsg2 = erl8583_message:set(0, "0110", IsoMsg),
 	Marshalled = erl8583_marshaller:marshal(IsoMsg2, ?MARSHALLER_XML),
 	IsoMsg3 = erl8583_marshaller:unmarshal(Marshalled, ?MARSHALLER_XML),
 	[0, 1, 3, 48] = erl8583_message:get_fields(IsoMsg3),
-	BitMap2 = erl8583_message:get(48, IsoMsg3).
+	BitMap2b = erl8583_message:get(48, IsoMsg3),
+	Attrs2b = lists:sort(erl8583_message:get_attributes(BitMap2b)),
+	Attrs2b = lists:sort(erl8583_message:get_attributes(BitMap2)).
+
 
 xml_marshal_complex_attributes_b_test() ->
 	BitMap = from_list([{1, "foo"}, {2, "bar"}]),
-	BitMap2 = erl8583_message:set_attributes([{"foo","bar"},{"hello","world"}], BitMap),
+	BitMap2 = set_attributes([{"foo","bar"},{"hello","world"}], BitMap),
 	IsoMsg = from_list([{1, "0200"}, {3, "333333"}, {48, BitMap2} ]),
 	IsoMsg2 = erl8583_message:set(0, "0110", IsoMsg),
 	Marshalled = erl8583_marshaller_xml:marshal(IsoMsg2),
 	IsoMsg3 = erl8583_marshaller_xml:unmarshal(Marshalled),
 	[0, 1, 3, 48] = erl8583_message:get_fields(IsoMsg3),
-	BitMap2 = erl8583_message:get(48, IsoMsg3).
+	BitMap2b = erl8583_message:get(48, IsoMsg3),
+	Attrs2b = lists:sort(erl8583_message:get_attributes(BitMap2b)),
+	Attrs2b = lists:sort(erl8583_message:get_attributes(BitMap2)).
 
 xml_marshal_binary_test() ->
 	IsoMsg1 = erl8583_message:new(),
@@ -74,4 +79,9 @@ from_list([], Message) ->
 	Message;
 from_list([{Key, Value} | Tail], Message) ->
 	from_list(Tail, erl8583_message:set(Key, Value, Message)).
+
+set_attributes([], Message) ->
+	Message;
+set_attributes([{Key, Value} | Tail], Message) ->
+	set_attributes(Tail, erl8583_message:set_attribute(Key, Value, Message)).
 

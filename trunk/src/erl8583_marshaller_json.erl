@@ -83,7 +83,7 @@ unmarshal_init(Message, Marshalled) ->
 			{struct, Attributes} = proplists:get_value(<<"attributes">>, JsonData),
 			Keys = proplists:get_keys(Attributes),
 			Attrs =[{binary_to_list(Key), binary_to_list(proplists:get_value(Key, Attributes))} || Key <- Keys],
-			{erl8583_message:set_attributes(Attrs, Message), Marshalled}
+			{set_attributes(lists:reverse(Attrs), Message), Marshalled}
 	end.
 
 %% @doc Starts the marshalling of a message and returns the
@@ -261,3 +261,7 @@ marshal_attributes_list([{Key, Value}|Tail]) ->
 	"\"" ++ Key ++ "\" : \"" ++ Value ++ "\", " ++ marshal_attributes_list(Tail).
 
 
+set_attributes([], Message) ->
+	Message;
+set_attributes([{Key, Value} | Tail], Message) ->
+	set_attributes(Tail, erl8583_message:set_attribute(Key, Value, Message)).
