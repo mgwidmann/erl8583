@@ -105,7 +105,7 @@ marshal_init(Message) ->
 
 unmarshal_mti(Marshalled) ->
 	{struct, JsonData} = mochijson2:decode(Marshalled),
-	{struct, FieldsData} = proplists:get_value(<<"fields">>, JsonData),
+	{struct, FieldsData} = proplists:get_value(<<"iso8583_fields">>, JsonData),
 	MtiBin = proplists:get_value(<<"0">>, FieldsData),
 	{binary_to_list(MtiBin), Marshalled}.
 
@@ -126,7 +126,7 @@ marshal_mti(Mti) ->
 
 unmarshal_bitmap(Marshalled) ->
 	{struct, JsonData} = mochijson2:decode(Marshalled),
-	{struct, FieldsData} = proplists:get_value(<<"fields">>, JsonData),
+	{struct, FieldsData} = proplists:get_value(<<"iso8583_fields">>, JsonData),
 	Fields = proplists:get_keys(FieldsData),
 	FieldIds = [list_to_integer(binary_to_list(Id)) || Id <- Fields] -- [0],
 	{lists:sort(FieldIds), Marshalled}.
@@ -149,7 +149,7 @@ marshal_bitmap(Message) ->
 
 unmarshal_field(FieldId, Marshalled, EncodingRules) ->
 	{struct, JsonData} = mochijson2:decode(Marshalled),
-	{struct, FieldsProps} = proplists:get_value(<<"fields">>, JsonData),
+	{struct, FieldsProps} = proplists:get_value(<<"iso8583_fields">>, JsonData),
 	FieldValue = proplists:get_value(list_to_binary(integer_to_list(FieldId)), FieldsProps),
 	case FieldValue of
 		{struct, PropList} ->
@@ -192,7 +192,7 @@ unmarshal_end(Message, _Marshalled) ->
 -spec(marshal_end(iso8583message(), string()) -> string()).
 
 marshal_end(Message, Marshalled) ->
-	"{\"fields\" : {" ++ Marshalled ++ "}" ++ marshal_attributes(Message) ++ "}".
+	"{\"iso8583_fields\" : {" ++ Marshalled ++ "}" ++ marshal_attributes(Message) ++ "}".
 
 %%
 %% Local Functions

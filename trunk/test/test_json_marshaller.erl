@@ -79,12 +79,12 @@ marshal_unmarshal_complex_test() ->
 
 marshal_end_test() ->
 	Message1 = erl8583_message:new(),
-	"{\"fields\" : {}}" = erl8583_marshaller_json:marshal_end(Message1, "").
+	"{\"iso8583_fields\" : {}}" = erl8583_marshaller_json:marshal_end(Message1, "").
 
 marshal_end_attrs_test() ->
 	Message1 = erl8583_message:new(),
 	Message2 = set_attributes(lists:reverse([{"foo", "1"}, {"bar", "2"}]), Message1),
-	"{\"fields\" : {}, \"attributes\" : {\"foo\" : \"1\", \"bar\" : \"2\"}}" = erl8583_marshaller_json:marshal_end(Message2, "").
+	"{\"iso8583_fields\" : {}, \"attributes\" : {\"foo\" : \"1\", \"bar\" : \"2\"}}" = erl8583_marshaller_json:marshal_end(Message2, "").
 
 marshal_unmarshal_attrs_test() ->
 	Message1 = erl8583_message:new(),
