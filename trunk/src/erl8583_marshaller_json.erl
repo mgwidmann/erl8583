@@ -171,7 +171,8 @@ marshal_field(FieldId, FieldValue, _EncodingRules) when is_binary(FieldValue) ->
 	", " ++ encode_id(FieldId) ++ " : " ++ encode_value(FieldValue);
 marshal_field(FieldId, FieldValue, _EncodingRules) ->
 	true = erl8583_message:is_message(FieldValue),
-	KeyValueList = erl8583_message:to_list(FieldValue),
+	Keys = erl8583_message:get_fields(FieldValue),
+	KeyValueList = [{Key, erl8583_message:get(Key, FieldValue)} || Key <- Keys],
 	", " ++ encode_id(FieldId) ++ " : " ++ "{" ++ encode_values(KeyValueList, []) ++ "}".
 
 
@@ -241,7 +242,8 @@ encode_value(Value) when is_binary(Value) ->
 	"\"" ++ erl8583_convert:binary_to_ascii_hex(Value) ++ "\"";
 encode_value(Value) ->
 	true = erl8583_message:is_message(Value),
-	KeyValueList = erl8583_message:to_list(Value),
+	Keys = erl8583_message:get_fields(Value),
+	KeyValueList = [{Key, erl8583_message:get(Key, Value)} || Key <- Keys],
 	"{" ++ encode_values(KeyValueList, []) ++ "}".
 
 marshal_attributes(Message) ->
