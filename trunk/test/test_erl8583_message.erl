@@ -135,26 +135,6 @@ update_list3_test() ->
 	"foo" = erl8583_message:get(2, SubMessage),
 	"bar" = erl8583_message:get([3, 1], SubMessage).
 
-get_numeric_test() ->
-	Message1 = erl8583_message:new(),
-	Message2 = erl8583_message:set([5, 2], "0123", Message1),
-	Message3 = erl8583_message:set(6, "77", Message2),
-	123 = erl8583_message:get_numeric([5, 2], Message3),
-	77 = erl8583_message:get_numeric(6, Message3).
-	
-set_numeric_test() ->
-	Message1 = erl8583_message:new(),
-	Message2 = erl8583_message:set_numeric([5, 2], 123, 12, Message1),
-	Message3 = erl8583_message:set_numeric(6, 77, 2, Message2),
-	"000000000123" = erl8583_message:get([5, 2], Message3),
-	"77" = erl8583_message:get(6, Message3).
-	
-update_numeric_test() ->
-	Message1 = erl8583_message:new(),
-	Message2 = erl8583_message:set_numeric([5, 2], 123, 12, Message1),
-	Message3 = erl8583_message:set_numeric([5, 2], 77, 3, Message2),
-	"077" = erl8583_message:get([5, 2], Message3).
-	
 is_message_test() ->
 	false = erl8583_message:is_message(3),
 	true = erl8583_message:is_message(#iso8583_message{}).
