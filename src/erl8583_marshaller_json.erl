@@ -76,15 +76,9 @@ unmarshal(Marshalled) ->
 
 unmarshal_init(Message, Marshalled) ->
 	{struct, JsonData} = mochijson2:decode(Marshalled),
-	case proplists:is_defined(<<"attributes">>, JsonData) of
-		false ->
-			{Message, Marshalled};
-		true ->
-			{struct, Attributes} = proplists:get_value(<<"attributes">>, JsonData),
-			Keys = proplists:get_keys(Attributes),
-			Attrs =[{binary_to_list(Key), binary_to_list(proplists:get_value(Key, Attributes))} || Key <- Keys],
-			{set_attributes(lists:reverse(Attrs), Message), Marshalled}
-	end.
+	Keys = proplists:get_keys(JsonData) -- [<<"iso8583_fields">>],
+	Attrs =[{binary_to_list(Key), binary_to_list(proplists:get_value(Key, JsonData))} || Key <- Keys],
+	{set_attributes(lists:reverse(Attrs), Message), Marshalled}.
 
 %% @doc Starts the marshalling of a message and returns the
 %%      initial marshalled data and message as a 2-tuple.
@@ -252,8 +246,8 @@ marshal_attributes(Message) ->
 		[] ->
 			[];
 		_ ->
-			Attrs = lists:reverse([{Key, erl8583_message:get_attribute(Key, Message)} || Key <- AttrKeys]),
-			", \"attributes\" : {" ++ marshal_attributes_list(Attrs) ++ "}"
+			Attrs = [{Key, erl8583_message:get_attribute(Key, Message)} || Key <- AttrKeys],
+			", " ++ marshal_attributes_list(Attrs)
 	end.
 
 marshal_attributes_list([{Key, Value}]) ->
