@@ -83,8 +83,8 @@ marshal_end_test() ->
 
 marshal_end_attrs_test() ->
 	Message1 = erl8583_message:new(),
-	Message2 = set_attributes(lists:reverse([{"foo", "1"}, {"bar", "2"}]), Message1),
-	"{\"iso8583_fields\" : {}, \"attributes\" : {\"foo\" : \"1\", \"bar\" : \"2\"}}" = erl8583_marshaller_json:marshal_end(Message2, "").
+	Message2 = set_attributes([{"foo", "1"}, {"bar", "2"}], Message1),
+	"{\"iso8583_fields\" : {}, \"foo\" : \"1\", \"bar\" : \"2\"}" = erl8583_marshaller_json:marshal_end(Message2, "").
 
 marshal_unmarshal_attrs_test() ->
 	Message1 = erl8583_message:new(),

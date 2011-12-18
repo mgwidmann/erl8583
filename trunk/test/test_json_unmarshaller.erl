@@ -75,11 +75,16 @@ unmarshal_init_no_attrs_test() ->
 	{Message, Marshalled} = erl8583_marshaller_json:unmarshal_init(Message, Marshalled).
 
 unmarshal_init_with_attrs_test() ->
-	Marshalled = "{\"attributes\" : {\"foo\" : \"bar\"}, \"iso8583_fields\" : {\"0\" : \"0200\", \"2\" : \"1234567890\", \"64\" : \"0011A0FF000000AA\"}}",
+	Marshalled = "{\"foo\" : \"bar\", \"iso8583_fields\" : {\"0\" : \"0200\", \"2\" : \"1234567890\", \"64\" : \"0011A0FF000000AA\"}}",
 	Message = erl8583_message:new(),
 	{Message2, Marshalled} = erl8583_marshaller_json:unmarshal_init(Message, Marshalled),
 	["foo"] = erl8583_message:get_attribute_keys(Message2).
 
+unmarshal_init_with_two_attrs_test() ->
+	Marshalled = "{\"foo\" : \"bar\", \"baz\" : \"bar\", \"iso8583_fields\" : {\"0\" : \"0200\", \"2\" : \"1234567890\", \"64\" : \"0011A0FF000000AA\"}}",
+	Message = erl8583_message:new(),
+	{Message2, Marshalled} = erl8583_marshaller_json:unmarshal_init(Message, Marshalled),
+	["foo", "baz"] = erl8583_message:get_attribute_keys(Message2).
 	
 unmarshal_message_test() ->
 	Msg = "{\"iso8583_fields\" : {\"0\" : \"0200\", \"2\" : \"1234567890\", \"64\" : \"0011A0FF000000AA\"}}",
