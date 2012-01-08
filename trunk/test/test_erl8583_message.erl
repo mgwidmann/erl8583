@@ -188,11 +188,6 @@ bad_field_value_2_test() ->
 	Message = erl8583_message:new(),
 	?assertError(_, erl8583_message:set(1, 3, Message)).
 
-% The value of a field can't be a list with negative values
-bad_field_value_3_test() ->
-	Message = erl8583_message:new(),
-	?assertError(_, erl8583_message:set(1, [3, 2, -5, 7], Message)).
-
 % The value of a field can't be a list with non-integer values
 bad_field_value_4_test() ->
 	Message = erl8583_message:new(),
@@ -214,4 +209,9 @@ remove_attributes_test() ->
 	Message5 = erl8583_message:set_attribute("d", "1", Message4),
 	Message6 = erl8583_message:remove_attribute("c", Message5),
 	["b", "a", "d"] = erl8583_message:get_attribute_keys(Message6).
+	
+set_string_value_test() ->
+	Message = erl8583_message:new(),
+	Message2 = erl8583_message:set(0, "0200", Message),
+	<<"0200">> = erl8583_message:get(0, Message2).
 	

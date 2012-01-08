@@ -84,7 +84,7 @@ set([FieldId|Tail], FieldValue, Message) when is_integer(FieldId) ->
 	set(FieldId, Message3, Message);
 set(FieldId, FieldValue, #iso8583_message{values=Dict}=Message) when is_integer(FieldId) andalso FieldId >= 0 ->
 	ConvertedFieldValue = convert_field_value(FieldValue),
-	Message#iso8583_message{values=dict:store(FieldId, FieldValue, Dict)}.
+	Message#iso8583_message{values=dict:store(FieldId, ConvertedFieldValue, Dict)}.
 
 %% @doc Gets the value of a field from a message given a field ID or a list
 %%      of identifiers. A list of integers indicates that
@@ -206,7 +206,8 @@ is_message(_NonMessage) ->
 %% Field values can be stored only as binaries or messages.
 convert_field_value(Value) when is_binary(Value) ->
 	Value;
+convert_field_value(Value) when is_list(Value) ->
+	unicode:characters_to_binary(Value, utf8);
 convert_field_value(Value) ->
 	true = is_message(Value),
 	Value.
-
