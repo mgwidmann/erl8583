@@ -105,10 +105,12 @@
 marshal(Message, MarshalHandlers) ->
 	OptionsRecord = parse_options(MarshalHandlers, #marshal_options{}),
 	{Marshalled1, Message1} = init_marshalling(OptionsRecord, Message),
-	Marshalled2 = Marshalled1 ++ encode_mti(OptionsRecord, Message1),
+	MarshalledMti = encode_mti(OptionsRecord, Message1),
+	Marshalled2 = <<Marshalled1/binary, MarshalledMti/binary>>,
 	{MarshalledBitmap, Message2} = encode_bitmap(OptionsRecord, Message1),
-	Marshalled3 = Marshalled2 ++ MarshalledBitmap,
-	Marshalled4 = Marshalled3 ++ encode_fields(OptionsRecord, Message2),
+	Marshalled3 = <<Marshalled2/binary, MarshalledBitmap/binary>>,
+	MarshalledFields = encode_fields(OptionsRecord, Message2),
+	Marshalled4 = <<Marshalled3/binary, MarshalledFields/binary>>,
 	end_marshalling(OptionsRecord, Message2, Marshalled4).
 
 %% @doc Unmarshals a byte sequence into an ISO 8583 message.
@@ -170,7 +172,7 @@ encode_mti(Options, Message) ->
 	MtiMarshalModule = Options#marshal_options.mti_marshaller,
 	if
 		MtiMarshalModule =:= undefined ->
-			[];
+			<<>>;
 		MtiMarshalModule =/= undefined ->
 			case erl8583_message:get_fields(Message) of
 				[0|_Fields] ->
@@ -194,7 +196,7 @@ encode_bitmap(Options, Message) ->
 	BitmapMarshalModule = Options#marshal_options.bitmap_marshaller,
 	if
 		BitmapMarshalModule =:= undefined ->
-			{[], Message};
+			{<<>>, Message};
 		BitmapMarshalModule =/= undefined ->			
 			BitmapMarshalModule:marshal_bitmap(Message)
 	end.
@@ -215,7 +217,7 @@ encode_fields(Options, Message) ->
 	FieldArranger = Options#marshal_options.field_arranger,
 	if
 		FieldMarshalModule =:= undefined ->
-			[];
+			<<>>;
 		FieldMarshalModule =/= undefined ->
 			encode(Fields, Message, FieldMarshalModule, EncodingRules, FieldArranger) 
 	end.
@@ -279,7 +281,7 @@ init_marshalling(Options, Message) ->
 	InitMarshalModule = Options#marshal_options.init_marshaller,
 	if
 		InitMarshalModule =:= undefined ->
-			{[], Message};
+			{<<>>, Message};
 		InitMarshalModule =/= undefined ->
 			InitMarshalModule:marshal_init(Message) 
 	end.
