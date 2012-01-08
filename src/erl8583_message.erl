@@ -83,12 +83,12 @@ set([FieldId|Tail], FieldValue, Message) when is_integer(FieldId) ->
 	Message3 = set(Tail, FieldValue, Message2),
 	set(FieldId, Message3, Message);
 set(FieldId, FieldValue, #iso8583_message{values=Dict}=Message) when is_integer(FieldId) andalso FieldId >= 0 ->
-	ok = validate_field_value(FieldValue),
+	ConvertedFieldValue = convert_field_value(FieldValue),
 	Message#iso8583_message{values=dict:store(FieldId, FieldValue, Dict)}.
 
 %% @doc Gets the value of a field from a message given a field ID or a list
 %%      of identifiers. A list of integers indicates that
-%%      some field is a submessage; e.g. [127, 2] would indicate field 2
+%%      some field is a submessage; e.g. [127, 2] would indicate subfield 2
 %%      in field 127 of the original message.
 %%
 %% @spec get(FieldId::integer()|list(integer()), iso8583message()) -> iso8583field_value()
@@ -202,21 +202,11 @@ is_message(_NonMessage) ->
 %%
 %% Local Functions
 %%
-validate_field_value(Value) when is_binary(Value) ->
-	ok;
-validate_field_value([]) ->
-	ok;
-validate_field_value([Char|Tail]) ->
-	case is_integer(Char) andalso (Char >= 0) of
-		true ->
-			validate_field_value(Tail);
-		false ->
-			throw({"Invalid erl8583_message value.", Char})
-	end;
-validate_field_value(Value) ->
-	case is_message(Value) of
-		true ->
-			ok;
-		false ->
-			throw({"Invalid erl8583_message value.", Value})
-	end.
+
+%% Field values can be stored only as binaries or messages.
+convert_field_value(Value) when is_binary(Value) ->
+	Value;
+convert_field_value(Value) ->
+	true = is_message(Value),
+	Value.
+
