@@ -34,7 +34,7 @@ marshal_mti(Value) ->
 
 marshal_bitmap(Message) ->
 	[0, 2,3] = erl8583_message:get_fields(Message),
-	{"bitmap = 123", erl8583_message:set(1, "1", Message)}.
+	{<<"bitmap = 123">>, erl8583_message:set(1, "1", Message)}.
 
 marshal_end(_Message, Marshalled) ->
 	"Start" ++ Marshalled ++ "End".
@@ -89,7 +89,7 @@ bitmap_test() ->
 	Message0 = erl8583_message:set(0, "0200", erl8583_message:new()),
 	Message1 = erl8583_message:set(2, "1", Message0),	
 	Message2 = erl8583_message:set(3, "1", Message1),
-	"bitmap = 123" = erl8583_marshaller:marshal(Message2, [{bitmap_marshaller, ?MODULE}]).
+	<<"bitmap = 123">> = erl8583_marshaller:marshal(Message2, [{bitmap_marshaller, ?MODULE}]).
 
 fields_test() ->
 	Message0 = erl8583_message:set(0, "0100", erl8583_message:new()),
