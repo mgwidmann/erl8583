@@ -44,14 +44,14 @@
 -spec(repeat(iso8583message()) -> iso8583message()).
 
 repeat(Message) ->
-	[M1, M2, M3, M4] = erl8583_message:get(?MTI, Message),
+	<<M1, M2, M3, M4>> = erl8583_message:get(?MTI, Message),
 	if 
 		M4 =:= $0 orelse M4 =:= $2 orelse M4 =:= $4 ->
 			M4Updated = M4 + 1;
 		M4 =:= $1 orelse M4 =:= $3 orelse M4 =:= $5 ->
 			M4Updated = M4
 	end,
-	erl8583_message:set(?MTI, [M1, M2, M3, M4Updated], Message).
+	erl8583_message:set(?MTI, <<M1, M2, M3, M4Updated>>, Message).
 
 %% @doc Creates a response message for a message where the response has
 %%      the same field values as the original message. The MTI is changed 
@@ -73,11 +73,11 @@ response(Message) ->
 
 response(FieldIds, Message) ->
 	Clone = clone_fields(FieldIds, Message),
-	[M1, M2, M3, M4] = erl8583_message:get(?MTI, Message),
+	<<M1, M2, M3, M4>> = erl8583_message:get(?MTI, Message),
 	if
 		M3 =:= $0 orelse M3 =:= $2 orelse M3 =:= $4 ->
 			% Ignore repeats.
-			erl8583_message:set(?MTI, [M1, M2, M3 + 1, (M4 div 2) * 2], Clone)
+			erl8583_message:set(?MTI, <<M1, M2, (M3 + 1), ((M4 div 2) * 2)>>, Clone)
 	end.
 
 
