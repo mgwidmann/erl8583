@@ -154,7 +154,7 @@ get_encoding_rules(Options, Message) ->
 			case erl8583_message:get_fields(Message) of
 				[0|_Fields] ->
 					Mti = erl8583_message:get(0, Message),
-					[Version|_MtiRest] = Mti,
+					<<Version, _MtiRest/binary>> = Mti,
 					case Version of
 						$0 ->
 							erl8583_fields;
@@ -178,7 +178,7 @@ encode_mti(Options, Message) ->
 				[0|_Fields] ->
 					MtiMarshalModule:marshal_mti(erl8583_message:get(0,Message));
 				_ ->
-					[]
+					<<>>
 			end
 	end.
 
@@ -223,10 +223,10 @@ encode_fields(Options, Message) ->
 	end.
 	
 encode(Fields, Msg, FieldMarshaller, EncodingRules, FieldArranger) ->
-	encode(Fields, Msg, [], FieldMarshaller, EncodingRules, FieldArranger).
+	encode(Fields, Msg, <<>>, FieldMarshaller, EncodingRules, FieldArranger).
 
 encode([], _Msg, Result, _FieldMarshaller, _EncodingRules, _FieldArranger) ->
-	lists:reverse(Result);
+	Result;
 encode(Fields, Msg, Result, FieldMarshaller, EncodingRules, FieldArranger) ->
 	if
 		FieldArranger =:= undefined ->

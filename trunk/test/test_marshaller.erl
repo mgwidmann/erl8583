@@ -25,8 +25,8 @@ marshal_field(_N, Value, foo_rules) ->
 marshal_field(_N, _Value, erl8583_fields_1993) ->
 	"1993".
 
-marshal_mti("0200") ->
-	[0,2,0,0];
+marshal_mti(<<"0200">>) ->
+	<<0,2,0,0>>;
 marshal_mti("0100") ->
 	"0100";
 marshal_mti(Value) ->
@@ -83,7 +83,7 @@ no_encoders_test() ->
 	
 mti_test() ->
 	Message = erl8583_message:set(0, "0200", erl8583_message:new()),
-	[0, 2, 0, 0] = erl8583_marshaller:marshal(Message, [{field_marshaller, ?MODULE}, {mti_marshaller, ?MODULE}]).
+	<<0, 2, 0, 0>> = erl8583_marshaller:marshal(Message, [{field_marshaller, ?MODULE}, {mti_marshaller, ?MODULE}]).
 
 bitmap_test() ->
 	Message0 = erl8583_message:set(0, "0200", erl8583_message:new()),
