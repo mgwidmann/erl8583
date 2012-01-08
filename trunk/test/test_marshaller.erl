@@ -21,9 +21,9 @@
 marshal_field(_N, Value, erl8583_fields) ->
 	Value;
 marshal_field(_N, Value, foo_rules) ->
-	"_" ++ Value;
+	<<"_", Value/binary>>;
 marshal_field(_N, _Value, erl8583_fields_1993) ->
-	"1993".
+	<<"1993">>.
 
 marshal_mti(<<"0200">>) ->
 	<<0,2,0,0>>;
@@ -37,13 +37,13 @@ marshal_bitmap(Message) ->
 	{<<"bitmap = 123">>, erl8583_message:set(1, "1", Message)}.
 
 marshal_end(_Message, Marshalled) ->
-	"Start" ++ Marshalled ++ "End".
+	<<"Start", Marshalled/binary, "End">>.
 
 unmarshal_end(Message, _Marshalled) ->
 	erl8583_message:remove(1, Message).
 
 marshal_init(Message) ->
-	{"X", erl8583_message:set(0, "0110", Message)}.
+	{<<"X">>, erl8583_message:set(0, "0110", Message)}.
 
 unmarshal_init(Message, Marshalled) ->
 	{Message, lists:sublist(Marshalled, 2, length(Marshalled)-2)}.
@@ -96,7 +96,7 @@ fields_test() ->
 	Message1 = erl8583_message:set(1, "V1", Message0),
 	Message2 = erl8583_message:set(2, "V2", Message1),	
 	Message3 = erl8583_message:set(3, "V3", Message2),
-	"0100V1V2V3" = erl8583_marshaller:marshal(Message3, [{field_marshaller, ?MODULE}, {mti_marshaller, ?MODULE}]).
+	<<"0100V1V2V3">> = erl8583_marshaller:marshal(Message3, [{field_marshaller, ?MODULE}, {mti_marshaller, ?MODULE}]).
 	
 fields_with_encoding_rules_test() ->
 	Message0 = erl8583_message:set(0, "0100", erl8583_message:new()),
@@ -104,18 +104,18 @@ fields_with_encoding_rules_test() ->
 	Message2 = erl8583_message:set(2, "V2", Message1),	
 	Message3 = erl8583_message:set(3, "V3", Message2),
 	Options = [{field_marshaller, ?MODULE}, {encoding_rules, foo_rules}, {mti_marshaller, ?MODULE}],
-	"0100_V1_V2_V3" = erl8583_marshaller:marshal(Message3, Options).
+	<<"0100_V1_V2_V3">> = erl8583_marshaller:marshal(Message3, Options).
 
 marshal_end_test() ->
 	Message = erl8583_message:set(0, "0200", erl8583_message:new()),
 	Options = [{field_marshaller, ?MODULE}, {end_marshaller, ?MODULE}, {mti_marshaller, ?MODULE}],
-	"Start" ++ [0, 2, 0, 0] ++ "End" = erl8583_marshaller:marshal(Message, Options).
+	<<"Start", 0, 2, 0, 0, "End">> = erl8583_marshaller:marshal(Message, Options).
 
 encoding_rules_test() ->
 	Options = [{field_marshaller, ?MODULE}, {mti_marshaller, ?MODULE}],
 	Message0 = erl8583_message:set(0, "1100", erl8583_message:new()),
 	Message1 = erl8583_message:set(1, "V1", Message0),
-	"11001993" = erl8583_marshaller:marshal(Message1, Options).
+	<<"11001993">> = erl8583_marshaller:marshal(Message1, Options).
 
 unmarshal_mti_test() ->
 	Message = erl8583_marshaller:unmarshal([0, 2, 0, 0], [{mti_marshaller, ?MODULE}]),
@@ -147,7 +147,7 @@ marshal_init_test() ->
 	Message1 = erl8583_message:set(1, "V1", Message0),
 	Message2 = erl8583_message:set(2, "V2", Message1),	
 	Message3 = erl8583_message:set(3, "V3", Message2),
-	"X0110V1V2V3" = erl8583_marshaller:marshal(Message3, [{init_marshaller, ?MODULE}, {field_marshaller, ?MODULE}, {mti_marshaller, ?MODULE}]).
+	<<"X0110V1V2V3">> = erl8583_marshaller:marshal(Message3, [{init_marshaller, ?MODULE}, {field_marshaller, ?MODULE}, {mti_marshaller, ?MODULE}]).
 
 unmarshal_end_test() ->
 	Message = erl8583_marshaller:unmarshal([$S, 0, 2, 0, 0, 31, 1, 2, 3, 4, 5, $E], [{field_marshaller, ?MODULE},
