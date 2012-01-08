@@ -77,6 +77,10 @@ unmarshal_mti(Marshalled) ->
 	{FieldValue, Rest, _Fields} = unmarshal_field(0, Marshalled, undefined),
 	{FieldValue, Rest}.
 
+no_encoders_test() ->
+	Message = erl8583_message:new(),
+	<<>> =  erl8583_marshaller:marshal(Message, []).
+	
 mti_test() ->
 	Message = erl8583_message:set(0, "0200", erl8583_message:new()),
 	[0, 2, 0, 0] = erl8583_marshaller:marshal(Message, [{field_marshaller, ?MODULE}, {mti_marshaller, ?MODULE}]).
