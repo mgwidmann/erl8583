@@ -236,7 +236,7 @@ encode(Fields, Msg, Result, FieldMarshaller, EncodingRules, FieldArranger) ->
 	end,	
 	Value = erl8583_message:get(FieldId, Msg),
 	EncodedValue = FieldMarshaller:marshal_field(FieldId, Value, EncodingRules),
-	encode(Tail, Msg, lists:reverse(EncodedValue) ++ Result, FieldMarshaller, EncodingRules, undefined).
+	encode(Tail, Msg, <<Result/binary, EncodedValue/binary>>, FieldMarshaller, EncodingRules, undefined).
 
 decode_fields([], Message, _OptionsRecord, Marshalled) ->
 	{Message, Marshalled};
