@@ -56,10 +56,10 @@ unmarshal_field(20, [20|Tail], _) ->
 	{[20], Tail, [30]};
 unmarshal_field(30, [30|Tail], _) ->
 	{[30], Tail, []};
-unmarshal_field(_, [H|Rest], _) ->
-	{[H+$0], Rest, []}.
+unmarshal_field(_, <<H,Rest/binary>>, _) ->
+	{<<(H+$0)>>, Rest, []}.
 
-unmarshal_bitmap([7|T]) ->
+unmarshal_bitmap(<<7,T/binary>>) ->
 	{[1, 2, 3], T};
 unmarshal_bitmap([31|T]) ->
 	{[1, 2, 3, 4, 5], T};
@@ -126,9 +126,9 @@ unmarshal_mti_test() ->
 	[0] = erl8583_message:get_fields(Message).
 
 unmarshal_bitmap_test() ->
-	Message = erl8583_marshaller:unmarshal([0, 2, 0, 0, 7, 1, 2, 3], [{mti_marshaller, ?MODULE}, {field_marshaller, ?MODULE}, {bitmap_marshaller, ?MODULE}]),
+	Message = erl8583_marshaller:unmarshal(<<0, 2, 0, 0, 7, 1, 2, 3>>, [{mti_marshaller, ?MODULE}, {field_marshaller, ?MODULE}, {bitmap_marshaller, ?MODULE}]),
 	[0, 1, 2, 3] = erl8583_message:get_fields(Message),
-	"1" = erl8583_message:get(1, Message).
+	<<"1">> = erl8583_message:get(1, Message).
 	
 unmarshal_init_test() ->
 	Message = erl8583_marshaller:unmarshal([$S, 0, 2, 0, 0, 31, 1, 2, 3, 4, 5, $E], [{field_marshaller, ?MODULE},
