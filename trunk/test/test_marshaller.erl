@@ -155,28 +155,28 @@ marshal_init_test() ->
 	<<"X0110V1V2V3">> = erl8583_marshaller:marshal(Message3, [{init_marshaller, ?MODULE}, {field_marshaller, ?MODULE}, {mti_marshaller, ?MODULE}]).
 
 unmarshal_end_test() ->
-	Message = erl8583_marshaller:unmarshal([$S, 0, 2, 0, 0, 31, 1, 2, 3, 4, 5, $E], [{field_marshaller, ?MODULE},
+	Message = erl8583_marshaller:unmarshal(<<$S, 0, 2, 0, 0, 31, 1, 2, 3, 4, 5, $E>>, [{field_marshaller, ?MODULE},
 																			  {mti_marshaller, ?MODULE}, 
 																			  {bitmap_marshaller, ?MODULE},
 																			  {init_marshaller, ?MODULE},
 																			  {end_marshaller, ?MODULE}]),
 	[0, 2, 3, 4, 5] = erl8583_message:get_fields(Message),
-	"0200" = erl8583_message:get(0, Message),
-	"4" = erl8583_message:get(4, Message).
+	<<"0200">> = erl8583_message:get(0, Message),
+	<<"4">> = erl8583_message:get(4, Message).
 	
 marshal_field_arranger_test() ->
 	Message0 = erl8583_message:set(0, "0100", erl8583_message:new()),
 	Message1 = erl8583_message:set(1, "V1", Message0),
 	Message2 = erl8583_message:set(2, "V2", Message1),	
 	Message3 = erl8583_message:set(3, "V3", Message2),
-	"0100V2V1V3" = erl8583_marshaller:marshal(Message3, [{field_arranger, ?MODULE}, {field_marshaller, ?MODULE}, {mti_marshaller, ?MODULE}]).
+	<<"0100V2V1V3">> = erl8583_marshaller:marshal(Message3, [{field_arranger, ?MODULE}, {field_marshaller, ?MODULE}, {mti_marshaller, ?MODULE}]).
 
 unmarshal_field_arranger_test() ->
-	Message = erl8583_marshaller:unmarshal([0, 2, 0, 0, 30, 20, 10, 30], [{field_arranger, ?MODULE}, {mti_marshaller, ?MODULE}, {field_marshaller, ?MODULE}, {bitmap_marshaller, ?MODULE}]),
+	Message = erl8583_marshaller:unmarshal(<<0, 2, 0, 0, 30, 20, 10, 30>>, [{field_arranger, ?MODULE}, {mti_marshaller, ?MODULE}, {field_marshaller, ?MODULE}, {bitmap_marshaller, ?MODULE}]),
 	[0, 10, 20, 30] = erl8583_message:get_fields(Message),
-	[10] = erl8583_message:get(10, Message),
-	[20] = erl8583_message:get(20, Message),
-	[30] = erl8583_message:get(30, Message).
+	<<10>> = erl8583_message:get(10, Message),
+	<<20>> = erl8583_message:get(20, Message),
+	<<30>> = erl8583_message:get(30, Message).
 
 
 %%
