@@ -46,7 +46,8 @@ marshal_init(Message) ->
 	{<<"X">>, erl8583_message:set(0, "0110", Message)}.
 
 unmarshal_init(Message, Marshalled) ->
-	{Message, lists:sublist(Marshalled, 2, length(Marshalled)-2)}.
+	MarshalledList = erlang:binary_to_list(Marshalled),
+	{Message, erlang:list_to_binary(lists:sublist(MarshalledList, 2, length(MarshalledList)-2))}.
 
 unmarshal_field(0, <<0,2,0,0,Rest/binary>>, _) ->
 	{<<"0200">>, Rest, []};
@@ -61,7 +62,7 @@ unmarshal_field(_, <<H,Rest/binary>>, _) ->
 
 unmarshal_bitmap(<<7,T/binary>>) ->
 	{[1, 2, 3], T};
-unmarshal_bitmap([31|T]) ->
+unmarshal_bitmap(<<31, T/binary>>) ->
 	{[1, 2, 3, 4, 5], T};
 unmarshal_bitmap([30|T]) ->
 	{[10, 20], T}.
@@ -131,13 +132,13 @@ unmarshal_bitmap_test() ->
 	<<"1">> = erl8583_message:get(1, Message).
 	
 unmarshal_init_test() ->
-	Message = erl8583_marshaller:unmarshal([$S, 0, 2, 0, 0, 31, 1, 2, 3, 4, 5, $E], [{field_marshaller, ?MODULE},
+	Message = erl8583_marshaller:unmarshal(<<$S, 0, 2, 0, 0, 31, 1, 2, 3, 4, 5, $E>>, [{field_marshaller, ?MODULE},
 																			  {mti_marshaller, ?MODULE}, 
 																			  {bitmap_marshaller, ?MODULE},
 																			  {init_marshaller, ?MODULE}]),
 	[0, 1, 2, 3, 4, 5] = erl8583_message:get_fields(Message),
-	"0200" = erl8583_message:get(0, Message),
-	"4" = erl8583_message:get(4, Message).
+	<<"0200">> = erl8583_message:get(0, Message),
+	<<"4">> = erl8583_message:get(4, Message).
 
 unmarshal_additional_fields_test() ->
 	Message = erl8583_marshaller:unmarshal([0, 2, 0, 0, 30, 10, 20, 30], [{mti_marshaller, ?MODULE}, {field_marshaller, ?MODULE}, {bitmap_marshaller, ?MODULE}]),
