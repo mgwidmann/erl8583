@@ -51,11 +51,11 @@
 %% @doc Converts a string of characters to a list containing
 %%      the ASCII hex character codes.
 %%
-%% @spec string_to_ascii_hex(string()) -> string()
--spec(string_to_ascii_hex(string()) -> string()).
+%% @spec string_to_ascii_hex(binary()) -> binary()
+-spec(string_to_ascii_hex(binary()) -> binary()).
 
 string_to_ascii_hex(Str) ->
-	string_to_ascii_hex(Str, []).
+	string_to_ascii_hex(Str, <<>>).
 
 %% @doc Converts a string containing ASCII hex characters
 %%      to an equivalent ASCII string().
@@ -206,17 +206,17 @@ ascii_hex_to_digit([A]) when A >= $a andalso A =< $f ->
 	A - 87.
 
 %% @doc Converts a value in the range 0-15 to a 1 character
-%%      ASCII string containing the equivalent hexadecimal digit.
-%%      Values 10 - 15 are converted to the upper case strings
+%%      ASCII character containing the equivalent hexadecimal digit.
+%%      Values 10 - 15 are converted to the upper case codes
 %%      "A" - "F".
 %%
-%% @spec digit_to_ascii_hex(IntValue::integer()) -> string()
--spec(digit_to_ascii_hex(IntValue::integer()) -> string()).
+%% @spec digit_to_ascii_hex(IntValue::integer()) -> integer()
+-spec(digit_to_ascii_hex(IntValue::integer()) -> integer()).
 
 digit_to_ascii_hex(D) when D >= 0 andalso D =< 9 ->
-	[48+D];
+	48+D;
 digit_to_ascii_hex(D) when D >= 10 andalso D =< 15 ->
-	[55+D].
+	55+D.
 
 %% @doc Strips trailing spaces from an ASCII string.
 %%
@@ -276,14 +276,12 @@ bitmap_to_list(Bitmap, Offset) when size(Bitmap) =:= 8 ->
 %%
 %% Local Functions
 %%
-string_to_ascii_hex([], Result) ->
-	lists:reverse(Result);
-string_to_ascii_hex([Char|Tail], Result) ->
-	Msb = Char div 16,
-	Lsb = Char rem 16,
-	string_to_ascii_hex(Tail, digit_to_ascii_hex(Lsb) ++ 
-							digit_to_ascii_hex(Msb) ++
-							Result).
+string_to_ascii_hex(<<>>, Result) ->
+	Result;
+string_to_ascii_hex(<<Char,Tail/binary>>, Result) ->
+	Msb = digit_to_ascii_hex(Char div 16),
+	Lsb = digit_to_ascii_hex(Char rem 16),
+	string_to_ascii_hex(Tail, <<Result/binary, Msb, Lsb>>).
 
 ascii_hex_to_string([], Result) ->
 	lists:reverse(Result);
@@ -306,7 +304,7 @@ binary_to_ascii_hex([], Result) ->
 binary_to_ascii_hex([H|T], Result) ->
 	Msn = H div 16,
 	Lsn = H rem 16,
-	binary_to_ascii_hex(T, digit_to_ascii_hex(Lsn) ++ digit_to_ascii_hex(Msn) ++ Result).
+	binary_to_ascii_hex(T, [digit_to_ascii_hex(Lsn)] ++ [digit_to_ascii_hex(Msn)] ++ Result).
 
 ascii_hex_to_bytes([], Result) ->
 	lists:reverse(Result);
