@@ -39,10 +39,10 @@ unmarshal_bitmap([$B|Rest]) ->
 %% Local Functions
 %%
 pan_test() ->
-	Msg = erl8583_marshaller:unmarshal("02004000000000000000165234567890123456", ?MARSHALLER_ASCII),
-	"0200" = erl8583_message:get(0, Msg),
+	Msg = erl8583_marshaller:unmarshal(<<"02004000000000000000165234567890123456">>, ?MARSHALLER_ASCII),
+	<<"0200">> = erl8583_message:get(0, Msg),
 	[0, 2] = erl8583_message:get_fields(Msg),
-	"5234567890123456" = erl8583_message:get(2, Msg).
+	<<"5234567890123456">> = erl8583_message:get(2, Msg).
 	
 field_8_9_10_test() ->
 	Msg = erl8583_marshaller:unmarshal("030001C0000000000000000000010000000200000003", ?MARSHALLER_ASCII),
