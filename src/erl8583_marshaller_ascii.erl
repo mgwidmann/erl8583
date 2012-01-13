@@ -95,8 +95,8 @@ marshal_bitmap(Message) ->
 -spec(unmarshal_bitmap(string()) -> {list(integer()), string()}).
 
 unmarshal_bitmap(AsciiMessage) ->
-	{AsciiBitmap, Fields} = lists:split(16, AsciiMessage),
-	Bitmap = erl8583_convert:ascii_hex_to_binary(AsciiBitmap),
+	{AsciiBitmap, Fields} = erlang:split_binary(AsciiMessage, 16),
+	Bitmap = erl8583_convert:ascii_hex_to_binary(erlang:binary_to_list(AsciiBitmap)),
 	{erl8583_convert:bitmap_to_list(Bitmap, 0), Fields}.
 
 %% @doc Marshals a field value into an ASCII string using a specified
@@ -159,7 +159,7 @@ marshal_end(_Message, Marshalled) ->
 %% @spec unmarshal_end(iso8583message(), Marshalled::string()) -> iso8583message()
 -spec(unmarshal_end(iso8583message(), Marshalled::string()) -> iso8583message()).
 
-unmarshal_end(Message, []) ->
+unmarshal_end(Message, <<>>) ->
 	erl8583_message:remove(1, Message).
 
 %%
@@ -195,8 +195,8 @@ marshal_data_element({b, fixed, Length}, FieldValue) when size(FieldValue) =:= L
 	erl8583_convert:binary_to_ascii_hex(FieldValue).
 
 unmarshal_data_element({n, llvar, _MaxLength}, AsciiFields) ->
-	{N, Rest} = lists:split(2, AsciiFields),
-	lists:split(list_to_integer(N), Rest);
+	{N, Rest} = erlang:split_binary(AsciiFields, 2),
+	erlang:split_binary(Rest, list_to_integer(binary_to_list(N)));
 unmarshal_data_element({n, lllvar, _MaxLength}, AsciiFields) ->
 	{N, Rest} = lists:split(3, AsciiFields),
 	lists:split(list_to_integer(N), Rest);
@@ -216,7 +216,7 @@ unmarshal_data_element({ans, lllvar, _MaxLength}, AsciiFields) ->
 	{N, Rest} = lists:split(3, AsciiFields),
 	lists:split(list_to_integer(N), Rest);
 unmarshal_data_element({n, fixed, Length}, AsciiFields) ->
-	lists:split(Length, AsciiFields);
+	erlang:split_binary(AsciiFields, Length);
 unmarshal_data_element({an, fixed, Length}, AsciiFields) ->
 	lists:split(Length, AsciiFields);
 unmarshal_data_element({ans, fixed, Length}, AsciiFields) ->
