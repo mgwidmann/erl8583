@@ -12,6 +12,9 @@
 
 %% Defines types used by other modules.
 
+%% @type utf8() = binary(). A UTF8 string encoded as a binary.
+-type(utf8() :: binary()).
+
 %% @type max_length() = integer(). The maximum length of a field in bytes.
 -type(max_length() :: integer()).
 
@@ -27,8 +30,8 @@
 -type(iso8583message() :: #iso8583_message{}).
 
 %% Valid types for the field of an ISO 8583 message.
-%%she
-%% @type iso8583field_value() = string()|binary()|iso8583message(). Valid
+%%
+%% @type iso8583field_value() = utf8()|binary()|iso8583message(). Valid
 %% types for an ISO 8583 field. 
--type(iso8583field_value() :: string()|binary()|iso8583message()).
+-type(iso8583field_value() :: utf8()|binary()|iso8583message()).
 

@@ -19,9 +19,15 @@
 -module(erl8583_convert).
 
 %%
+%% Include files
+%%
+%% @headerfile "../include/erl8583_types.hrl"
+-include("erl8583_types.hrl").
+
+%%
 %% Exported Functions
 %%
--export([string_to_ascii_hex/1, 
+-export([utf8_to_ascii_hex/1, 
 		 ascii_hex_to_string/1, 
 		 integer_to_string/2, 
 		 pad_with_trailing_spaces/2,
@@ -48,20 +54,20 @@
 %% API Functions
 %%
 
-%% @doc Converts a string of characters to a list containing
+%% @doc Converts a UTF8 string of characters to a string containing
 %%      the ASCII hex character codes.
 %%
-%% @spec string_to_ascii_hex(binary()) -> binary()
--spec(string_to_ascii_hex(binary()) -> binary()).
+%% @spec utf8_to_ascii_hex(utf8()) -> utf8()
+-spec(utf8_to_ascii_hex(utf8()) -> utf8()).
 
-string_to_ascii_hex(Str) ->
-	string_to_ascii_hex(Str, <<>>).
+utf8_to_ascii_hex(Str) ->
+	utf8_to_ascii_hex(Str, <<>>).
 
 %% @doc Converts a string containing ASCII hex characters
-%%      to an equivalent ASCII string().
+%%      to an equivalent UTF8 string().
 %%
-%% @spec ascii_hex_to_string(string()) -> string()
--spec(ascii_hex_to_string(string()) -> string()).
+%% @spec ascii_hex_to_string(utf8()) -> utf8()
+-spec(ascii_hex_to_string(utf8()) -> utf8()).
 
 ascii_hex_to_string(HexStr) ->
 	ascii_hex_to_string(HexStr, []).
@@ -276,12 +282,12 @@ bitmap_to_list(Bitmap, Offset) when size(Bitmap) =:= 8 ->
 %%
 %% Local Functions
 %%
-string_to_ascii_hex(<<>>, Result) ->
+utf8_to_ascii_hex(<<>>, Result) ->
 	Result;
-string_to_ascii_hex(<<Char,Tail/binary>>, Result) ->
+utf8_to_ascii_hex(<<Char,Tail/binary>>, Result) ->
 	Msb = digit_to_ascii_hex(Char div 16),
 	Lsb = digit_to_ascii_hex(Char rem 16),
-	string_to_ascii_hex(Tail, <<Result/binary, Msb, Lsb>>).
+	utf8_to_ascii_hex(Tail, <<Result/binary, Msb, Lsb>>).
 
 ascii_hex_to_string([], Result) ->
 	lists:reverse(Result);
