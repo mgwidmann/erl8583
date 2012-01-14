@@ -31,7 +31,7 @@
 		 ascii_hex_to_utf8/1,
 		 integer_to_utf8/1,
 		 utf8_to_integer/1, 
-		 integer_to_string/2, 
+		 integer_to_utf8/2, 
 		 pad_with_trailing_spaces/2,
 		 binary_to_ascii_hex/1,
 		 binary_list_to_ascii_hex/1,
@@ -83,8 +83,8 @@ ascii_hex_to_utf8(HexStr) ->
 integer_to_utf8(IntValue) ->
 	unicode:characters_to_binary(integer_to_list(IntValue), utf8).
 
-%% @doc Converts a UTF8 string encoding a decimal
-%%      value to its integer value.
+%% @doc Converts a UTF8 string encoding a decimal value to
+%%      its integer value.
 %%
 %% @spec utf8_to_integer(utf8()) -> integer()
 -spec(utf8_to_integer(utf8()) -> integer()).
@@ -92,14 +92,15 @@ integer_to_utf8(IntValue) ->
 utf8_to_integer(IntStr) ->
 	list_to_integer(binary_to_list(IntStr)).
 
-%% @doc Converts an integer to an ASCII string of fixed length with
-%%      leading zeroes if necessary.
+%% @doc Converts an integer to its UTF8 decimal string
+%%      representation and pads with leading zeroes so
+%%      that the string is of specified length.
 %%
-%% @spec integer_to_string(integer(), integer()) -> string()
--spec(integer_to_string(integer(), integer()) -> string()).
+%% @spec integer_to_utf8(integer(), integer()) -> utf8()
+-spec(integer_to_utf8(integer(), integer()) -> utf8()).
 
-integer_to_string(IntValue, Length) ->
-	pad_with_zeroes(Length, integer_to_list(IntValue)).
+integer_to_utf8(IntValue, Length) ->
+	pad_with_zeroes(Length, integer_to_utf8(IntValue)).
 
 %% @doc Pads an ASCII string with a number of spaces so that the
 %%      resultant string has specified length.
@@ -191,11 +192,11 @@ bcd_to_ascii_hex(BcdList, Length, PaddingChar) when length(BcdList) =:= (Length 
 	IntValue = bcd_to_integer(BcdList),
 	case Length rem 2 of
 		0 ->
-			integer_to_string(IntValue, Length);
+			integer_to_utf8(IntValue, Length);
 		1 ->
 			StrippedValue = IntValue - ascii_hex_to_digit(PaddingChar),
 			0 = StrippedValue rem 10,
-			integer_to_string(StrippedValue div 10, Length)
+			integer_to_utf8(StrippedValue div 10, Length)
 	end.
 
 %% @doc Converts a list of track 2 nibbles to a string containing
@@ -315,10 +316,10 @@ ascii_hex_to_utf8(<<Dig1, Dig2, Tail/binary>>, Result) ->
 	Char = ascii_hex_to_digit([Dig1]) * 16 + ascii_hex_to_digit([Dig2]),
 	ascii_hex_to_utf8(Tail, <<Result/binary, Char>>).
 
-pad_with_zeroes(Length, Value) when Length =:= length(Value) ->
+pad_with_zeroes(Length, Value) when Length =:= size(Value) ->
 	Value;
-pad_with_zeroes(Length, Value) when Length > length(Value) ->
-	pad_with_zeroes(Length, "0" ++ Value).
+pad_with_zeroes(Length, Value) when Length > size(Value) ->
+	pad_with_zeroes(Length, <<"0", Value/binary>>).
 
 pad_with_leading_spaces(List, Length) when length(List) =:= Length ->
 	List;
