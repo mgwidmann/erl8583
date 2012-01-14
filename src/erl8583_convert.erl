@@ -28,7 +28,9 @@
 %% Exported Functions
 %%
 -export([utf8_to_ascii_hex/1, 
-		 ascii_hex_to_utf8/1, 
+		 ascii_hex_to_utf8/1,
+		 integer_to_utf8/1,
+		 utf8_to_integer/1, 
 		 integer_to_string/2, 
 		 pad_with_trailing_spaces/2,
 		 binary_to_ascii_hex/1,
@@ -71,6 +73,24 @@ utf8_to_ascii_hex(Str) ->
 
 ascii_hex_to_utf8(HexStr) ->
 	ascii_hex_to_utf8(HexStr, <<>>).
+
+%% @doc Converts an integer to its UTF8 decimal string
+%%      representation.
+%%
+%% @spec integer_to_utf8(integer()) -> utf8()
+-spec(integer_to_utf8(integer()) -> utf8()).
+
+integer_to_utf8(IntValue) ->
+	list_to_binary(integer_to_list(IntValue)).
+
+%% @doc Converts a UTF8 string encoding a decimal
+%%      value to its integer value.
+%%
+%% @spec utf8_to_integer(utf8()) -> integer()
+-spec(utf8_to_integer(utf8()) -> integer()).
+
+utf8_to_integer(IntStr) ->
+	list_to_integer(binary_to_list(IntStr)).
 
 %% @doc Converts an integer to an ASCII string of fixed length with
 %%      leading zeroes if necessary.
