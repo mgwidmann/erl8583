@@ -28,7 +28,7 @@
 %% Exported Functions
 %%
 -export([utf8_to_ascii_hex/1, 
-		 ascii_hex_to_string/1, 
+		 ascii_hex_to_utf8/1, 
 		 integer_to_string/2, 
 		 pad_with_trailing_spaces/2,
 		 binary_to_ascii_hex/1,
@@ -66,11 +66,11 @@ utf8_to_ascii_hex(Str) ->
 %% @doc Converts a string containing ASCII hex characters
 %%      to an equivalent UTF8 string().
 %%
-%% @spec ascii_hex_to_string(utf8()) -> utf8()
--spec(ascii_hex_to_string(utf8()) -> utf8()).
+%% @spec ascii_hex_to_utf8(utf8()) -> utf8()
+-spec(ascii_hex_to_utf8(utf8()) -> utf8()).
 
-ascii_hex_to_string(HexStr) ->
-	ascii_hex_to_string(HexStr, []).
+ascii_hex_to_utf8(HexStr) ->
+	ascii_hex_to_utf8(HexStr, <<>>).
 
 %% @doc Converts an integer to an ASCII string of fixed length with
 %%      leading zeroes if necessary.
@@ -289,11 +289,11 @@ utf8_to_ascii_hex(<<Char,Tail/binary>>, Result) ->
 	Lsb = digit_to_ascii_hex(Char rem 16),
 	utf8_to_ascii_hex(Tail, <<Result/binary, Msb, Lsb>>).
 
-ascii_hex_to_string([], Result) ->
-	lists:reverse(Result);
-ascii_hex_to_string([Dig1, Dig2 | Tail], Result) ->
-	Char = [ascii_hex_to_digit([Dig1]) * 16 + ascii_hex_to_digit([Dig2])],
-	ascii_hex_to_string(Tail, Char ++ Result).
+ascii_hex_to_utf8(<<>>, Result) ->
+	Result;
+ascii_hex_to_utf8(<<Dig1, Dig2, Tail/binary>>, Result) ->
+	Char = ascii_hex_to_digit([Dig1]) * 16 + ascii_hex_to_digit([Dig2]),
+	ascii_hex_to_utf8(Tail, <<Result/binary, Char>>).
 
 pad_with_zeroes(Length, Value) when Length =:= length(Value) ->
 	Value;

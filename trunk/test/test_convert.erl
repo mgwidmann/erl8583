@@ -44,8 +44,8 @@ string_to_ascii_hex_test() ->
 	<<"48656C6C6F">> = erl8583_convert:utf8_to_ascii_hex(<<"Hello">>).
 
 ascii_hex_to_string_test() ->
-	"" = erl8583_convert:ascii_hex_to_string(""),
-	"Hello" = erl8583_convert:ascii_hex_to_string("48656C6c6F").
+	<<"">> = erl8583_convert:ascii_hex_to_utf8(<<"">>),
+	<<"Hello">> = erl8583_convert:ascii_hex_to_utf8(<<"48656C6c6F">>).
 
 binary_to_ascii_hex_test() ->
 	"00FFA5" = erl8583_convert:binary_to_ascii_hex(<<0, 255, 165>>).
