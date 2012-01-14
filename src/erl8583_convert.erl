@@ -81,7 +81,7 @@ ascii_hex_to_utf8(HexStr) ->
 -spec(integer_to_utf8(integer()) -> utf8()).
 
 integer_to_utf8(IntValue) ->
-	list_to_binary(integer_to_list(IntValue)).
+	unicode:characters_to_binary(integer_to_list(IntValue), utf8).
 
 %% @doc Converts a UTF8 string encoding a decimal
 %%      value to its integer value.
