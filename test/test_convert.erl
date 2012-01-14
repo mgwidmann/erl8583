@@ -52,7 +52,10 @@ integer_to_utf8_test() ->
 
 utf8_to_integer_test() ->
 	-34567 = erl8583_convert:utf8_to_integer(<<"-34567">>).
-				
+
+integer_to_utf8_padding_test() ->
+	<<"00123">> = erl8583_convert:integer_to_utf8(123, 5).
+
 binary_to_ascii_hex_test() ->
 	"00FFA5" = erl8583_convert:binary_to_ascii_hex(<<0, 255, 165>>).
 
@@ -89,10 +92,10 @@ bcd_to_integer_test() ->
 	123456 = erl8583_convert:bcd_to_integer([18, 52, 86]).
 
 bcd_to_ascii_hex_test() ->
-	"1234" = erl8583_convert:bcd_to_ascii_hex([18, 52], 4, "F"),
-	"123" = erl8583_convert:bcd_to_ascii_hex([18, 63], 3, "F"),
-	"123" = erl8583_convert:bcd_to_ascii_hex([18, 48], 3, "0"),
-	"401" = erl8583_convert:bcd_to_ascii_hex([64, 31], 3, "F").
+	<<"1234">> = erl8583_convert:bcd_to_ascii_hex([18, 52], 4, "F"),
+	<<"123">> = erl8583_convert:bcd_to_ascii_hex([18, 63], 3, "F"),
+	<<"123">> = erl8583_convert:bcd_to_ascii_hex([18, 48], 3, "0"),
+	<<"401">> = erl8583_convert:bcd_to_ascii_hex([64, 31], 3, "F").
 
 track2_to_string_test() ->
 	";1234123412341234=0305101193010877?" = erl8583_convert:track2_to_string([177, 35, 65, 35, 65, 35, 65, 35, 77, 3, 5, 16, 17, 147, 1, 8, 119, 240],  35).
