@@ -39,9 +39,9 @@ ascii_hex_to_digit_test() ->
 	?assertError(_, erl8583_convert:ascii_hex_to_digit("G")).
 
 string_to_ascii_hex_test() ->
-	<<>> = erl8583_convert:string_to_ascii_hex(<<>>),
-	<<"30">> = erl8583_convert:string_to_ascii_hex(<<"0">>),
-	<<"48656C6C6F">> = erl8583_convert:string_to_ascii_hex(<<"Hello">>).
+	<<>> = erl8583_convert:utf8_to_ascii_hex(<<>>),
+	<<"30">> = erl8583_convert:utf8_to_ascii_hex(<<"0">>),
+	<<"48656C6C6F">> = erl8583_convert:utf8_to_ascii_hex(<<"Hello">>).
 
 ascii_hex_to_string_test() ->
 	"" = erl8583_convert:ascii_hex_to_string(""),
