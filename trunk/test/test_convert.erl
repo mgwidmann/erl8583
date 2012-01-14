@@ -47,6 +47,12 @@ ascii_hex_to_string_test() ->
 	<<"">> = erl8583_convert:ascii_hex_to_utf8(<<"">>),
 	<<"Hello">> = erl8583_convert:ascii_hex_to_utf8(<<"48656C6c6F">>).
 
+integer_to_utf8_test() ->
+	<<"123">> = erl8583_convert:integer_to_utf8(123).
+
+utf8_to_integer_test() ->
+	-34567 = erl8583_convert:utf8_to_integer(<<"-34567">>).
+				
 binary_to_ascii_hex_test() ->
 	"00FFA5" = erl8583_convert:binary_to_ascii_hex(<<0, 255, 165>>).
 
