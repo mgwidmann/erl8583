@@ -68,10 +68,10 @@ binary_list_to_ascii_hex_test() ->
 	<<"00FFA5">> = erl8583_convert:binary_list_to_ascii_hex([0, 255, 165]).
 
 ascii_hex_to_binary_test() ->
-	<<0, 255, 165>> = erl8583_convert:ascii_hex_to_binary("00FFa5").
+	<<0, 255, 165>> = erl8583_convert:ascii_hex_to_binary(<<"00FFa5">>).
 
 ascii_hex_to_binary_list_test() ->
-	[0, 255, 165] = erl8583_convert:ascii_hex_to_binary_list("00FFa5").
+	[0, 255, 165] = erl8583_convert:ascii_hex_to_binary_list(<<"00FFa5">>).
 
 integer_to_bcd_test() ->
 	[1] = erl8583_convert:integer_to_bcd(1, 1),
