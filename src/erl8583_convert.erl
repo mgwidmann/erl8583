@@ -131,19 +131,19 @@ binary_list_to_ascii_hex(BinList) ->
 
 %% @doc Returns the binary value corresponding to an ASCII hex string.
 %%
-%% @spec ascii_hex_to_binary(string()) -> binary()
--spec(ascii_hex_to_binary(string()) -> binary()).
+%% @spec ascii_hex_to_binary(utf8()) -> binary()
+-spec(ascii_hex_to_binary(utf8()) -> binary()).
 
 ascii_hex_to_binary(HexStr) ->
 	list_to_binary(ascii_hex_to_binary_list(HexStr)).
 	
 %% @doc Returns a binary list corresponding to an ASCII hex string.
 %%
-%% @spec ascii_hex_to_binary_list(string()) -> list(byte())
--spec(ascii_hex_to_binary_list(string()) -> list(byte())).
+%% @spec ascii_hex_to_binary_list(utf8()) -> list(byte())
+-spec(ascii_hex_to_binary_list(utf8()) -> list(byte())).
 
 ascii_hex_to_binary_list(HexStr) ->
-	case length(HexStr) rem 2 of
+	case size(HexStr) rem 2 of
 		0 ->
 			ascii_hex_to_bytes(HexStr, []);
 		1 ->
@@ -330,9 +330,9 @@ binary_to_ascii_hex(<<H, T/binary>>, Result) ->
 	Lsn = digit_to_ascii_hex(H rem 16),
 	binary_to_ascii_hex(T, <<Result/binary, Msn, Lsn>>).
 
-ascii_hex_to_bytes([], Result) ->
+ascii_hex_to_bytes(<<>>, Result) ->
 	lists:reverse(Result);
-ascii_hex_to_bytes([Msd, Lsd | Tail], Result) ->
+ascii_hex_to_bytes(<<Msd, Lsd, Tail/binary>>, Result) ->
 	Msn = ascii_hex_to_digit([Msd]),
 	Lsn = ascii_hex_to_digit([Lsd]),
 	ascii_hex_to_bytes(Tail, [Msn * 16 + Lsn] ++ Result).
