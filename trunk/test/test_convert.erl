@@ -62,10 +62,10 @@ pad_with_trailing_spaces_test() ->
 	?assertError(_, erl8583_convert:pad_with_trailing_spaces(<<"hello">>, 4)).
 
 binary_to_ascii_hex_test() ->
-	"00FFA5" = erl8583_convert:binary_to_ascii_hex(<<0, 255, 165>>).
+	<<"00FFA5">> = erl8583_convert:binary_to_ascii_hex(<<0, 255, 165>>).
 
 binary_list_to_ascii_hex_test() ->
-	"00FFA5" = erl8583_convert:binary_list_to_ascii_hex([0, 255, 165]).
+	<<"00FFA5">> = erl8583_convert:binary_list_to_ascii_hex([0, 255, 165]).
 
 ascii_hex_to_binary_test() ->
 	<<0, 255, 165>> = erl8583_convert:ascii_hex_to_binary("00FFa5").
