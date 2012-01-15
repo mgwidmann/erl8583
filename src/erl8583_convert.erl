@@ -27,30 +27,44 @@
 %%
 %% Exported Functions
 %%
--export([utf8_to_ascii_hex/1, 
+-export([% string conversion functions.
+		 utf8_to_ascii_hex/1, 
 		 ascii_hex_to_utf8/1,
-		 integer_to_utf8/1,
-		 utf8_to_integer/1, 
-		 integer_to_utf8/2, 
-		 pad_with_trailing_spaces/2,
+		 
+		 % binary conversions 
 		 binary_to_ascii_hex/1,
 		 binary_list_to_ascii_hex/1,
 		 ascii_hex_to_binary/1,
 		 ascii_hex_to_binary_list/1,
-		 integer_to_bcd/2,
-		 ascii_hex_to_bcd/2,
+		 
+		 % numeric conversions
+		 integer_to_utf8/1,
+		 integer_to_utf8/2, % to do: remove. Pad with zeroes as separate function
+		 utf8_to_integer/1, 
+		 integer_to_bcd/2, % to do: remove length argument
+		 ascii_hex_to_bcd/2, % to do: remove padding argument
 		 bcd_to_integer/1,
-		 bcd_to_ascii_hex/3,
+		 bcd_to_ascii_hex/3,% r
+		 
+		 % track 2 conversions
 		 track2_to_string/2,
 		 string_to_track2/1,
-		 ascii_hex_to_digit/1,
-		 digit_to_ascii_hex/1,
-		 strip_trailing_spaces/1,
-		 strip_leading_zeroes/1,
+		 
+		 % EBCDIC / ASCII conversion
 		 ascii_to_ebcdic/1,
 		 ebcdic_to_ascii/1,
+		 
+		 % bitmap conversion
 		 list_to_bitmap/2,
-		 bitmap_to_list/2]).
+		 bitmap_to_list/2,
+		 
+		 % padding helpers
+		 % Move to a different module.
+		 % Add a function to pad with leading zeroes (and perhaps trailing F's)
+		 pad_with_trailing_spaces/2,
+		 strip_leading_zeroes/1,
+		 strip_trailing_spaces/1
+		]).
 
 %%
 %% API Functions
@@ -139,8 +153,8 @@ ascii_hex_to_binary(HexStr) ->
 	
 %% @doc Returns a binary list corresponding to an ASCII hex string.
 %%
-%% @spec ascii_hex_to_binary_list(utf8()) -> list(byte())
--spec(ascii_hex_to_binary_list(utf8()) -> list(byte())).
+%% @spec ascii_hex_to_binary_list(utf8()) -> bcd()
+-spec(ascii_hex_to_binary_list(utf8()) -> bcd()).
 
 ascii_hex_to_binary_list(HexStr) ->
 	case size(HexStr) rem 2 of
@@ -153,18 +167,18 @@ ascii_hex_to_binary_list(HexStr) ->
 %% @doc Converts an integer to a list of specified length 
 %%      of BCD encoded bytes.
 %%
-%% @spec integer_to_bcd(integer(), integer()) -> list(byte())
--spec(integer_to_bcd(integer(), integer()) -> list(byte())).
+%% @spec integer_to_bcd(integer(), integer()) -> bcd()
+-spec(integer_to_bcd(integer(), integer()) -> bcd()).
 
 integer_to_bcd(IntValue, Length) ->
 	integer_to_bcd(IntValue, Length, []).
 
 %% @doc Converts an ASCII hex encoded string to a list of BCD
-%%      encoded bytes ()padded with a specified padding character
+%%      encoded bytes padded with a specified padding character
 %%      if the string has odd length).
 %%
-%% @spec ascii_hex_to_bcd(utf8(), char()) -> list(byte())
--spec(ascii_hex_to_bcd(utf8(), char()) -> list(byte())).
+%% @spec ascii_hex_to_bcd(utf8(), char()) -> bcd()
+-spec(ascii_hex_to_bcd(utf8(), char()) -> bcd()).
 
 ascii_hex_to_bcd(HexStr, PaddingChar) when size(HexStr) rem 2 =:= 1 ->
 	ascii_hex_to_bcd(<<HexStr/binary, PaddingChar>>, PaddingChar);
@@ -173,8 +187,8 @@ ascii_hex_to_bcd(HexStr, _PaddingChar) ->
 	
 %% @doc Converts a list of BCD encoded bytes to an integer.
 %%
-%% @spec bcd_to_integer(list(byte())) -> integer()
--spec(bcd_to_integer(list(byte())) -> integer()).
+%% @spec bcd_to_integer(bcd()) -> integer()
+-spec(bcd_to_integer(bcd()) -> integer()).
 
 bcd_to_integer(BcdList) ->
 	F = fun(Value, Acc) ->
@@ -218,34 +232,6 @@ track2_to_string(Track2Data, Length) ->
 
 string_to_track2(Str) ->
 	string_to_track2(Str, [], 0, true).
-
-%% @doc Converts a string containing 1 ASCII hex character
-%%      to its value. The ASCII hex digits A-F can be encoded
-%%      as upper-case ("A" - "F") or lower-case ("a" - "f")
-%%      characters.
-%%
-%% @spec ascii_hex_to_digit(HexDigit::string()) -> integer()
--spec(ascii_hex_to_digit(HexDigit::string()) -> integer()).
-
-ascii_hex_to_digit([A]) when A >= $0 andalso A =< $9 ->
-	A - $0;
-ascii_hex_to_digit([A]) when A >= $A andalso A =< $F ->
-	A - 55;
-ascii_hex_to_digit([A]) when A >= $a andalso A =< $f ->
-	A - 87.
-
-%% @doc Converts a value in the range 0-15 to a 1 character
-%%      ASCII character containing the equivalent hexadecimal digit.
-%%      Values 10 - 15 are converted to the upper case codes
-%%      "A" - "F".
-%%
-%% @spec digit_to_ascii_hex(IntValue::integer()) -> integer()
--spec(digit_to_ascii_hex(IntValue::integer()) -> integer()).
-
-digit_to_ascii_hex(D) when D >= 0 andalso D =< 9 ->
-	48+D;
-digit_to_ascii_hex(D) when D >= 10 andalso D =< 15 ->
-	55+D.
 
 %% @doc Strips trailing spaces from an ASCII string.
 %%
@@ -563,4 +549,16 @@ bitmap_int_to_list(Value, Offset, N, Result) ->
 		_ ->
 			bitmap_int_to_list(Value, Offset, N+1, [64-N|Result])
 	end.
+
+ascii_hex_to_digit([A]) when A >= $0 andalso A =< $9 ->
+	A - $0;
+ascii_hex_to_digit([A]) when A >= $A andalso A =< $F ->
+	A - 55;
+ascii_hex_to_digit([A]) when A >= $a andalso A =< $f ->
+	A - 87.
+
+digit_to_ascii_hex(D) when D >= 0 andalso D =< 9 ->
+	48+D;
+digit_to_ascii_hex(D) when D >= 10 andalso D =< 15 ->
+	55+D.
 
