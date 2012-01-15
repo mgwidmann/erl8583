@@ -56,6 +56,11 @@ utf8_to_integer_test() ->
 integer_to_utf8_padding_test() ->
 	<<"00123">> = erl8583_convert:integer_to_utf8(123, 5).
 
+pad_with_trailing_spaces_test() ->
+	<<"hello">> = erl8583_convert:pad_with_trailing_spaces(<<"hello">>, 5),
+	<<"hello  ">> = erl8583_convert:pad_with_trailing_spaces(<<"hello">>, 7),
+	?assertError(_, erl8583_convert:pad_with_trailing_spaces(<<"hello">>, 4)).
+
 binary_to_ascii_hex_test() ->
 	"00FFA5" = erl8583_convert:binary_to_ascii_hex(<<0, 255, 165>>).
 

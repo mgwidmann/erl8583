@@ -102,14 +102,16 @@ utf8_to_integer(IntStr) ->
 integer_to_utf8(IntValue, Length) ->
 	pad_with_zeroes(Length, integer_to_utf8(IntValue)).
 
-%% @doc Pads an ASCII string with a number of spaces so that the
+%% @doc Pads a UTF8 string with a number of spaces so that the
 %%      resultant string has specified length.
 %%
-%% @spec pad_with_trailing_spaces(string(), integer()) -> string()
--spec(pad_with_trailing_spaces(string(), integer()) -> string()).
+%% @spec pad_with_trailing_spaces(utf8(), integer()) -> utf8()
+-spec(pad_with_trailing_spaces(utf8(), integer()) -> utf8()).
 
-pad_with_trailing_spaces(Str, Length) ->
-	lists:reverse(pad_with_leading_spaces(lists:reverse(Str), Length)).
+pad_with_trailing_spaces(Str, Length) when size(Str) =:= Length ->
+	Str;
+pad_with_trailing_spaces(Str, Length) when size(Str) < Length ->
+	pad_with_trailing_spaces(<<Str/binary, " ">>, Length).
 
 %% @doc Returns the ASCII hex encoding of a binary value.
 %%
@@ -320,11 +322,6 @@ pad_with_zeroes(Length, Value) when Length =:= size(Value) ->
 	Value;
 pad_with_zeroes(Length, Value) when Length > size(Value) ->
 	pad_with_zeroes(Length, <<"0", Value/binary>>).
-
-pad_with_leading_spaces(List, Length) when length(List) =:= Length ->
-	List;
-pad_with_leading_spaces(List, Length) when length(List) < Length ->
-	pad_with_leading_spaces(" " ++ List, Length).
 
 binary_to_ascii_hex([], Result) ->
 	lists:reverse(Result);
