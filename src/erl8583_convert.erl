@@ -115,19 +115,19 @@ pad_with_trailing_spaces(Str, Length) when size(Str) < Length ->
 
 %% @doc Returns the ASCII hex encoding of a binary value.
 %%
-%% @spec binary_to_ascii_hex(binary()) -> string()
--spec(binary_to_ascii_hex(binary()) -> string()).
+%% @spec binary_to_ascii_hex(binary()) -> utf8()
+-spec(binary_to_ascii_hex(binary()) -> utf8()).
 
 binary_to_ascii_hex(BinValue) ->
-	binary_to_ascii_hex(binary_to_list(BinValue), []).
+	binary_to_ascii_hex(BinValue, <<>>).
 
 %% @doc Returns the ASCII hex encoding of a list of bytes.
 %%
-%% @spec binary_list_to_ascii_hex(binary()) -> string()
--spec(binary_list_to_ascii_hex(list(byte())) -> string()).
+%% @spec binary_list_to_ascii_hex(binary()) -> utf8()
+-spec(binary_list_to_ascii_hex(list(byte())) -> utf8()).
 
 binary_list_to_ascii_hex(BinList) ->
-	binary_to_ascii_hex(BinList, []).
+	binary_to_ascii_hex(list_to_binary(BinList), <<>>).
 
 %% @doc Returns the binary value corresponding to an ASCII hex string.
 %%
@@ -323,12 +323,12 @@ pad_with_zeroes(Length, Value) when Length =:= size(Value) ->
 pad_with_zeroes(Length, Value) when Length > size(Value) ->
 	pad_with_zeroes(Length, <<"0", Value/binary>>).
 
-binary_to_ascii_hex([], Result) ->
-	lists:reverse(Result);
-binary_to_ascii_hex([H|T], Result) ->
-	Msn = H div 16,
-	Lsn = H rem 16,
-	binary_to_ascii_hex(T, [digit_to_ascii_hex(Lsn)] ++ [digit_to_ascii_hex(Msn)] ++ Result).
+binary_to_ascii_hex(<<>>, Result) ->
+	Result;
+binary_to_ascii_hex(<<H, T/binary>>, Result) ->
+	Msn = digit_to_ascii_hex(H div 16),
+	Lsn = digit_to_ascii_hex(H rem 16),
+	binary_to_ascii_hex(T, <<Result/binary, Msn, Lsn>>).
 
 ascii_hex_to_bytes([], Result) ->
 	lists:reverse(Result);
