@@ -84,10 +84,11 @@ integer_to_bcd_test() ->
 	?assertError(_, erl8583_convert:integer_to_bcd(1000, 3)).
 
 ascii_hex_to_bcd_test() ->
-	[48, 31] = erl8583_convert:ascii_hex_to_bcd("301", "F"),
-	[64, 31] = erl8583_convert:ascii_hex_to_bcd("401", "F"),
-	[48, 16] = erl8583_convert:ascii_hex_to_bcd("301", "0"),
-	[18, 52] = erl8583_convert:ascii_hex_to_bcd("1234", "0").
+	[48, 31] = erl8583_convert:ascii_hex_to_bcd(<<"301">>, $F),
+	[48, 1] = erl8583_convert:ascii_hex_to_bcd(<<"3001">>, $F),
+	[64, 31] = erl8583_convert:ascii_hex_to_bcd(<<"401">>, $F),
+	[48, 16] = erl8583_convert:ascii_hex_to_bcd(<<"301">>, $0),
+	[18, 52] = erl8583_convert:ascii_hex_to_bcd(<<"1234">>, $0).
 
 bcd_to_integer_test() ->
 	17 = erl8583_convert:bcd_to_integer([23]),
