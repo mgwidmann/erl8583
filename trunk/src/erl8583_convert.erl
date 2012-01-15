@@ -163,11 +163,11 @@ integer_to_bcd(IntValue, Length) ->
 %%      encoded bytes ()padded with a specified padding character
 %%      if the string has odd length).
 %%
-%% @spec ascii_hex_to_bcd(string(), char()) -> list(byte())
--spec(ascii_hex_to_bcd(string(), char()) -> list(byte())).
+%% @spec ascii_hex_to_bcd(utf8(), char()) -> list(byte())
+-spec(ascii_hex_to_bcd(utf8(), char()) -> list(byte())).
 
-ascii_hex_to_bcd(HexStr, PaddingChar) when length(HexStr) rem 2 =:= 1 ->
-	ascii_hex_to_bcd(HexStr ++ PaddingChar, PaddingChar);
+ascii_hex_to_bcd(HexStr, PaddingChar) when size(HexStr) rem 2 =:= 1 ->
+	ascii_hex_to_bcd(<<HexStr/binary, PaddingChar>>, PaddingChar);
 ascii_hex_to_bcd(HexStr, _PaddingChar) ->
 	ascii_hex_to_bcd2(HexStr, []).	
 	
@@ -353,9 +353,9 @@ concat_adjacent_bytes([], Result) ->
 concat_adjacent_bytes([Dig1, Dig2|Tail], Result) ->
 	concat_adjacent_bytes(Tail, [Dig1 * 16 + Dig2|Result]).
 
-ascii_hex_to_bcd2([], Result) ->
+ascii_hex_to_bcd2(<<>>, Result) ->
 	lists:reverse(Result);
-ascii_hex_to_bcd2([Dig1, Dig2|Tail], Result) ->
+ascii_hex_to_bcd2(<<Dig1, Dig2, Tail/binary>>, Result) ->
 	Byte = ascii_hex_to_digit([Dig1]) * 16 + ascii_hex_to_digit([Dig2]),
 	ascii_hex_to_bcd2(Tail, [Byte|Result]).
 
