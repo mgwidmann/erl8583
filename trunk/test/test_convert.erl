@@ -22,22 +22,6 @@
 %%
 %% Local Functions
 %%
-digit_to_ascii_hex_test() ->
-	$0 = erl8583_convert:digit_to_ascii_hex(0),
-	$9 = erl8583_convert:digit_to_ascii_hex(9),
-	$A = erl8583_convert:digit_to_ascii_hex(10),
-	$F = erl8583_convert:digit_to_ascii_hex(15),
-	?assertError(_, erl8583_convert:digit_to_ascii_hex(16)).
-
-ascii_hex_to_digit_test() ->
-	0 = erl8583_convert:ascii_hex_to_digit("0"),
-	9 = erl8583_convert:ascii_hex_to_digit("9"),
-	10 = erl8583_convert:ascii_hex_to_digit("A"),
-	15 = erl8583_convert:ascii_hex_to_digit("F"),
-	10 = erl8583_convert:ascii_hex_to_digit("a"),
-	15 = erl8583_convert:ascii_hex_to_digit("f"),
-	?assertError(_, erl8583_convert:ascii_hex_to_digit("G")).
-
 string_to_ascii_hex_test() ->
 	<<>> = erl8583_convert:utf8_to_ascii_hex(<<>>),
 	<<"30">> = erl8583_convert:utf8_to_ascii_hex(<<"0">>),

@@ -15,6 +15,9 @@
 %% @type utf8() = binary(). A UTF8 string encoded as a binary.
 -type(utf8() :: binary()).
 
+%% @type bcd() = list(byte()). A list of bytes where each byte is a BCD value.
+-type(bcd() :: list(byte())).
+
 %% @type max_length() = integer(). The maximum length of a field in bytes.
 -type(max_length() :: integer()).
 
