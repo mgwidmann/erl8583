@@ -32,10 +32,10 @@ ascii_hex_to_string_test() ->
 	<<"Hello">> = erl8583_convert:ascii_hex_to_utf8(<<"48656C6c6F">>).
 
 integer_to_utf8_test() ->
-	<<"123">> = erl8583_convert:integer_to_utf8(123).
+	<<"123">> = erl8583_convert:integer_to_numeric_utf8(123).
 
 utf8_to_integer_test() ->
-	-34567 = erl8583_convert:utf8_to_integer(<<"-34567">>).
+	-34567 = erl8583_convert:numeric_utf8_to_integer(<<"-34567">>).
 
 pad_with_trailing_spaces_test() ->
 	<<"hello">> = erl8583_convert:pad_with_trailing_spaces(<<"hello">>, 5),

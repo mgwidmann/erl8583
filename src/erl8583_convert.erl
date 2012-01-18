@@ -39,8 +39,8 @@
 		 ascii_hex_to_binary_list/1,
 		 
 		 % numeric conversions
-		 integer_to_utf8/1,
-		 utf8_to_integer/1, 
+		 integer_to_numeric_utf8/1,
+		 numeric_utf8_to_integer/1, 
 		 integer_to_bcd/2, % to do: remove length argument
 		 ascii_hex_to_bcd/2, % to do: remove padding argument
 		 bcd_to_integer/1,
@@ -90,19 +90,19 @@ ascii_hex_to_utf8(HexStr) ->
 %% @doc Converts an integer to its UTF8 decimal string
 %%      representation.
 %%
-%% @spec integer_to_utf8(integer()) -> utf8()
--spec(integer_to_utf8(integer()) -> utf8()).
+%% @spec integer_to_numeric_utf8(integer()) -> utf8()
+-spec(integer_to_numeric_utf8(integer()) -> utf8()).
 
-integer_to_utf8(IntValue) ->
+integer_to_numeric_utf8(IntValue) ->
 	unicode:characters_to_binary(integer_to_list(IntValue), utf8).
 
 %% @doc Converts a UTF8 string encoding a decimal value to
 %%      its integer value.
 %%
-%% @spec utf8_to_integer(utf8()) -> integer()
--spec(utf8_to_integer(utf8()) -> integer()).
+%% @spec numeric_utf8_to_integer(utf8()) -> integer()
+-spec(numeric_utf8_to_integer(utf8()) -> integer()).
 
-utf8_to_integer(IntStr) ->
+numeric_utf8_to_integer(IntStr) ->
 	list_to_integer(binary_to_list(IntStr)).
 
 %% @doc Converts an integer to its UTF8 decimal string
