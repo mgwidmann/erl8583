@@ -121,8 +121,14 @@ numeric_utf8_to_integer(IntStr) ->
 numeric_utf8_to_bcd(IntStr) ->
 	integer_to_bcd(numeric_utf8_to_integer(IntStr)).
 
+%% @doc Converts a BCD encoding to a UTF8 string encoding a decimal 
+%%      value.
+%%
+%% @spec bcd_to_numeric_utf8(bcd()) -> utf8()
+-spec(bcd_to_numeric_utf8(bcd()) -> utf8()).
+
 bcd_to_numeric_utf8(Bcd) ->
-	ok.
+	integer_to_numeric_utf8(bcd_to_integer(Bcd)).
 
 ascii_hex_to_integer(AsciiHex) ->
 	ok.
