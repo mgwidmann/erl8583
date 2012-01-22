@@ -55,21 +55,11 @@ ascii_hex_to_binary_list_test() ->
 	[0, 255, 165] = erl8583_convert:ascii_hex_to_binary_list(<<"00FFa5">>).
 
 integer_to_bcd_test() ->
-	[1] = erl8583_convert:integer_to_bcd(1, 1),
-	[1] = erl8583_convert:integer_to_bcd(1, 2),
-	[0, 1] = erl8583_convert:integer_to_bcd(1, 3),
-	[16] = erl8583_convert:integer_to_bcd(10, 2),
-	[0, 16] = erl8583_convert:integer_to_bcd(10, 3),
-	[9, 153] = erl8583_convert:integer_to_bcd(999, 3),
-	[0,18,52,86,120] = erl8583_convert:integer_to_bcd(12345678, 10),
-	?assertError(_, erl8583_convert:integer_to_bcd(1000, 3)).
-
-ascii_hex_to_bcd_test() ->
-	[48, 31] = erl8583_convert:ascii_hex_to_bcd(<<"301">>, $F),
-	[48, 1] = erl8583_convert:ascii_hex_to_bcd(<<"3001">>, $F),
-	[64, 31] = erl8583_convert:ascii_hex_to_bcd(<<"401">>, $F),
-	[48, 16] = erl8583_convert:ascii_hex_to_bcd(<<"301">>, $0),
-	[18, 52] = erl8583_convert:ascii_hex_to_bcd(<<"1234">>, $0).
+	[1] = erl8583_convert:integer_to_bcd(1),
+	[16] = erl8583_convert:integer_to_bcd(10),
+	[9, 153] = erl8583_convert:integer_to_bcd(999),
+	[18,52,86,120] = erl8583_convert:integer_to_bcd(12345678),
+	[] = erl8583_convert:integer_to_bcd(0).
 
 bcd_to_integer_test() ->
 	17 = erl8583_convert:bcd_to_integer([23]),
