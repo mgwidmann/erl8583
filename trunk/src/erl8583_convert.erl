@@ -39,11 +39,18 @@
 		 ascii_hex_to_binary_list/1,
 		 
 		 % numeric conversions
+		 numeric_utf8_to_integer/1,
 		 integer_to_numeric_utf8/1,
-		 numeric_utf8_to_integer/1, 
-		 integer_to_bcd/2, % to do: remove length argument
-		 ascii_hex_to_bcd/2, % to do: remove padding argument
+		 numeric_utf8_to_bcd/1,
+		 bcd_to_numeric_utf8/1,
+		 integer_to_bcd/1,
 		 bcd_to_integer/1,
+		 integer_to_ascii_hex/1,
+		 ascii_hex_to_integer/1,
+		  
+		 %integer_to_bcd/2, % to do: remove length argument
+		 %ascii_hex_to_bcd/2, % to do: remove padding argument
+		 %bcd_to_integer/1,
 		 
 		 % track 2 conversions
 		 track2_to_string/2,
@@ -105,15 +112,17 @@ integer_to_numeric_utf8(IntValue) ->
 numeric_utf8_to_integer(IntStr) ->
 	list_to_integer(binary_to_list(IntStr)).
 
-%% @doc Converts an integer to its UTF8 decimal string
-%%      representation and pads with leading zeroes so
-%%      that the string is of specified length.
-%%
-%% @spec integer_to_utf8(integer(), integer()) -> utf8()
-%-spec(integer_to_utf8(integer(), integer()) -> utf8()).
+numeric_utf8_to_bcd(IntStr) ->
+	ok.
 
-%integer_to_utf8(IntValue, Length) ->
-%	pad_with_zeroes(Length, integer_to_utf8(IntValue)).
+bcd_to_numeric_utf8(Bcd) ->
+	ok.
+
+ascii_hex_to_integer(AsciiHex) ->
+	ok.
+
+integer_to_ascii_hex(IntValue) ->
+	ok.
 
 %% @doc Pads a UTF8 string with a number of spaces so that the
 %%      resultant string has specified length.
@@ -163,27 +172,6 @@ ascii_hex_to_binary_list(HexStr) ->
 			ascii_hex_to_bytes([$0|HexStr], [])
 	end.
 	
-%% @doc Converts an integer to a list of specified length 
-%%      of BCD encoded bytes.
-%%
-%% @spec integer_to_bcd(integer(), integer()) -> bcd()
--spec(integer_to_bcd(integer(), integer()) -> bcd()).
-
-integer_to_bcd(IntValue, Length) ->
-	integer_to_bcd(IntValue, Length, []).
-
-%% @doc Converts an ASCII hex encoded string to a list of BCD
-%%      encoded bytes padded with a specified padding character
-%%      if the string has odd length).
-%%
-%% @spec ascii_hex_to_bcd(utf8(), char()) -> bcd()
--spec(ascii_hex_to_bcd(utf8(), char()) -> bcd()).
-
-ascii_hex_to_bcd(HexStr, PaddingChar) when size(HexStr) rem 2 =:= 1 ->
-	ascii_hex_to_bcd(<<HexStr/binary, PaddingChar>>, PaddingChar);
-ascii_hex_to_bcd(HexStr, _PaddingChar) ->
-	ascii_hex_to_bcd2(HexStr, []).	
-	
 %% @doc Converts a list of BCD encoded bytes to an integer.
 %%
 %% @spec bcd_to_integer(bcd()) -> integer()
@@ -196,6 +184,14 @@ bcd_to_integer(BcdList) ->
 				100 * Acc + 10 * Dig1 + Dig2
 		end,
 	lists:foldl(F, 0, BcdList).
+
+%% @doc Converts an integer to a list of BCD encoded bytes.
+%%
+%% @spec integer_to_bcd(integer()) -> bcd()
+-spec(integer_to_bcd(integer()) -> bcd()).
+
+integer_to_bcd(IntValue) ->
+	integer_to_bcd(IntValue, []).
 
 %% @doc Converts a list of track 2 nibbles to a string containing
 %%      an ASCII encoding of the same data.
@@ -299,28 +295,6 @@ ascii_hex_to_bytes(<<Msd, Lsd, Tail/binary>>, Result) ->
 	Msn = ascii_hex_to_digit([Msd]),
 	Lsn = ascii_hex_to_digit([Lsd]),
 	ascii_hex_to_bytes(Tail, [Msn * 16 + Lsn] ++ Result).
-
-integer_to_bcd(0, 0, List) ->
-	[Head|Tail] = List,
-	case length(List) rem 2 of
-		0 ->
-			concat_adjacent_bytes(List, []);
-		1 when Head =< 9 ->
-			[Head|concat_adjacent_bytes(Tail, [])]
-	end;	
-integer_to_bcd(Value, Length, List) when Length > 0 ->
-	integer_to_bcd(Value div 10, Length-1, [Value rem 10|List]).
-
-concat_adjacent_bytes([], Result) ->
-	lists:reverse(Result);
-concat_adjacent_bytes([Dig1, Dig2|Tail], Result) ->
-	concat_adjacent_bytes(Tail, [Dig1 * 16 + Dig2|Result]).
-
-ascii_hex_to_bcd2(<<>>, Result) ->
-	lists:reverse(Result);
-ascii_hex_to_bcd2(<<Dig1, Dig2, Tail/binary>>, Result) ->
-	Byte = ascii_hex_to_digit([Dig1]) * 16 + ascii_hex_to_digit([Dig2]),
-	ascii_hex_to_bcd2(Tail, [Byte|Result]).
 
 track2_to_string2([], Result) ->
 	lists:reverse(Result);
@@ -539,3 +513,8 @@ digit_to_ascii_hex(D) when D >= 0 andalso D =< 9 ->
 digit_to_ascii_hex(D) when D >= 10 andalso D =< 15 ->
 	55+D.
 
+integer_to_bcd(0, Result) ->
+	Result;
+integer_to_bcd(IntValue, Result) ->
+	Byte = IntValue rem 100,
+	integer_to_bcd(IntValue div 100, [(Byte div 10) * 16 + (Byte rem 10)] ++ Result).
