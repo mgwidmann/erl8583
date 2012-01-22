@@ -68,6 +68,13 @@ bcd_to_integer_test() ->
 	123 = erl8583_convert:bcd_to_integer([1, 35]),
 	123456 = erl8583_convert:bcd_to_integer([18, 52, 86]).
 
+utf8_to_bcd_test() ->
+	[1] = erl8583_convert:numeric_utf8_to_bcd(<<"1">>),
+	[16] = erl8583_convert:numeric_utf8_to_bcd(<<"10">>),
+	[9, 153] = erl8583_convert:numeric_utf8_to_bcd(<<"999">>),
+	[18,52,86,120] = erl8583_convert:numeric_utf8_to_bcd(<<"12345678">>),
+	[] = erl8583_convert:numeric_utf8_to_bcd(<<"0">>).
+	
 track2_to_string_test() ->
 	";1234123412341234=0305101193010877?" = erl8583_convert:track2_to_string([177, 35, 65, 35, 65, 35, 65, 35, 77, 3, 5, 16, 17, 147, 1, 8, 119, 240],  35).
 

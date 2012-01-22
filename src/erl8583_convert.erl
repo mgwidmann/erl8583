@@ -112,8 +112,14 @@ integer_to_numeric_utf8(IntValue) ->
 numeric_utf8_to_integer(IntStr) ->
 	list_to_integer(binary_to_list(IntStr)).
 
+%% @doc Converts a UTF8 string encoding a decimal value to
+%%      a BCD encoding.
+%%
+%% @spec numeric_utf8_to_bcd(utf8()) -> bcd()
+-spec(numeric_utf8_to_bcd(utf8()) -> bcd()).
+
 numeric_utf8_to_bcd(IntStr) ->
-	ok.
+	integer_to_bcd(numeric_utf8_to_integer(IntStr)).
 
 bcd_to_numeric_utf8(Bcd) ->
 	ok.
